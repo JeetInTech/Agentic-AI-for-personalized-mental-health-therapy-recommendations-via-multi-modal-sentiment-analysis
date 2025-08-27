@@ -1,0 +1,30 @@
+# Text Analysis
+streamlit
+transformers
+torch
+pandas
+vaderSentiment
+nltk
+numpy
+scikit-learn
+textblob
+plotly
+python-dateutil
+
+# Audio Analysis
+librosa
+sounddevice
+SpeechRecognition
+pydub
+soundfile
+openai-whisper
+
+# Visual Analysis - MediaPipe handles everything!
+opencv-python
+mediapipe
+pillow
+
+# Advanced ML
+tensorflow
+keras
+scipy

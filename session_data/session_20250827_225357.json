@@ -1,0 +1,711 @@
+{
+  "session_id": "session_20250827_225357",
+  "start_time": "2025-08-27 22:55:54.879273",
+  "end_time": "2025-08-27 22:55:54.879273",
+  "chat_history": [
+    {
+      "role": "user",
+      "content": "I can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+      "timestamp": "2025-08-27 22:54:55.212688"
+    },
+    {
+      "role": "assistant",
+      "content": "It takes strength to reach out when you're struggling.\n\nAnyone in your situation would likely feel similarly.\n\nThank you for sharing what's on your mind.\n\nYou don't have to face this alone.\n\nLet's try something that might help you feel a bit better right now.",
+      "analysis": {
+        "text": {
+          "timestamp": "2025-08-27 22:54:55.212688",
+          "original_text": "I can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+          "processed_text": "i can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+          "text_length": 71,
+          "word_count": 14,
+          "vader_sentiment": {
+            "neg": 0.269,
+            "neu": 0.585,
+            "pos": 0.146,
+            "compound": -0.2732
+          },
+          "vader_alt_sentiment": {
+            "neg": 0.254,
+            "neu": 0.608,
+            "pos": 0.138,
+            "compound": -0.2732
+          },
+          "textblob_sentiment": {
+            "polarity": 0.0,
+            "subjectivity": 0.125
+          },
+          "features": {
+            "word_count": 14,
+            "sentence_count": 1,
+            "avg_word_length": 4.142857142857143,
+            "exclamation_count": 0,
+            "question_count": 0,
+            "capital_ratio": 0.014084507042253521,
+            "punctuation_density": 0.014084507042253521,
+            "noun": 6,
+            "verb": 6,
+            "adjective": 1,
+            "adverb": 0,
+            "pronoun": 3
+          },
+          "emotions": {
+            "detected_emotions": [],
+            "emotion_scores": {},
+            "dominant_emotion": "neutral",
+            "emotion_confidence": 0.0,
+            "ml_emotion": "joy",
+            "ml_confidence": 0.11764705882352941
+          },
+          "crisis": {
+            "crisis_risk": 0.21452349920921673,
+            "risk_level": "elevated",
+            "crisis_indicators": [],
+            "matched_keywords": [],
+            "risk_factors": {},
+            "immediate_concern": false,
+            "ml_prediction": true,
+            "ml_probability": 0.8580939968368669
+          },
+          "progress": {
+            "progress_indicators": [],
+            "coping_skills": [],
+            "insight_markers": [],
+            "resilience_signs": [],
+            "progress_score": 0
+          },
+          "sentiment_score": -0.18213333333333334,
+          "sentiment_label": "Negative",
+          "confidence": 0.9834137244444444,
+          "analysis_duration": 0.349274,
+          "analysis_version": "1.0",
+          "modality": "text"
+        },
+        "timestamp": "2025-08-27 22:54:55.561962",
+        "original_text": "I can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+        "processed_text": "i can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+        "text_length": 71,
+        "word_count": 14,
+        "vader_sentiment": {
+          "neg": 0.269,
+          "neu": 0.585,
+          "pos": 0.146,
+          "compound": -0.2732
+        },
+        "vader_alt_sentiment": {
+          "neg": 0.254,
+          "neu": 0.608,
+          "pos": 0.138,
+          "compound": -0.2732
+        },
+        "textblob_sentiment": {
+          "polarity": 0.0,
+          "subjectivity": 0.125
+        },
+        "features": {
+          "word_count": 14,
+          "sentence_count": 1,
+          "avg_word_length": 4.142857142857143,
+          "exclamation_count": 0,
+          "question_count": 0,
+          "capital_ratio": 0.014084507042253521,
+          "punctuation_density": 0.014084507042253521,
+          "noun": 6,
+          "verb": 6,
+          "adjective": 1,
+          "adverb": 0,
+          "pronoun": 3
+        },
+        "emotions": {
+          "detected_emotions": [],
+          "emotion_scores": {},
+          "dominant_emotion": "neutral",
+          "emotion_confidence": 0.0,
+          "ml_emotion": "joy",
+          "ml_confidence": 0.11764705882352941
+        },
+        "crisis": {
+          "crisis_risk": 0.21452349920921673,
+          "risk_level": "elevated",
+          "crisis_indicators": [],
+          "matched_keywords": [],
+          "risk_factors": {},
+          "immediate_concern": false,
+          "ml_prediction": true,
+          "ml_probability": 0.8580939968368669
+        },
+        "progress": {
+          "progress_indicators": [],
+          "coping_skills": [],
+          "insight_markers": [],
+          "resilience_signs": [],
+          "progress_score": 0
+        },
+        "sentiment_score": -0.18213333333333334,
+        "sentiment_label": "Negative",
+        "confidence": 0.9834137244444444,
+        "analysis_duration": 0.349274,
+        "analysis_version": "1.0",
+        "modality": "text",
+        "modalities_used": [
+          "text",
+          "timestamp",
+          "original_text",
+          "processed_text",
+          "text_length",
+          "word_count",
+          "vader_sentiment",
+          "vader_alt_sentiment",
+          "textblob_sentiment",
+          "features",
+          "emotions",
+          "crisis",
+          "progress",
+          "sentiment_score",
+          "sentiment_label",
+          "confidence",
+          "analysis_duration",
+          "analysis_version",
+          "modality"
+        ]
+      },
+      "timestamp": "2025-08-27 22:54:55.561962"
+    },
+    {
+      "role": "user",
+      "content": "My chest feels tight and I keep thinking something bad is going to happen.",
+      "timestamp": "2025-08-27 22:55:37.603260"
+    },
+    {
+      "role": "assistant",
+      "content": "I can hear that this is really difficult for you.\n\nYour response is a normal reaction to an abnormal situation.\n\nThank you for sharing what's on your mind.\n\nYou don't have to face this alone.\n\nI'd like to teach you a skill that you can use whenever you need it.",
+      "analysis": {
+        "text": {
+          "timestamp": "2025-08-27 22:55:37.603260",
+          "original_text": "My chest feels tight and I keep thinking something bad is going to happen.",
+          "processed_text": "my chest feels tight and i keep thinking something bad is going to happen.",
+          "text_length": 74,
+          "word_count": 14,
+          "vader_sentiment": {
+            "neg": 0.226,
+            "neu": 0.774,
+            "pos": 0.0,
+            "compound": -0.5423
+          },
+          "vader_alt_sentiment": {
+            "neg": 0.212,
+            "neu": 0.788,
+            "pos": 0.0,
+            "compound": -0.5423
+          },
+          "textblob_sentiment": {
+            "polarity": -0.4392857142857142,
+            "subjectivity": 0.47619047619047616
+          },
+          "features": {
+            "word_count": 14,
+            "sentence_count": 1,
+            "avg_word_length": 4.357142857142857,
+            "exclamation_count": 0,
+            "question_count": 0,
+            "capital_ratio": 0.02702702702702703,
+            "punctuation_density": 0.013513513513513514,
+            "noun": 2,
+            "verb": 5,
+            "adjective": 4,
+            "adverb": 0,
+            "pronoun": 1
+          },
+          "emotions": {
+            "detected_emotions": [],
+            "emotion_scores": {},
+            "dominant_emotion": "neutral",
+            "emotion_confidence": 0.0,
+            "ml_emotion": "joy",
+            "ml_confidence": 0.11764705882352941
+          },
+          "crisis": {
+            "crisis_risk": 0.22069618273351205,
+            "risk_level": "elevated",
+            "crisis_indicators": [],
+            "matched_keywords": [],
+            "risk_factors": {},
+            "immediate_concern": false,
+            "ml_prediction": true,
+            "ml_probability": 0.8827847309340482
+          },
+          "progress": {
+            "progress_indicators": [],
+            "coping_skills": [],
+            "insight_markers": [],
+            "resilience_signs": [],
+            "progress_score": 0
+          },
+          "sentiment_score": -0.5079619047619047,
+          "sentiment_label": "Negative",
+          "confidence": 0.997641790430839,
+          "analysis_duration": 0.012717,
+          "analysis_version": "1.0",
+          "modality": "text"
+        },
+        "timestamp": "2025-08-27 22:55:37.616584",
+        "original_text": "My chest feels tight and I keep thinking something bad is going to happen.",
+        "processed_text": "my chest feels tight and i keep thinking something bad is going to happen.",
+        "text_length": 74,
+        "word_count": 14,
+        "vader_sentiment": {
+          "neg": 0.226,
+          "neu": 0.774,
+          "pos": 0.0,
+          "compound": -0.5423
+        },
+        "vader_alt_sentiment": {
+          "neg": 0.212,
+          "neu": 0.788,
+          "pos": 0.0,
+          "compound": -0.5423
+        },
+        "textblob_sentiment": {
+          "polarity": -0.4392857142857142,
+          "subjectivity": 0.47619047619047616
+        },
+        "features": {
+          "word_count": 14,
+          "sentence_count": 1,
+          "avg_word_length": 4.357142857142857,
+          "exclamation_count": 0,
+          "question_count": 0,
+          "capital_ratio": 0.02702702702702703,
+          "punctuation_density": 0.013513513513513514,
+          "noun": 2,
+          "verb": 5,
+          "adjective": 4,
+          "adverb": 0,
+          "pronoun": 1
+        },
+        "emotions": {
+          "detected_emotions": [],
+          "emotion_scores": {},
+          "dominant_emotion": "neutral",
+          "emotion_confidence": 0.0,
+          "ml_emotion": "joy",
+          "ml_confidence": 0.11764705882352941
+        },
+        "crisis": {
+          "crisis_risk": 0.22069618273351205,
+          "risk_level": "elevated",
+          "crisis_indicators": [],
+          "matched_keywords": [],
+          "risk_factors": {},
+          "immediate_concern": false,
+          "ml_prediction": true,
+          "ml_probability": 0.8827847309340482
+        },
+        "progress": {
+          "progress_indicators": [],
+          "coping_skills": [],
+          "insight_markers": [],
+          "resilience_signs": [],
+          "progress_score": 0
+        },
+        "sentiment_score": -0.5079619047619047,
+        "sentiment_label": "Negative",
+        "confidence": 0.997641790430839,
+        "analysis_duration": 0.012717,
+        "analysis_version": "1.0",
+        "modality": "text",
+        "modalities_used": [
+          "text",
+          "timestamp",
+          "original_text",
+          "processed_text",
+          "text_length",
+          "word_count",
+          "vader_sentiment",
+          "vader_alt_sentiment",
+          "textblob_sentiment",
+          "features",
+          "emotions",
+          "crisis",
+          "progress",
+          "sentiment_score",
+          "sentiment_label",
+          "confidence",
+          "analysis_duration",
+          "analysis_version",
+          "modality"
+        ]
+      },
+      "timestamp": "2025-08-27 22:55:37.620245"
+    }
+  ],
+  "analysis_results": [
+    {
+      "text": {
+        "timestamp": "2025-08-27 22:54:55.212688",
+        "original_text": "I can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+        "processed_text": "i can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+        "text_length": 71,
+        "word_count": 14,
+        "vader_sentiment": {
+          "neg": 0.269,
+          "neu": 0.585,
+          "pos": 0.146,
+          "compound": -0.2732
+        },
+        "vader_alt_sentiment": {
+          "neg": 0.254,
+          "neu": 0.608,
+          "pos": 0.138,
+          "compound": -0.2732
+        },
+        "textblob_sentiment": {
+          "polarity": 0.0,
+          "subjectivity": 0.125
+        },
+        "features": {
+          "word_count": 14,
+          "sentence_count": 1,
+          "avg_word_length": 4.142857142857143,
+          "exclamation_count": 0,
+          "question_count": 0,
+          "capital_ratio": 0.014084507042253521,
+          "punctuation_density": 0.014084507042253521,
+          "noun": 6,
+          "verb": 6,
+          "adjective": 1,
+          "adverb": 0,
+          "pronoun": 3
+        },
+        "emotions": {
+          "detected_emotions": [],
+          "emotion_scores": {},
+          "dominant_emotion": "neutral",
+          "emotion_confidence": 0.0,
+          "ml_emotion": "joy",
+          "ml_confidence": 0.11764705882352941
+        },
+        "crisis": {
+          "crisis_risk": 0.21452349920921673,
+          "risk_level": "elevated",
+          "crisis_indicators": [],
+          "matched_keywords": [],
+          "risk_factors": {},
+          "immediate_concern": false,
+          "ml_prediction": true,
+          "ml_probability": 0.8580939968368669
+        },
+        "progress": {
+          "progress_indicators": [],
+          "coping_skills": [],
+          "insight_markers": [],
+          "resilience_signs": [],
+          "progress_score": 0
+        },
+        "sentiment_score": -0.18213333333333334,
+        "sentiment_label": "Negative",
+        "confidence": 0.9834137244444444,
+        "analysis_duration": 0.349274,
+        "analysis_version": "1.0",
+        "modality": "text"
+      },
+      "timestamp": "2025-08-27 22:54:55.561962",
+      "original_text": "I can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+      "processed_text": "i can\u2019t stop worrying about my future, it\u2019s like my mind won\u2019t shut off",
+      "text_length": 71,
+      "word_count": 14,
+      "vader_sentiment": {
+        "neg": 0.269,
+        "neu": 0.585,
+        "pos": 0.146,
+        "compound": -0.2732
+      },
+      "vader_alt_sentiment": {
+        "neg": 0.254,
+        "neu": 0.608,
+        "pos": 0.138,
+        "compound": -0.2732
+      },
+      "textblob_sentiment": {
+        "polarity": 0.0,
+        "subjectivity": 0.125
+      },
+      "features": {
+        "word_count": 14,
+        "sentence_count": 1,
+        "avg_word_length": 4.142857142857143,
+        "exclamation_count": 0,
+        "question_count": 0,
+        "capital_ratio": 0.014084507042253521,
+        "punctuation_density": 0.014084507042253521,
+        "noun": 6,
+        "verb": 6,
+        "adjective": 1,
+        "adverb": 0,
+        "pronoun": 3
+      },
+      "emotions": {
+        "detected_emotions": [],
+        "emotion_scores": {},
+        "dominant_emotion": "neutral",
+        "emotion_confidence": 0.0,
+        "ml_emotion": "joy",
+        "ml_confidence": 0.11764705882352941
+      },
+      "crisis": {
+        "crisis_risk": 0.21452349920921673,
+        "risk_level": "elevated",
+        "crisis_indicators": [],
+        "matched_keywords": [],
+        "risk_factors": {},
+        "immediate_concern": false,
+        "ml_prediction": true,
+        "ml_probability": 0.8580939968368669
+      },
+      "progress": {
+        "progress_indicators": [],
+        "coping_skills": [],
+        "insight_markers": [],
+        "resilience_signs": [],
+        "progress_score": 0
+      },
+      "sentiment_score": -0.18213333333333334,
+      "sentiment_label": "Negative",
+      "confidence": 0.9834137244444444,
+      "analysis_duration": 0.349274,
+      "analysis_version": "1.0",
+      "modality": "text",
+      "modalities_used": [
+        "text",
+        "timestamp",
+        "original_text",
+        "processed_text",
+        "text_length",
+        "word_count",
+        "vader_sentiment",
+        "vader_alt_sentiment",
+        "textblob_sentiment",
+        "features",
+        "emotions",
+        "crisis",
+        "progress",
+        "sentiment_score",
+        "sentiment_label",
+        "confidence",
+        "analysis_duration",
+        "analysis_version",
+        "modality"
+      ]
+    },
+    {
+      "text": {
+        "timestamp": "2025-08-27 22:55:37.603260",
+        "original_text": "My chest feels tight and I keep thinking something bad is going to happen.",
+        "processed_text": "my chest feels tight and i keep thinking something bad is going to happen.",
+        "text_length": 74,
+        "word_count": 14,
+        "vader_sentiment": {
+          "neg": 0.226,
+          "neu": 0.774,
+          "pos": 0.0,
+          "compound": -0.5423
+        },
+        "vader_alt_sentiment": {
+          "neg": 0.212,
+          "neu": 0.788,
+          "pos": 0.0,
+          "compound": -0.5423
+        },
+        "textblob_sentiment": {
+          "polarity": -0.4392857142857142,
+          "subjectivity": 0.47619047619047616
+        },
+        "features": {
+          "word_count": 14,
+          "sentence_count": 1,
+          "avg_word_length": 4.357142857142857,
+          "exclamation_count": 0,
+          "question_count": 0,
+          "capital_ratio": 0.02702702702702703,
+          "punctuation_density": 0.013513513513513514,
+          "noun": 2,
+          "verb": 5,
+          "adjective": 4,
+          "adverb": 0,
+          "pronoun": 1
+        },
+        "emotions": {
+          "detected_emotions": [],
+          "emotion_scores": {},
+          "dominant_emotion": "neutral",
+          "emotion_confidence": 0.0,
+          "ml_emotion": "joy",
+          "ml_confidence": 0.11764705882352941
+        },
+        "crisis": {
+          "crisis_risk": 0.22069618273351205,
+          "risk_level": "elevated",
+          "crisis_indicators": [],
+          "matched_keywords": [],
+          "risk_factors": {},
+          "immediate_concern": false,
+          "ml_prediction": true,
+          "ml_probability": 0.8827847309340482
+        },
+        "progress": {
+          "progress_indicators": [],
+          "coping_skills": [],
+          "insight_markers": [],
+          "resilience_signs": [],
+          "progress_score": 0
+        },
+        "sentiment_score": -0.5079619047619047,
+        "sentiment_label": "Negative",
+        "confidence": 0.997641790430839,
+        "analysis_duration": 0.012717,
+        "analysis_version": "1.0",
+        "modality": "text"
+      },
+      "timestamp": "2025-08-27 22:55:37.616584",
+      "original_text": "My chest feels tight and I keep thinking something bad is going to happen.",
+      "processed_text": "my chest feels tight and i keep thinking something bad is going to happen.",
+      "text_length": 74,
+      "word_count": 14,
+      "vader_sentiment": {
+        "neg": 0.226,
+        "neu": 0.774,
+        "pos": 0.0,
+        "compound": -0.5423
+      },
+      "vader_alt_sentiment": {
+        "neg": 0.212,
+        "neu": 0.788,
+        "pos": 0.0,
+        "compound": -0.5423
+      },
+      "textblob_sentiment": {
+        "polarity": -0.4392857142857142,
+        "subjectivity": 0.47619047619047616
+      },
+      "features": {
+        "word_count": 14,
+        "sentence_count": 1,
+        "avg_word_length": 4.357142857142857,
+        "exclamation_count": 0,
+        "question_count": 0,
+        "capital_ratio": 0.02702702702702703,
+        "punctuation_density": 0.013513513513513514,
+        "noun": 2,
+        "verb": 5,
+        "adjective": 4,
+        "adverb": 0,
+        "pronoun": 1
+      },
+      "emotions": {
+        "detected_emotions": [],
+        "emotion_scores": {},
+        "dominant_emotion": "neutral",
+        "emotion_confidence": 0.0,
+        "ml_emotion": "joy",
+        "ml_confidence": 0.11764705882352941
+      },
+      "crisis": {
+        "crisis_risk": 0.22069618273351205,
+        "risk_level": "elevated",
+        "crisis_indicators": [],
+        "matched_keywords": [],
+        "risk_factors": {},
+        "immediate_concern": false,
+        "ml_prediction": true,
+        "ml_probability": 0.8827847309340482
+      },
+      "progress": {
+        "progress_indicators": [],
+        "coping_skills": [],
+        "insight_markers": [],
+        "resilience_signs": [],
+        "progress_score": 0
+      },
+      "sentiment_score": -0.5079619047619047,
+      "sentiment_label": "Negative",
+      "confidence": 0.997641790430839,
+      "analysis_duration": 0.012717,
+      "analysis_version": "1.0",
+      "modality": "text",
+      "modalities_used": [
+        "text",
+        "timestamp",
+        "original_text",
+        "processed_text",
+        "text_length",
+        "word_count",
+        "vader_sentiment",
+        "vader_alt_sentiment",
+        "textblob_sentiment",
+        "features",
+        "emotions",
+        "crisis",
+        "progress",
+        "sentiment_score",
+        "sentiment_label",
+        "confidence",
+        "analysis_duration",
+        "analysis_version",
+        "modality"
+      ]
+    }
+  ],
+  "intervention_history": [
+    {
+      "type": "therapeutic_technique",
+      "technique": {
+        "name": "Three-Minute Breathing Space",
+        "category": "Mindfulness",
+        "description": "Create space between you and difficult experiences",
+        "steps": [
+          "Let's take a three-minute breathing space together.",
+          "Minute 1: Awareness - What's happening right now? Notice thoughts, feelings, sensations.",
+          "Minute 2: Gathering - Bring your attention to your breath. Feel each inhale and exhale.",
+          "Minute 3: Expanding - Widen your awareness to your whole body and surroundings.",
+          "How do you feel after creating this space?"
+        ],
+        "duration_minutes": 3
+      },
+      "rationale": "This Mindfulness technique is well-suited for your current emotional state.",
+      "personalization_factors": [
+        "stress",
+        "emotional_reactivity",
+        "mindfulness_practice"
+      ],
+      "effectiveness_prediction": 0.85
+    },
+    {
+      "type": "therapeutic_technique",
+      "technique": {
+        "name": "Three-Minute Breathing Space",
+        "category": "Mindfulness",
+        "description": "Create space between you and difficult experiences",
+        "steps": [
+          "Let's take a three-minute breathing space together.",
+          "Minute 1: Awareness - What's happening right now? Notice thoughts, feelings, sensations.",
+          "Minute 2: Gathering - Bring your attention to your breath. Feel each inhale and exhale.",
+          "Minute 3: Expanding - Widen your awareness to your whole body and surroundings.",
+          "How do you feel after creating this space?"
+        ],
+        "duration_minutes": 3
+      },
+      "rationale": "This Mindfulness technique is well-suited for your current emotional state.",
+      "personalization_factors": [
+        "stress",
+        "emotional_reactivity",
+        "mindfulness_practice"
+      ],
+      "effectiveness_prediction": 0.85
+    }
+  ],
+  "crisis_detected": false,
+  "modalities_used": {
+    "text": true,
+    "audio": false,
+    "video": false
+  }
+}

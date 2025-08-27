@@ -1,0 +1,39 @@
+{
+  "preferred_techniques": [],
+  "effective_interventions": {},
+  "crisis_patterns": [],
+  "emotional_triggers": [],
+  "response_patterns": {
+    "sentiment_history": [
+      {
+        "timestamp": "2025-08-27T22:54:55.561962",
+        "sentiment_score": -0.18213333333333334
+      },
+      {
+        "timestamp": "2025-08-27T22:55:37.616584",
+        "sentiment_score": -0.5079619047619047
+      }
+    ]
+  },
+  "therapy_goals": [],
+  "session_history": [
+    {
+      "timestamp": "2025-08-27T22:54:55.561962",
+      "emotional_state": null,
+      "sentiment_score": -0.18213333333333334,
+      "intervention_used": "Three-Minute Breathing Space",
+      "crisis_risk": 0,
+      "crisis_indicators": [],
+      "notes": null
+    },
+    {
+      "timestamp": "2025-08-27T22:55:37.616584",
+      "emotional_state": null,
+      "sentiment_score": -0.5079619047619047,
+      "intervention_used": "Three-Minute Breathing Space",
+      "crisis_risk": 0,
+      "crisis_indicators": [],
+      "notes": null
+    }
+  ]
+}
