@@ -1,0 +1,37 @@
+{
+  "models": {
+    "emotion_model": "j-hartmann/emotion-english-distilroberta-base",
+    "sentiment_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+    "device": "auto",
+    "max_length": 512
+  },
+   "llm": {
+    "ollama_url": "http://localhost:11434",
+    "ollama_model": "llama3.1:8b",
+    "groq_api_key": "REMOVED_API_KEY_SEE_ENV_FILE",
+    "groq_model": "llama-3.1-70b-versatile",
+    "temperature": 0.7,
+    "max_tokens": 300
+  },
+  "analysis": {
+    "crisis_threshold_high": 0.8,
+    "crisis_threshold_moderate": 0.5,
+    "crisis_threshold_low": 0.2
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": false,
+    "secret_key": "your-secret-key-here"
+  },
+  "logging": {
+    "level": "INFO",
+    "log_to_file": true,
+    "log_file": "logs/app.log"
+  },
+  "security": {
+    "log_crisis_events": true,
+    "anonymize_logs": true,
+    "data_retention_days": 30
+  }
+}

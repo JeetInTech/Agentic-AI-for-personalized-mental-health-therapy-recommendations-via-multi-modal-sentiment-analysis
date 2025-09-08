@@ -1,0 +1,429 @@
+2025-09-01 12:35:43,876 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 12:35:44,562 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 12:35:50,579 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 12:35:52,062 - root - INFO - Emotion model loaded
+2025-09-01 12:35:53,733 - root - INFO - Crisis detection model loaded
+2025-09-01 12:35:54,955 - root - INFO - Sentiment model loaded
+2025-09-01 12:35:54,956 - root - INFO - All models loaded successfully
+2025-09-01 12:35:55,240 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 12:35:55,377 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 12:35:56,390 - root - INFO - Whisper model loaded successfully
+2025-09-01 12:35:57,071 - root - INFO - Transformer emotion model loaded
+2025-09-01 12:35:57,648 - root - INFO - Alternative emotion model loaded
+2025-09-01 12:35:58,012 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 12:35:58,012 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 12:35:58,374 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2025-09-01 12:38:16,328 - root - ERROR - Emotion analysis error: list indices must be integers or slices, not str
+2025-09-01 12:38:16,898 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-09-01 12:38:16,899 - therapy_agent - ERROR - Groq API error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 12:38:16,899 - therapy_agent - ERROR - LLM generation failed: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 13:04:40,296 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:04:40,340 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:04:41,048 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:04:46,317 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 13:04:47,569 - root - INFO - Emotion model loaded
+2025-09-01 13:04:49,128 - root - INFO - Crisis detection model loaded
+2025-09-01 13:04:50,260 - root - INFO - Sentiment model loaded
+2025-09-01 13:04:50,261 - root - INFO - All models loaded successfully
+2025-09-01 13:04:50,483 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:04:50,604 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:04:51,494 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:04:52,132 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:04:52,688 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:04:53,010 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:04:53,011 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:04:53,013 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:04:53,018 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:07:43,889 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:07:43,926 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:07:44,554 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:07:49,782 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 13:07:50,979 - root - INFO - Emotion model loaded
+2025-09-01 13:07:52,579 - root - INFO - Crisis detection model loaded
+2025-09-01 13:07:53,738 - root - INFO - Sentiment model loaded
+2025-09-01 13:07:53,739 - root - INFO - All models loaded successfully
+2025-09-01 13:07:53,973 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:07:54,098 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:07:55,001 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:07:55,649 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:07:56,196 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:07:56,505 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:07:56,506 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:07:56,508 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:07:56,513 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:07:56,545 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-01 13:07:56,546 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-01 13:07:56,563 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:08:20,710 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:08:20,755 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:08:21,469 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:08:23,128 - root - INFO - Emotion model loaded
+2025-09-01 13:08:24,852 - root - INFO - Crisis detection model loaded
+2025-09-01 13:08:26,141 - root - INFO - Sentiment model loaded
+2025-09-01 13:08:26,141 - root - INFO - All models loaded successfully
+2025-09-01 13:08:26,852 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:08:26,984 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:08:28,025 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:08:28,754 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:08:29,419 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:08:29,830 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:08:29,830 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:08:29,834 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:08:29,840 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:08:29,867 - werkzeug - WARNING -  * Debugger is active!
+2025-09-01 13:08:29,877 - werkzeug - INFO -  * Debugger PIN: 376-289-046
+2025-09-01 13:08:30,640 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\venv\\Lib\\site-packages\\jinja2\\loaders.py', reloading
+2025-09-01 13:08:30,654 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:08:30] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-09-01 13:08:30,814 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:08:30] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2025-09-01 13:08:30,822 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:08:30] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2025-09-01 13:08:31,151 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:08:31] "GET /?__debugger__=yes&cmd=resource&f=console.png&s=wPNLOA2qo7p97kNFjKSQ HTTP/1.1" 200 -
+2025-09-01 13:08:31,409 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:08:31] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2025-09-01 13:08:34,052 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:09:11,827 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:09:11,874 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:09:12,473 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:09:18,722 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 13:09:20,095 - root - INFO - Emotion model loaded
+2025-09-01 13:09:22,173 - root - INFO - Crisis detection model loaded
+2025-09-01 13:09:23,508 - root - INFO - Sentiment model loaded
+2025-09-01 13:09:23,509 - root - INFO - All models loaded successfully
+2025-09-01 13:09:23,774 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:09:23,910 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:09:24,979 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:09:25,681 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:09:26,259 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:09:26,628 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:09:26,628 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:09:26,633 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:09:26,642 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:09:26,681 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-01 13:09:26,682 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-01 13:09:26,704 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:09:50,302 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:09:50,346 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:09:50,921 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:09:52,039 - root - INFO - Emotion model loaded
+2025-09-01 13:09:53,451 - root - INFO - Crisis detection model loaded
+2025-09-01 13:09:54,596 - root - INFO - Sentiment model loaded
+2025-09-01 13:09:54,597 - root - INFO - All models loaded successfully
+2025-09-01 13:09:55,166 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:09:55,283 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:09:56,183 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:09:56,974 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:09:57,537 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:09:57,851 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:09:57,852 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:09:57,854 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:09:57,859 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:09:57,879 - werkzeug - WARNING -  * Debugger is active!
+2025-09-01 13:09:57,886 - werkzeug - INFO -  * Debugger PIN: 376-289-046
+2025-09-01 13:09:58,393 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:09:58] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-09-01 13:09:58,514 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:09:58] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-09-01 13:09:58,514 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:09:58] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-09-01 13:09:58,846 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:09:58] "GET /?__debugger__=yes&cmd=resource&f=console.png&s=yHXRxgF7DhJ7Hwx8wpN8 HTTP/1.1" 200 -
+2025-09-01 13:12:56,228 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:12:56,270 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:12:56,886 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:13:02,342 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 13:13:03,572 - root - INFO - Emotion model loaded
+2025-09-01 13:13:04,938 - root - INFO - Crisis detection model loaded
+2025-09-01 13:13:06,061 - root - INFO - Sentiment model loaded
+2025-09-01 13:13:06,061 - root - INFO - All models loaded successfully
+2025-09-01 13:13:06,282 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:13:06,392 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:13:07,285 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:13:07,975 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:13:08,571 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:13:08,884 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:13:08,885 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:13:08,887 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:13:08,892 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:13:08,921 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-01 13:13:08,922 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-01 13:13:08,938 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:13:30,800 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:13:30,834 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:13:31,406 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:13:32,520 - root - INFO - Emotion model loaded
+2025-09-01 13:13:33,938 - root - INFO - Crisis detection model loaded
+2025-09-01 13:13:35,131 - root - INFO - Sentiment model loaded
+2025-09-01 13:13:35,131 - root - INFO - All models loaded successfully
+2025-09-01 13:13:35,693 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:13:35,803 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:13:36,701 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:13:37,390 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:13:37,970 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:13:38,280 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:13:38,281 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:13:38,283 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:13:38,288 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:13:38,307 - werkzeug - WARNING -  * Debugger is active!
+2025-09-01 13:13:38,314 - werkzeug - INFO -  * Debugger PIN: 376-289-046
+2025-09-01 13:13:38,831 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:13:38] "GET / HTTP/1.1" 200 -
+2025-09-01 13:13:38,897 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:13:38] "POST /api/session/new HTTP/1.1" 200 -
+2025-09-01 13:13:39,067 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:13:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-01 13:14:09,203 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:14:09] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:14:38,902 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:14:38] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:15:09,206 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:15:09] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:15:14,103 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:15:14] "POST /api/session/consent HTTP/1.1" 200 -
+2025-09-01 13:15:39,216 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:15:39] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:15:54,047 - root - ERROR - Emotion analysis error: list indices must be integers or slices, not str
+2025-09-01 13:15:54,744 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-09-01 13:15:54,746 - therapy_agent - ERROR - Groq API error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 13:15:54,746 - therapy_agent - ERROR - LLM generation failed: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 13:15:54,747 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:15:54] "POST /api/chat/send HTTP/1.1" 200 -
+2025-09-01 13:16:09,212 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:16:09] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:16:38,896 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:16:38] "GET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1" 200 -
+2025-09-01 13:16:57,774 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\venv\\Lib\\site-packages\\werkzeug\\debug\\__init__.py', reloading
+2025-09-01 13:16:57,791 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\venv\\Lib\\site-packages\\werkzeug\\serving.py', reloading
+2025-09-01 13:16:57,821 - werkzeug - INFO -  * Detected change in 'C:\\Users\\Jeet\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\http\\server.py', reloading
+2025-09-01 13:16:57,837 - werkzeug - INFO -  * Detected change in 'C:\\Users\\Jeet\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\socketserver.py', reloading
+2025-09-01 13:16:58,615 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\venv\\Lib\\site-packages\\numba\\np\\arrayobj.py', reloading
+2025-09-01 13:17:01,095 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:17:23,104 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:17:23,145 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:17:23,726 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:17:24,851 - root - INFO - Emotion model loaded
+2025-09-01 13:17:26,273 - root - INFO - Crisis detection model loaded
+2025-09-01 13:17:27,475 - root - INFO - Sentiment model loaded
+2025-09-01 13:17:27,476 - root - INFO - All models loaded successfully
+2025-09-01 13:17:28,042 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:17:28,158 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:17:29,050 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:17:29,706 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:17:30,301 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:17:30,630 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:17:30,631 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:17:30,635 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:17:30,640 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:17:30,661 - werkzeug - WARNING -  * Debugger is active!
+2025-09-01 13:17:30,669 - werkzeug - INFO -  * Debugger PIN: 376-289-046
+2025-09-01 13:17:31,210 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:17:31] "[33mPOST /api/session/settings HTTP/1.1[0m" 404 -
+2025-09-01 13:17:31,213 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:17:31] "[33mGET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1[0m" 404 -
+2025-09-01 13:17:31,219 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:17:31] "[33mPOST /api/upload/audio HTTP/1.1[0m" 404 -
+2025-09-01 13:17:31,223 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:17:31] "[33mPOST /api/session/settings HTTP/1.1[0m" 404 -
+2025-09-01 13:17:39,949 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:17:39] "[33mGET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1[0m" 404 -
+2025-09-01 13:18:09,646 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:18:09] "[33mGET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1[0m" 404 -
+2025-09-01 13:19:01,963 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:19:01] "[33mGET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1[0m" 404 -
+2025-09-01 13:19:07,176 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\newapp.py', reloading
+2025-09-01 13:19:07,178 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\newapp.py', reloading
+2025-09-01 13:19:07,179 - werkzeug - INFO -  * Detected change in 'D:\\Zen\\projects\\Freelancer\\health\\newapp.py', reloading
+2025-09-01 13:19:09,660 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-01 13:19:32,459 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:19:32,494 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:19:33,111 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:19:33,961 - root - INFO - Emotion model loaded
+2025-09-01 13:19:35,567 - root - INFO - Crisis detection model loaded
+2025-09-01 13:19:36,690 - root - INFO - Sentiment model loaded
+2025-09-01 13:19:36,690 - root - INFO - All models loaded successfully
+2025-09-01 13:19:37,208 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:19:37,317 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:19:38,205 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:19:38,971 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:19:39,563 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:19:39,872 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:19:39,873 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:19:39,875 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:19:39,880 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:19:54,247 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:19:54] "[33mGET /api/session/stats/8a3dac47-8bb6-4bdb-a447-6d3fcec0a260 HTTP/1.1[0m" 404 -
+2025-09-01 13:20:03,467 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:20:03] "[33mPOST /api/chat/send HTTP/1.1[0m" 404 -
+2025-09-01 13:20:31,487 - therapy_agent - WARNING - OpenAI not available
+2025-09-01 13:20:31,525 - __main__ - INFO - Initializing AI components...
+2025-09-01 13:20:32,089 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-01 13:20:37,209 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-01 13:20:38,429 - root - INFO - Emotion model loaded
+2025-09-01 13:20:39,812 - root - INFO - Crisis detection model loaded
+2025-09-01 13:20:41,145 - root - INFO - Sentiment model loaded
+2025-09-01 13:20:41,146 - root - INFO - All models loaded successfully
+2025-09-01 13:20:41,363 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-01 13:20:41,475 - tensorflow - WARNING - From D:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-01 13:20:42,372 - root - INFO - Whisper model loaded successfully
+2025-09-01 13:20:43,010 - root - INFO - Transformer emotion model loaded
+2025-09-01 13:20:43,564 - root - INFO - Alternative emotion model loaded
+2025-09-01 13:20:43,874 - therapy_agent - INFO - Groq client initialized with model: llama-3.1-70b-instruct
+2025-09-01 13:20:43,875 - therapy_agent - INFO - TherapyAgent initialized with provider: groq
+2025-09-01 13:20:43,877 - __main__ - INFO - All components initialized successfully
+2025-09-01 13:20:43,882 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-01 13:20:43,891 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-01 13:20:43,892 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-01 13:20:48,512 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:20:48] "GET / HTTP/1.1" 200 -
+2025-09-01 13:20:48,560 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:20:48] "POST /api/session/new HTTP/1.1" 200 -
+2025-09-01 13:20:50,940 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:20:50] "POST /api/session/consent HTTP/1.1" 200 -
+2025-09-01 13:21:10,283 - root - ERROR - Emotion analysis error: list indices must be integers or slices, not str
+2025-09-01 13:21:10,915 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-09-01 13:21:10,917 - therapy_agent - ERROR - Groq API error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 13:21:10,918 - therapy_agent - ERROR - LLM generation failed: Error code: 404 - {'error': {'message': 'The model `llama-3.1-70b-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}}
+2025-09-01 13:21:10,919 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:21:10] "POST /api/chat/send HTTP/1.1" 200 -
+2025-09-01 13:21:18,633 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:21:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:21:48,945 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:21:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:22:18,647 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:22:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:22:48,960 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:22:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:23:18,644 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:23:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:23:48,956 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:23:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:25:01,957 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:25:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:25:55,887 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:25:55] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:26:18,954 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:26:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:26:48,634 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:26:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:27:18,860 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:27:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:27:48,641 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:27:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:28:18,947 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:28:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:28:48,635 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:28:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:30:01,954 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:30:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:31:01,650 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:31:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:31:44,437 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:31:44] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:31:48,639 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:31:48] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:32:18,964 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:32:18] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:33:01,643 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:33:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:34:01,958 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:34:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:35:01,634 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:35:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:36:01,958 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:36:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:37:01,645 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:37:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:38:01,964 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:38:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:39:01,643 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:39:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-01 13:40:01,958 - werkzeug - INFO - 127.0.0.1 - - [01/Sep/2025 13:40:01] "GET /api/session/stats/c97d0d00-c203-457b-9428-358a3b798df9 HTTP/1.1" 200 -
+2025-09-06 00:39:26,277 - therapy_agent - WARNING - OpenAI not available
+2025-09-06 00:39:27,257 - __main__ - INFO - Initializing AI components...
+2025-09-06 00:39:28,600 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-06 00:39:42,113 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-06 00:39:44,653 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:40:56,133 - root - INFO - Emotion model loaded
+2025-09-06 00:41:04,917 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:42:13,696 - root - INFO - Crisis detection model loaded
+2025-09-06 00:42:15,015 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:42:15,874 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:44:28,043 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:44:29,426 - root - INFO - Sentiment model loaded
+2025-09-06 00:44:29,427 - root - INFO - All models loaded successfully
+2025-09-06 00:44:30,254 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-06 00:44:30,832 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-06 00:44:33,508 - root - INFO - Whisper model loaded successfully
+2025-09-06 00:44:34,430 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-09-06 00:46:11,437 - root - INFO - Transformer emotion model loaded
+2025-09-06 00:47:08,536 - root - INFO - Alternative emotion model loaded
+2025-09-06 00:47:09,577 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-09-06 00:47:09,600 - therapy_agent - ERROR - Ollama model validation failed: 'name'
+2025-09-06 00:47:09,601 - therapy_agent - ERROR - Failed to initialize Ollama: 'name'
+2025-09-06 00:47:09,601 - therapy_agent - ERROR - Error initializing LLM: 'name'
+2025-09-06 00:47:09,602 - therapy_agent - INFO - TherapyAgent initialized with provider: fallback
+2025-09-06 00:47:09,637 - __main__ - INFO - All components initialized successfully
+2025-09-06 00:47:09,654 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-06 00:47:09,736 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-06 00:47:09,737 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-06 00:51:01,994 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:51:01] "GET / HTTP/1.1" 200 -
+2025-09-06 00:51:02,072 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:51:02] "POST /api/session/new HTTP/1.1" 200 -
+2025-09-06 00:51:02,370 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:51:02] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-06 00:51:06,769 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:51:06] "POST /api/session/consent HTTP/1.1" 200 -
+2025-09-06 00:51:32,806 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:51:32] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:52:02,391 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:52:02] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:52:03,441 - root - ERROR - Error processing emotion results: float() argument must be a string or a real number, not 'dict'
+2025-09-06 00:52:03,715 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:52:03] "POST /api/chat/send HTTP/1.1" 200 -
+2025-09-06 00:52:32,392 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:52:32] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:53:02,080 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:53:02] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:53:32,391 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:53:32] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:54:02,085 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:54:02] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:54:33,121 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:54:33] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:55:02,806 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:55:02] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:55:33,124 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:55:33] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:56:02,814 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:56:02] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:56:33,116 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:56:33] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:57:17,813 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:57:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:58:18,123 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:58:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 00:59:17,811 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 00:59:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:00:18,128 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:00:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:01:17,822 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:01:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:02:18,121 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:02:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:03:17,811 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:03:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:04:18,123 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:04:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:05:17,842 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:05:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:06:18,130 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:06:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:07:17,813 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:07:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:08:18,120 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:08:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:09:17,810 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:09:17] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:10:18,118 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:10:18] "GET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1" 200 -
+2025-09-06 01:11:18,556 - therapy_agent - WARNING - OpenAI not available
+2025-09-06 01:11:18,604 - __main__ - INFO - Initializing AI components...
+2025-09-06 01:11:19,332 - root - WARNING - Could not load mental health model: rabiaqayyum/autotrain-mental-health-analysis is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2025-09-06 01:11:25,086 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-09-06 01:11:26,568 - root - INFO - Emotion model loaded
+2025-09-06 01:11:28,216 - root - INFO - Crisis detection model loaded
+2025-09-06 01:11:29,566 - root - INFO - Sentiment model loaded
+2025-09-06 01:11:29,566 - root - INFO - All models loaded successfully
+2025-09-06 01:11:29,874 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\backend.py:873: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2025-09-06 01:11:30,001 - tensorflow - WARNING - From E:\Zen\projects\Freelancer\health\venv\Lib\site-packages\tf_keras\src\optimizers\__init__.py:317: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2025-09-06 01:11:31,011 - root - INFO - Whisper model loaded successfully
+2025-09-06 01:11:31,773 - root - INFO - Transformer emotion model loaded
+2025-09-06 01:11:32,459 - root - INFO - Alternative emotion model loaded
+2025-09-06 01:11:32,940 - httpx - INFO - HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2025-09-06 01:11:32,941 - therapy_agent - ERROR - Ollama model validation failed: 'name'
+2025-09-06 01:11:32,942 - therapy_agent - ERROR - Failed to initialize Ollama: 'name'
+2025-09-06 01:11:32,942 - therapy_agent - ERROR - Error initializing LLM: 'name'
+2025-09-06 01:11:32,942 - therapy_agent - INFO - TherapyAgent initialized with provider: fallback
+2025-09-06 01:11:32,946 - __main__ - INFO - All components initialized successfully
+2025-09-06 01:11:32,953 - __main__ - INFO - Starting therapy web app on http://localhost:5000
+2025-09-06 01:11:32,965 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2025-09-06 01:11:32,965 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-06 01:12:01,009 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:01] "GET / HTTP/1.1" 200 -
+2025-09-06 01:12:01,173 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:01] "POST /api/session/new HTTP/1.1" 200 -
+2025-09-06 01:12:04,648 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:04] "POST /api/session/consent HTTP/1.1" 200 -
+2025-09-06 01:12:08,350 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:08] "[33mGET /api/session/stats/7d829551-6a7c-4d51-8ad6-e4c30230fc3e HTTP/1.1[0m" 404 -
+2025-09-06 01:12:30,768 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:30] "POST /api/chat/send HTTP/1.1" 200 -
+2025-09-06 01:12:31,483 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:12:31] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -
+2025-09-06 01:13:01,812 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:13:01] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -
+2025-09-06 01:13:32,127 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:13:32] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -
+2025-09-06 01:14:01,801 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:14:01] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -
+2025-09-06 01:14:32,127 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:14:32] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -
+2025-09-06 01:15:01,797 - werkzeug - INFO - 127.0.0.1 - - [06/Sep/2025 01:15:01] "GET /api/session/stats/233f674d-b04a-4350-a6ff-6e36f6161417 HTTP/1.1" 200 -

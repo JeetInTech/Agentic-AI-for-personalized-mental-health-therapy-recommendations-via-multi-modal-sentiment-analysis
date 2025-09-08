@@ -1,860 +1,664 @@
 """
-Agentic AI Therapy Assistant - Autonomous therapeutic intervention system
-Provides personalized mental health support through evidence-based therapeutic techniques
+Phase 1: Ollama → Groq → Rule-based fallback system
 """
 
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional, Any
+import logging
 import json
-import random
-from pathlib import Path
-from dataclasses import dataclass
-import re
-import warnings
-warnings.filterwarnings('ignore')
+import os
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+import time
 
-
-@dataclass
-class TherapeuticIntervention:
-    """Structure for therapeutic interventions"""
-    technique: str
-    category: str
-    description: str
-    steps: List[str]
-    duration_minutes: int
-    effectiveness_score: float
-    crisis_appropriate: bool
-    personalization_factors: List[str]
-
-
-@dataclass
-class UserProfile:
-    """User personalization profile"""
-    preferred_techniques: List[str]
-    effective_interventions: Dict[str, float]
-    crisis_patterns: List[Dict]
-    emotional_triggers: List[str]
-    response_patterns: Dict[str, Any]
-    therapy_goals: List[str]
-    session_history: List[Dict]
-
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class TherapyAgent:
     """
-    Autonomous AI Therapy Agent that provides:
-    - Personalized therapeutic interventions
-    - Crisis detection and response
-    - Adaptive learning from user interactions
-    - Evidence-based technique selection
+    Simplified therapy agent with reliable LLM integration and comprehensive fallbacks
     """
-
-    def __init__(self):
-        self.initialize_therapeutic_knowledge()
-        self.setup_crisis_protocols()
-        self.initialize_personalization_engine()
-        self.load_user_profiles()
-        self.setup_response_templates()
-
-    def initialize_therapeutic_knowledge(self):
-        """Initialize evidence-based therapeutic techniques database"""
-
-        # CBT (Cognitive Behavioral Therapy) Techniques
-        self.cbt_techniques = {
-            'cognitive_restructuring': TherapeuticIntervention(
-                technique='Cognitive Restructuring',
-                category='CBT',
-                description='Challenge and reframe negative thought patterns',
-                steps=[
-                    "Let's examine this thought: is it based on facts or feelings?",
-                    "What evidence supports this thought? What evidence contradicts it?",
-                    "If a friend had this thought, what would you tell them?",
-                    "What's a more balanced way to think about this situation?",
-                    "How does this new perspective make you feel?"
-                ],
-                duration_minutes=10,
-                effectiveness_score=0.85,
-                crisis_appropriate=True,
-                personalization_factors=['negative_thinking', 'catastrophizing', 'all_or_nothing']
-            ),
-
-            'thought_stopping': TherapeuticIntervention(
-                technique='Thought Stopping',
-                category='CBT',
-                description='Interrupt negative thought spirals',
-                steps=[
-                    "I notice you're caught in a negative thought cycle. Let's interrupt it.",
-                    "Take a deep breath and mentally say 'STOP' to these thoughts.",
-                    "Now, shift your attention to 5 things you can see around you.",
-                    "Name 4 things you can touch, 3 things you can hear.",
-                    "Take three more deep breaths and notice how you feel now."
-                ],
-                duration_minutes=5,
-                effectiveness_score=0.75,
-                crisis_appropriate=True,
-                personalization_factors=['rumination', 'anxiety', 'obsessive_thoughts']
-            ),
-
-            'behavioral_activation': TherapeuticIntervention(
-                technique='Behavioral Activation',
-                category='CBT',
-                description='Increase positive activities to improve mood',
-                steps=[
-                    "Let's identify one small, positive activity you could do today.",
-                    "It could be as simple as taking a short walk or listening to music.",
-                    "What activity sounds manageable and slightly enjoyable?",
-                    "When could you do this activity? Let's set a specific time.",
-                    "Remember: the goal is action, not perfection."
-                ],
-                duration_minutes=8,
-                effectiveness_score=0.8,
-                crisis_appropriate=False,
-                personalization_factors=['depression', 'low_motivation', 'isolation']
-            )
+    
+    def __init__(self, config_path="config.json"):
+        # Load configuration
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            
+            self.ollama_url = config.get("llm", {}).get("ollama_url", "http://localhost:11434")
+            self.groq_api_key = config.get("llm", {}).get("groq_api_key") or os.getenv("GROQ_API_KEY")
+            self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            
+            # Groq configuration from config
+            self.groq_model = "llama-3.1-70b-versatile"  # Default model
+            self.temperature = config.get("llm", {}).get("temperature", 0.7)
+            self.max_tokens = config.get("llm", {}).get("max_tokens", 300)
+            
+            logger.info(f"Configuration loaded from {config_path}")
+            if self.groq_api_key:
+                logger.info("Groq API key loaded from config")
+            
+        except FileNotFoundError:
+            logger.warning("Config file not found, using defaults and environment variables")
+            self.ollama_url = "http://localhost:11434"
+            self.groq_api_key = os.getenv("GROQ_API_KEY")
+            self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            self.groq_model = "llama-3.1-70b-versatile"
+            self.temperature = 0.7
+            self.max_tokens = 300
+        except Exception as e:
+            logger.error(f"Error loading config: {e}")
+            # Use defaults
+            self.ollama_url = "http://localhost:11434"
+            self.groq_api_key = os.getenv("GROQ_API_KEY")
+            self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            self.groq_model = "llama-3.1-70b-versatile"
+            self.temperature = 0.7
+            self.max_tokens = 300
+        
+        # Provider status
+        self.provider_status = {
+            'ollama': False,
+            'groq': False
         }
-
-        # DBT (Dialectical Behavior Therapy) Techniques
-        self.dbt_techniques = {
-            'distress_tolerance': TherapeuticIntervention(
-                technique='TIPP (Temperature, Intense Exercise, Paced Breathing, Paired Muscle Relaxation)',
-                category='DBT',
-                description='Rapidly reduce intense emotional distress',
-                steps=[
-                    "Let's use TIPP to manage this intense emotion quickly.",
-                    "Temperature: Hold ice cubes or splash cold water on your face.",
-                    "Or do 30 seconds of jumping jacks to change your body chemistry.",
-                    "Now, let's do paced breathing: breathe in for 4, hold for 7, out for 8.",
-                    "Tense your muscles for 5 seconds, then completely relax them."
-                ],
-                duration_minutes=5,
-                effectiveness_score=0.9,
-                crisis_appropriate=True,
-                personalization_factors=['high_intensity_emotions', 'panic', 'rage']
-            ),
-
-            'wise_mind': TherapeuticIntervention(
-                technique='Wise Mind',
-                category='DBT',
-                description='Balance emotional and rational thinking',
-                steps=[
-                    "Right now, what is your emotional mind telling you?",
-                    "What is your rational mind saying about this situation?",
-                    "Let's find your wise mind - the intersection of both.",
-                    "Take a moment to breathe and ask: what would be most helpful right now?",
-                    "What action honors both your feelings and your wisdom?"
-                ],
-                duration_minutes=7,
-                effectiveness_score=0.8,
-                crisis_appropriate=True,
-                personalization_factors=['emotional_overwhelm', 'decision_making', 'conflict']
-            ),
-
-            'radical_acceptance': TherapeuticIntervention(
-                technique='Radical Acceptance',
-                category='DBT',
-                description='Accept reality without approving of it',
-                steps=[
-                    "This situation is causing you pain. Let's practice radical acceptance.",
-                    "Repeat to yourself: 'This is the reality right now.'",
-                    "Notice any resistance - that's normal. Breathe through it.",
-                    "Acceptance doesn't mean approval. You can accept reality and still work to change it.",
-                    "How does it feel to stop fighting reality, even for a moment?"
-                ],
-                duration_minutes=10,
-                effectiveness_score=0.75,
-                crisis_appropriate=True,
-                personalization_factors=['trauma', 'grief', 'chronic_pain', 'unchangeable_situations']
-            )
+        
+        # Therapeutic techniques database
+        self.techniques = {
+            'cognitive_restructuring': {
+                'description': 'Identifying and challenging negative thought patterns',
+                'prompts': [
+                    "Let's examine that thought. What evidence supports it, and what evidence challenges it?",
+                    "Can you think of a more balanced way to view this situation?",
+                    "What would you tell a friend who had this same thought?"
+                ]
+            },
+            'behavioral_activation': {
+                'description': 'Increasing engagement in meaningful activities',
+                'prompts': [
+                    "What activities used to bring you joy or satisfaction?",
+                    "What's one small step you could take today toward something meaningful?",
+                    "How might you break this goal into smaller, manageable steps?"
+                ]
+            },
+            'mindfulness': {
+                'description': 'Present-moment awareness and acceptance',
+                'prompts': [
+                    "Let's focus on what you're experiencing right now. What do you notice?",
+                    "Can you observe these feelings without judging them as good or bad?",
+                    "What sensations do you notice in your body right now?"
+                ]
+            },
+            'grounding': {
+                'description': 'Techniques to manage overwhelming emotions',
+                'prompts': [
+                    "Let's try the 5-4-3-2-1 technique. Name 5 things you can see around you.",
+                    "Take a slow, deep breath with me. Focus on the feeling of air entering and leaving your lungs.",
+                    "Notice your feet on the ground. Feel that connection to the earth beneath you."
+                ]
+            }
         }
-
-        # ACT (Acceptance and Commitment Therapy) Techniques
-        self.act_techniques = {
-            'values_clarification': TherapeuticIntervention(
-                technique='Values Clarification',
-                category='ACT',
-                description='Connect with personal values for meaningful action',
-                steps=[
-                    "Let's step back from this problem and connect with your values.",
-                    "What matters most to you in life? Family, creativity, helping others?",
-                    "If you could live according to these values, what would that look like?",
-                    "How can we take one small step toward these values today?",
-                    "Remember: you can choose values-based action even when feeling difficult emotions."
-                ],
-                duration_minutes=12,
-                effectiveness_score=0.85,
-                crisis_appropriate=False,
-                personalization_factors=['lack_of_direction', 'meaninglessness', 'major_life_changes']
-            ),
-
-            'cognitive_defusion': TherapeuticIntervention(
-                technique='Cognitive Defusion',
-                category='ACT',
-                description='Create distance from unhelpful thoughts',
-                steps=[
-                    "I notice you're having the thought: [repeat their thought]",
-                    "Now try saying: 'I'm having the thought that...' before the thought.",
-                    "Now try: 'I notice I'm having the thought that...'",
-                    "Sing the thought to the tune of 'Happy Birthday' - notice what happens.",
-                    "These are just thoughts, not facts. How does this distance feel?"
-                ],
-                duration_minutes=6,
-                effectiveness_score=0.8,
-                crisis_appropriate=True,
-                personalization_factors=['thought_fusion', 'self_criticism', 'limiting_beliefs']
-            )
-        }
-
-        # Mindfulness and Grounding Techniques
-        self.mindfulness_techniques = {
-            '5_4_3_2_1_grounding': TherapeuticIntervention(
-                technique='5-4-3-2-1 Grounding',
-                category='Mindfulness',
-                description='Ground yourself in the present moment using senses',
-                steps=[
-                    "Let's ground you in the present moment using your senses.",
-                    "Name 5 things you can see around you right now.",
-                    "Now 4 things you can touch or feel (your chair, your clothes, temperature).",
-                    "3 things you can hear (maybe distant sounds, your breathing).",
-                    "2 things you can smell, and 1 thing you can taste.",
-                    "Notice how you feel more present and grounded now."
-                ],
-                duration_minutes=5,
-                effectiveness_score=0.9,
-                crisis_appropriate=True,
-                personalization_factors=['anxiety', 'panic', 'dissociation', 'overwhelm']
-            ),
-
-            'breathing_space': TherapeuticIntervention(
-                technique='Three-Minute Breathing Space',
-                category='Mindfulness',
-                description='Create space between you and difficult experiences',
-                steps=[
-                    "Let's take a three-minute breathing space together.",
-                    "Minute 1: Awareness - What's happening right now? Notice thoughts, feelings, sensations.",
-                    "Minute 2: Gathering - Bring your attention to your breath. Feel each inhale and exhale.",
-                    "Minute 3: Expanding - Widen your awareness to your whole body and surroundings.",
-                    "How do you feel after creating this space?"
-                ],
-                duration_minutes=3,
-                effectiveness_score=0.85,
-                crisis_appropriate=True,
-                personalization_factors=['stress', 'emotional_reactivity', 'mindfulness_practice']
-            )
-        }
-
-        # Combine all techniques
-        self.all_techniques = {
-            **self.cbt_techniques,
-            **self.dbt_techniques,
-            **self.act_techniques,
-            **self.mindfulness_techniques
-        }
-
-    def setup_crisis_protocols(self):
-        """Setup crisis intervention protocols"""
+        
+        # Crisis responses
         self.crisis_responses = {
-            'immediate': {
-                'priority': 'Get immediate help',
-                'message': """I'm very concerned about what you're sharing. Your safety is the most important thing right now.
-
-**Immediate Help:**
-🆘 Emergency: 911 (US) or your local emergency number
-🆘 Crisis Hotline: 988 (US Suicide & Crisis Lifeline) 
-🆘 Text HOME to 741741 (Crisis Text Line)
-
-Please reach out to one of these resources right now. You don't have to go through this alone.""",
-                'techniques': ['distress_tolerance', '5_4_3_2_1_grounding'],
-                'follow_up': 'crisis_follow_up'
-            },
-
-            'high': {
-                'priority': 'Urgent intervention needed',
-                'message': """I can hear that you're going through a really difficult time. Let's work together to help you feel safer right now.
-
-**Support Resources:**
-📞 Crisis Hotline: 988 (available 24/7)
-📱 Crisis Text Line: Text HOME to 741741
-🌐 Online chat: suicidepreventionlifeline.org
-
-Would you like to try a grounding technique with me first?""",
-                'techniques': ['distress_tolerance', 'wise_mind', '5_4_3_2_1_grounding'],
-                'follow_up': 'high_risk_follow_up'
-            },
-
-            'moderate': {
-                'priority': 'Increased support recommended',
-                'message': """I notice you're struggling right now. That takes courage to share. Let's work on some techniques to help you feel more stable.
-
-Remember: difficult emotions are temporary, even when they feel overwhelming.""",
-                'techniques': ['cognitive_restructuring', 'breathing_space', 'radical_acceptance'],
-                'follow_up': 'moderate_risk_follow_up'
-            }
-        }
-
-    def initialize_personalization_engine(self):
-        """Setup personalization and learning systems"""
-        self.personalization_factors = {
-            # Personality traits affecting technique selection
-            'personality': {
-                'analytical': ['cognitive_restructuring', 'values_clarification'],
-                'emotional': ['wise_mind', 'radical_acceptance'],
-                'action_oriented': ['behavioral_activation', 'distress_tolerance'],
-                'reflective': ['breathing_space', 'cognitive_defusion']
-            },
-
-            # Problem-specific technique mapping
-            'presenting_issues': {
-                'anxiety': ['5_4_3_2_1_grounding', 'thought_stopping', 'breathing_space'],
-                'depression': ['behavioral_activation', 'cognitive_restructuring', 'values_clarification'],
-                'trauma': ['distress_tolerance', 'radical_acceptance', '5_4_3_2_1_grounding'],
-                'relationships': ['wise_mind', 'values_clarification', 'cognitive_defusion'],
-                'anger': ['distress_tolerance', 'wise_mind', 'breathing_space'],
-                'grief': ['radical_acceptance', 'breathing_space', 'values_clarification']
-            },
-
-            # Learning preferences
-            'learning_style': {
-                'structured': ['cognitive_restructuring', 'behavioral_activation'],
-                'experiential': ['5_4_3_2_1_grounding', 'distress_tolerance'],
-                'reflective': ['values_clarification', 'breathing_space'],
-                'practical': ['thought_stopping', 'behavioral_activation']
-            }
-        }
-
-        # Effectiveness tracking
-        self.technique_effectiveness = {}
-        self.user_feedback_history = []
-
-    def load_user_profiles(self):
-        """Load existing user profiles for personalization"""
-        self.user_profiles = {}
-        profiles_dir = Path('multimodal_profiles')
-
-        if profiles_dir.exists():
-            for profile_file in profiles_dir.glob('*.json'):
-                try:
-                    with open(profile_file, 'r', encoding='utf-8') as f:
-                        profile_data = json.load(f)
-                        user_id = profile_file.stem
-                        # Ensure keys exist to match UserProfile dataclass
-                        self.user_profiles[user_id] = UserProfile(
-                            preferred_techniques=profile_data.get('preferred_techniques', []),
-                            effective_interventions=profile_data.get('effective_interventions', {}),
-                            crisis_patterns=profile_data.get('crisis_patterns', []),
-                            emotional_triggers=profile_data.get('emotional_triggers', []),
-                            response_patterns=profile_data.get('response_patterns', {}),
-                            therapy_goals=profile_data.get('therapy_goals', []),
-                            session_history=profile_data.get('session_history', [])
-                        )
-                except Exception as e:
-                    print(f"Error loading profile {profile_file}: {e}")
-
-    def setup_response_templates(self):
-        """Setup response templates for different situations"""
-        self.response_templates = {
-            'empathy': [
-                "I can hear that this is really difficult for you.",
-                "It sounds like you're going through a lot right now.",
-                "Thank you for sharing something so personal with me.",
-                "I can sense the pain in what you're describing.",
-                "It takes strength to reach out when you're struggling."
+            'HIGH': [
+                "I'm very concerned about what you've shared. Your safety is important. Please consider reaching out to a crisis hotline at 988 or emergency services at 911.",
+                "Thank you for trusting me with these difficult feelings. Right now, I want to make sure you're safe. The 988 Suicide & Crisis Lifeline is available 24/7.",
+                "These feelings sound overwhelming. Please know that help is available. You can call 988 for immediate support or 911 if you're in immediate danger."
             ],
-
-            'validation': [
-                "Your feelings are completely valid.",
-                "It makes sense that you would feel this way given what you've been through.",
-                "Anyone in your situation would likely feel similarly.",
-                "You're not overreacting - this is genuinely difficult.",
-                "Your response is a normal reaction to an abnormal situation."
-            ],
-
-            'hope': [
-                "While this feels overwhelming now, feelings do change over time.",
-                "You've made it through difficult times before, and you can make it through this too.",
-                "Taking this step to reach out shows your inner strength.",
-                "Recovery and healing are possible, even when it doesn't feel that way.",
-                "You don't have to face this alone."
-            ],
-
-            'transition': [
-                "Let's try something that might help you feel a bit better right now.",
-                "Would you be open to trying a technique with me?",
-                "Let me guide you through something that often helps in situations like this.",
-                "I'd like to teach you a skill that you can use whenever you need it.",
-                "Let's work together on this."
+            'MODERATE': [
+                "I hear that you're going through a really difficult time. Have you considered speaking with a mental health professional?",
+                "These feelings are significant and deserve attention. It might be helpful to connect with a therapist or counselor.",
+                "What support systems do you have available? Sometimes reaching out to a trusted friend or family member can help."
             ]
         }
-
-    def generate_response(self, user_message: str, analysis_results: Dict,
-                          chat_history: List[Dict], user_id: str = 'default') -> Dict[str, Any]:
-        """
-        Generate personalized therapeutic response based on multimodal analysis
-
-        Args:
-            user_message: User's text input
-            analysis_results: Results from multimodal fusion
-            chat_history: Previous conversation history
-            user_id: User identifier for personalization
-
-        Returns:
-            Dictionary containing response message, intervention, and metadata
-        """
-
-        # Assess situation severity
-        crisis_risk = analysis_results.get('crisis_risk', 0)
-        emotional_state = analysis_results.get('emotional_state', 'neutral')
-        sentiment_score = analysis_results.get('sentiment_score', 0)
-        confidence = analysis_results.get('overall_confidence', 0.5)
-
-        # Get or create user profile
-        user_profile = self.get_user_profile(user_id, analysis_results, chat_history)
-
-        # Determine response strategy
-        response_strategy = self.determine_response_strategy(
-            crisis_risk, emotional_state, sentiment_score, user_profile
-        )
-
-        # Handle crisis situations first
-        if crisis_risk > 0.6:
-            return self.handle_crisis_response(crisis_risk, analysis_results, user_profile)
-
-        # Generate therapeutic response
-        response_components = self.build_therapeutic_response(
-            user_message, analysis_results, user_profile, response_strategy
-        )
-
-        # Select and personalize intervention
-        intervention = self.select_intervention(analysis_results, user_profile)
-
-        # Update user profile based on interaction
-        self.update_user_profile(user_id, analysis_results, intervention)
-
-        return {
-            'message': response_components['message'],
-            'intervention': intervention,
-            'strategy': response_strategy,
-            'confidence': confidence,
-            'personalization_applied': response_components['personalization_used'],
-            'metadata': {
-                'crisis_risk': crisis_risk,
-                'techniques_considered': response_components['techniques_considered'],
-                'timestamp': datetime.now().isoformat()
-            }
+        
+        # Enhanced fallback responses with actionable suggestions
+        self.actionable_responses = {
+            'breakup': [
+                "Breakups are incredibly painful. Here are some things that might help: 1) Allow yourself to grieve - it's a real loss, 2) Reach out to supportive friends/family, 3) Focus on self-care activities you enjoy, 4) Consider limiting social media if it's triggering. What feels most manageable to try first?",
+                "Going through a breakup is one of life's most difficult experiences. Some concrete steps: Write in a journal about your feelings, try a 10-minute walk daily, call a friend who makes you laugh. Which of these resonates with you?",
+                "Breakup recovery takes time, but there are ways to help yourself heal: Create new routines, practice the 'no contact' rule if possible, engage in activities that make you feel accomplished. What's one small step you could take today?"
+            ],
+            'progress_sharing': [
+                "It sounds like you're taking some positive steps, which takes real courage. How did that feel for you? What worked well, and what felt challenging?",
+                "I'm glad to hear you're trying different approaches. That shows real strength. What did you notice about yourself during that experience?",
+                "Thank you for sharing your efforts with me. It's important to acknowledge when we take steps toward healing. What would feel like a natural next step from here?"
+            ],
+            'seeking_next_steps': [
+                "Since you're ready to explore more options, let's think about what might build on what you've already tried. What area of your life feels like it needs the most attention right now?",
+                "It sounds like you're motivated to continue working on this, which is wonderful. Consider: What time of day do you feel most capable? What activities have given you even small moments of relief?",
+                "Moving forward, it might help to focus on: Building consistent daily structure, strengthening your support network, or developing healthy coping strategies. Which area feels most important to you?"
+            ],
+            'depression': [
+                "Depression can make everything feel overwhelming. Small, concrete steps can help: 1) Try to maintain a sleep schedule, 2) Get 10 minutes of sunlight daily, 3) Do one small task that gives you a sense of accomplishment. What feels possible for you today?",
+                "When depression hits, structure can be helpful. Consider: Setting one small daily goal, reaching out to one person, doing 5 minutes of movement. You don't have to do everything - pick what feels manageable.",
+                "Depression lies to us about our worth and future. Combat this with: Daily self-compassion practice, connecting with others even briefly, engaging in one meaningful activity. Which approach feels right for you?"
+            ],
+            'anxiety': [
+                "Anxiety can feel overwhelming, but there are concrete tools that help: 1) Practice the 4-7-8 breathing technique, 2) Use the 5-4-3-2-1 grounding method, 3) Write down your worries for 10 minutes. Which would you like to try?",
+                "For anxiety management, try: Progressive muscle relaxation, limiting caffeine, breaking big worries into smaller actionable steps. What feels most doable right now?",
+                "Anxiety often involves 'what if' thinking. Counter it by: Focusing on what you can control today, challenging catastrophic thoughts, using mindfulness apps like Headspace. What resonates with you?"
+            ],
+            'stress': [
+                "Stress can be managed with specific strategies: 1) Prioritize your tasks and tackle one at a time, 2) Take regular 5-minute breaks, 3) Practice saying 'no' to non-essential commitments. What area needs attention first?",
+                "When overwhelmed by stress, try: Time-blocking your schedule, delegating tasks where possible, doing brief meditation sessions. Which strategy could help reduce your stress load?",
+                "Stress management involves both immediate relief and long-term strategies: Deep breathing for immediate calm, regular exercise for ongoing resilience, boundary-setting for prevention. What's your priority?"
+            ]
         }
-
-    def determine_response_strategy(self, crisis_risk: float, emotional_state: str,
-                                    sentiment_score: float, user_profile: UserProfile) -> str:
-        """Determine the appropriate response strategy"""
-
-        if crisis_risk > 0.6:
-            return 'crisis_intervention'
-        elif sentiment_score < -0.7:
-            return 'supportive_intervention'
-        elif emotional_state in ['anxious', 'panic']:
-            return 'anxiety_focused'
-        elif emotional_state in ['sad', 'depressed']:
-            return 'depression_focused'
-        elif sentiment_score > 0.5:
-            return 'positive_reinforcement'
-        else:
-            return 'exploratory_supportive'
-
-    def handle_crisis_response(self, crisis_risk: float, analysis_results: Dict,
-                               user_profile: UserProfile) -> Dict[str, Any]:
-        """Handle crisis situations with appropriate escalation"""
-
-        if crisis_risk > 0.8:
-            crisis_level = 'immediate'
-        elif crisis_risk > 0.7:
-            crisis_level = 'high'
-        else:
-            crisis_level = 'moderate'
-
-        crisis_protocol = self.crisis_responses[crisis_level]
-
-        # Build crisis response message
-        empathy_statement = random.choice(self.response_templates['empathy'])
-        crisis_message = crisis_protocol['message']
-
-        full_message = f"{empathy_statement}\n\n{crisis_message}"
-
-        # Select crisis-appropriate technique
-        available_techniques = [t for t in crisis_protocol['techniques']
-                                if t in self.all_techniques]
-
-        if available_techniques:
-            # Personalize technique selection even in crisis
-            preferred_technique = self.select_personalized_technique(
-                available_techniques, user_profile, crisis_appropriate=True
-            )
-            technique_obj = self.all_techniques[preferred_technique]
-        else:
-            technique_obj = self.all_techniques['5_4_3_2_1_grounding']  # Fallback
-
-        return {
-            'message': full_message,
-            'intervention': {
-                'type': 'crisis_intervention',
-                'priority': crisis_protocol['priority'],
-                'technique': {
-                    'name': technique_obj.technique,
-                    'description': technique_obj.description,
-                    'steps': technique_obj.steps
-                },
-                'follow_up': crisis_protocol['follow_up'],
-                'crisis_level': crisis_level
-            },
-            'strategy': 'crisis_intervention',
-            'confidence': 1.0,  # High confidence in crisis protocols
-            'metadata': {
-                'crisis_risk': crisis_risk,
-                'crisis_indicators': analysis_results.get('crisis_indicators', []),
-                'timestamp': datetime.now().isoformat()
-            }
-        }
-
-    def build_therapeutic_response(self, user_message: str, analysis_results: Dict,
-                                   user_profile: UserProfile, strategy: str) -> Dict[str, Any]:
-        """Build comprehensive therapeutic response"""
-
-        # Start with empathy and validation
-        empathy_statement = self.select_empathy_statement(analysis_results, user_profile)
-        validation_statement = self.select_validation_statement(analysis_results, user_profile)
-
-        # Add therapeutic insight
-        therapeutic_insight = self.generate_therapeutic_insight(
-            analysis_results, user_profile, strategy
-        )
-
-        # Add hope and encouragement
-        hope_statement = self.select_hope_statement(analysis_results, user_profile)
-
-        # Transition to intervention
-        transition_statement = random.choice(self.response_templates['transition'])
-
-        # Combine components
-        message_parts = [
-            empathy_statement,
-            validation_statement,
-            therapeutic_insight,
-            hope_statement,
-            transition_statement
-        ]
-
-        # Remove empty parts and join
-        message_parts = [part for part in message_parts if part]
-        full_message = "\n\n".join(message_parts)
-
-        return {
-            'message': full_message,
-            'personalization_used': self.get_personalization_applied(user_profile),
-            'techniques_considered': list(self.all_techniques.keys())
-        }
-
-    def select_intervention(self, analysis_results: Dict, user_profile: UserProfile) -> Dict[str, Any]:
-        """Select and personalize therapeutic intervention"""
-
-        emotional_state = analysis_results.get('emotional_state', 'neutral')
-        sentiment_score = analysis_results.get('sentiment_score', 0)
-        crisis_risk = analysis_results.get('crisis_risk', 0)
-
-        # Determine candidate techniques based on presenting issues
-        candidate_techniques = []
-
-        # Add techniques based on emotional state
-        if emotional_state in ['anxious', 'panic']:
-            candidate_techniques.extend(['5_4_3_2_1_grounding', 'breathing_space', 'distress_tolerance'])
-        elif emotional_state in ['sad', 'depressed', 'very_negative']:
-            candidate_techniques.extend(['cognitive_restructuring', 'behavioral_activation', 'values_clarification'])
-        elif emotional_state in ['angry', 'frustrated']:
-            candidate_techniques.extend(['distress_tolerance', 'wise_mind', 'radical_acceptance'])
-        else:
-            candidate_techniques.extend(['breathing_space', 'cognitive_defusion', 'wise_mind'])
-
-        # Filter by crisis appropriateness
-        if crisis_risk > 0.4:
-            candidate_techniques = [t for t in candidate_techniques
-                                    if self.all_techniques.get(t) and self.all_techniques[t].crisis_appropriate]
-
-        # Personalize selection
-        selected_technique = self.select_personalized_technique(
-            candidate_techniques, user_profile, crisis_risk > 0.4
-        )
-
-        technique_obj = self.all_techniques[selected_technique]
-
-        return {
-            'type': 'therapeutic_technique',
-            'technique': {
-                'name': technique_obj.technique,
-                'category': technique_obj.category,
-                'description': technique_obj.description,
-                'steps': technique_obj.steps,
-                'duration_minutes': technique_obj.duration_minutes
-            },
-            'rationale': self.generate_technique_rationale(selected_technique, analysis_results),
-            'personalization_factors': technique_obj.personalization_factors,
-            'effectiveness_prediction': self.predict_technique_effectiveness(
-                selected_technique, user_profile, analysis_results
-            )
-        }
-
-    def select_personalized_technique(self, candidates: List[str], user_profile: UserProfile,
-                                      crisis_appropriate: bool = False) -> str:
-        """Select technique based on user preferences and history"""
-
-        if not candidates:
-            return '5_4_3_2_1_grounding'  # Safe fallback
-
-        # Score techniques based on user preferences
-        technique_scores = {}
-
-        for technique in candidates:
-            if technique not in self.all_techniques:
-                continue
-
-            score = 0.5  # Base score
-
-            # Preference bonus
-            if technique in user_profile.preferred_techniques:
-                score += 0.3
-
-            # Effectiveness history bonus
-            if technique in user_profile.effective_interventions:
-                score += user_profile.effective_interventions[technique] * 0.2
-
-            # Crisis appropriateness
-            if crisis_appropriate and self.all_techniques[technique].crisis_appropriate:
-                score += 0.1
-
-            # Technique effectiveness score
-            score += self.all_techniques[technique].effectiveness_score * 0.2
-
-            technique_scores[technique] = score
-
-        # Select technique with highest score
-        if technique_scores:
-            return max(technique_scores.keys(), key=lambda x: technique_scores[x])
-        else:
-            return candidates[0]
-
-    def generate_therapeutic_insight(self, analysis_results: Dict, user_profile: UserProfile,
-                                     strategy: str) -> str:
-        """Generate personalized therapeutic insight"""
-
-        insights = analysis_results.get('insights', [])
-        emotional_patterns = analysis_results.get('emotional_patterns', {})
-
-        if insights:
-            primary_insight = insights[0]
-
-            # Personalize insight based on user's therapy history
-            if 'declining' in primary_insight and 'CBT' in [pref.split('_')[0] for pref in user_profile.preferred_techniques]:
-                return "I notice a pattern in your emotional experience. This might be a good time to examine the thoughts contributing to these feelings."
-            elif 'anxiety' in primary_insight:
-                return "Your body and mind are responding to stress right now. Let's work on bringing you back to a calmer state."
-            elif 'positive' in primary_insight:
-                return "I'm glad to hear some positive energy in what you're sharing. Let's build on this."
-            else:
-                return "I'm noticing some important patterns in what you're experiencing."
-
-        return "Thank you for sharing what's on your mind."
-
-    def select_empathy_statement(self, analysis_results: Dict, user_profile: UserProfile) -> str:
-        """Select appropriate empathy statement"""
-        sentiment_score = analysis_results.get('sentiment_score', 0)
-
-        if sentiment_score < -0.6:
-            return random.choice([
-                "I can hear how much pain you're carrying right now.",
-                "This sounds incredibly difficult and overwhelming.",
-                "I can sense the heaviness in what you're sharing."
-            ])
-        elif sentiment_score < -0.2:
-            return random.choice(self.response_templates['empathy'][:3])
-        else:
-            return random.choice(self.response_templates['empathy'][3:])
-
-    def select_validation_statement(self, analysis_results: Dict, user_profile: UserProfile) -> str:
-        """Select appropriate validation statement"""
-        return random.choice(self.response_templates['validation'])
-
-    def select_hope_statement(self, analysis_results: Dict, user_profile: UserProfile) -> str:
-        """Select appropriate hope statement"""
-        trajectory = analysis_results.get('emotional_trajectory', 'stable')
-
-        if trajectory == 'declining':
-            return "Even though things feel dark right now, you've shown resilience before and you have it within you now."
-        elif trajectory == 'improving':
-            return "I can sense some positive movement in how you're feeling. Let's build on that."
-        else:
-            return random.choice(self.response_templates['hope'])
-
-    def generate_technique_rationale(self, technique: str, analysis_results: Dict) -> str:
-        """Generate rationale for technique selection"""
-        technique_obj = self.all_techniques[technique]
-        emotional_state = analysis_results.get('emotional_state', 'neutral')
-
-        rationales = {
-            'cognitive_restructuring': f"This technique can help address the {emotional_state} thoughts that might be contributing to your distress.",
-            'distress_tolerance': f"This technique is designed to help manage intense {emotional_state} feelings quickly and effectively.",
-            '5_4_3_2_1_grounding': f"This grounding technique can help bring you back to the present moment when feeling {emotional_state}.",
-            'behavioral_activation': "Engaging in positive activities can help improve mood and energy levels.",
-            'wise_mind': "This technique helps balance emotional reactions with rational thinking."
-        }
-
-        return rationales.get(technique, f"This {technique_obj.category} technique is well-suited for your current emotional state.")
-
-    def predict_technique_effectiveness(self, technique: str, user_profile: UserProfile,
-                                        analysis_results: Dict) -> float:
-        """Predict how effective this technique will be for this user"""
-
-        base_effectiveness = self.all_techniques[technique].effectiveness_score
-
-        # Adjust based on user history
-        if technique in user_profile.effective_interventions:
-            personal_effectiveness = user_profile.effective_interventions[technique]
-            return (base_effectiveness + personal_effectiveness) / 2
-
-        # Adjust based on user preferences
-        preference_bonus = 0.1 if technique in user_profile.preferred_techniques else 0
-
-        return min(base_effectiveness + preference_bonus, 1.0)
-
-    def get_user_profile(self, user_id: str, analysis_results: Dict,
-                         chat_history: List[Dict]) -> UserProfile:
-        """Get or create user profile"""
-
-        if user_id not in self.user_profiles:
-            # Create new profile
-            self.user_profiles[user_id] = UserProfile(
-                preferred_techniques=[],
-                effective_interventions={},
-                crisis_patterns=[],
-                emotional_triggers=[],
-                response_patterns={},
-                therapy_goals=[],
-                session_history=[]
-            )
-
-        return self.user_profiles[user_id]
-
-    def update_user_profile(self, user_id: str, analysis_results: Dict, intervention: Dict):
-        """Update user profile based on interaction"""
-
-        if user_id not in self.user_profiles:
-            return
-
-        profile = self.user_profiles[user_id]
-
-        technique_name = intervention.get('technique', {}).get('name') or intervention.get('technique')
-        timestamp = datetime.now().isoformat()
-
-        session_entry = {
-            'timestamp': timestamp,
-            'emotional_state': analysis_results.get('emotional_state'),
-            'sentiment_score': analysis_results.get('sentiment_score'),
-            'intervention_used': technique_name,
-            'crisis_risk': analysis_results.get('crisis_risk', 0),
-            'crisis_indicators': analysis_results.get('crisis_indicators', []),
-            'notes': analysis_results.get('notes', None)
-        }
-
-        profile.session_history.append(session_entry)
-
-        observed_effectiveness = analysis_results.get('observed_effectiveness')
-        if observed_effectiveness is None:
-            feedback = analysis_results.get('user_feedback')  # optional: user self-report
-            if isinstance(feedback, (int, float)):
-                observed_effectiveness = float(feedback)
-
-        if technique_name:
-            prev = profile.effective_interventions.get(technique_name, None)
-            if observed_effectiveness is not None:
-                if prev is None:
-                    profile.effective_interventions[technique_name] = float(observed_effectiveness)
-                else:
-                    profile.effective_interventions[technique_name] = float((prev + observed_effectiveness) / 2)
-
-                global_prev = self.technique_effectiveness.get(technique_name, None)
-                if global_prev is None:
-                    self.technique_effectiveness[technique_name] = profile.effective_interventions[technique_name]
-                else:
-                    self.technique_effectiveness[technique_name] = (global_prev + profile.effective_interventions[technique_name]) / 2
-
-        triggers = analysis_results.get('triggers', [])
-        if isinstance(triggers, list):
-            for t in triggers:
-                if t not in profile.emotional_triggers:
-                    profile.emotional_triggers.append(t)
-
-        crisis_risk = analysis_results.get('crisis_risk', 0)
-        if crisis_risk >= 0.6:
-            pattern = {
-                'timestamp': timestamp,
-                'crisis_risk': crisis_risk,
-                'indicators': analysis_results.get('crisis_indicators', []),
-                'context_snippet': analysis_results.get('context_snippet')
-            }
-            profile.crisis_patterns.append(pattern)
-
-        sentiment_history = profile.response_patterns.get('sentiment_history', [])
-        sentiment_history.append({
-            'timestamp': timestamp,
-            'sentiment_score': analysis_results.get('sentiment_score', 0)
-        })
-        profile.response_patterns['sentiment_history'] = sentiment_history
-        if len(sentiment_history) > 100:
-            profile.response_patterns['sentiment_history'] = sentiment_history[-100:]
-
-        self.save_user_profile(user_id)
-
-    def save_user_profile(self, user_id: str):
-        profiles_dir = Path('multimodal_profiles')
-        profiles_dir.mkdir(parents=True, exist_ok=True)
-
-        profile = self.user_profiles[user_id]
-
-        serializable = {
-            'preferred_techniques': list(profile.preferred_techniques),
-            'effective_interventions': profile.effective_interventions,
-            'crisis_patterns': profile.crisis_patterns,
-            'emotional_triggers': profile.emotional_triggers,
-            'response_patterns': profile.response_patterns,
-            'therapy_goals': profile.therapy_goals,
-            'session_history': []
-        }
-
-        for entry in profile.session_history:
-            e = entry.copy()
-            # If timestamp is a datetime, convert to isoformat
-            if isinstance(e.get('timestamp'), datetime):
-                e['timestamp'] = e['timestamp'].isoformat()
-            serializable['session_history'].append(e)
-
+        
+        # Check provider availability
+        self.check_providers()
+    
+    def check_providers(self):
+        """Check availability of LLM providers"""
+        logger.info("Checking LLM provider availability...")
+        
+        # Check Ollama
         try:
-            with open(profiles_dir / f"{user_id}.json", 'w', encoding='utf-8') as f:
-                json.dump(serializable, f, ensure_ascii=False, indent=2)
-        except Exception as ex:
-            print(f"Error saving profile {user_id}: {ex}")
-
-    def get_personalization_applied(self, user_profile: UserProfile) -> Dict[str, Any]:
-        top_preferences = user_profile.preferred_techniques[:5]
-        top_effective = sorted(user_profile.effective_interventions.items(), key=lambda x: -x[1])[:5]
-        recent_sessions = user_profile.session_history[-5:]
-        return {
-            'top_preferences': top_preferences,
-            'top_effective_interventions': top_effective,
-            'recent_sessions_count': len(user_profile.session_history),
-            'recent_sessions': recent_sessions
-        }
-
-    def adjust_technique_effectiveness(self, technique_name: str, observed_score: float):
-        if not technique_name:
-            return
-        prev = self.technique_effectiveness.get(technique_name)
-        if prev is None:
-            self.technique_effectiveness[technique_name] = float(observed_score)
+            response = requests.get(f"{self.ollama_url}/api/tags", timeout=5)
+            if response.status_code == 200:
+                self.provider_status['ollama'] = True
+                logger.info("✓ Ollama is available")
+            else:
+                logger.warning("Ollama server responded but with error status")
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Ollama not available: {e}")
+            self.provider_status['ollama'] = False
+        
+        # Check Groq (if API key is available)
+        if self.groq_api_key:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {self.groq_api_key}",
+                    "Content-Type": "application/json"
+                }
+                # Simple test request
+                test_payload = {
+                    "messages": [{"role": "user", "content": "test"}],
+                    "model": self.groq_model,
+                    "max_tokens": 1
+                }
+                response = requests.post(self.groq_url, headers=headers, json=test_payload, timeout=10)
+                if response.status_code in [200, 400]:  # 400 is ok for test
+                    self.provider_status['groq'] = True
+                    logger.info("✓ Groq is available")
+                else:
+                    logger.warning(f"Groq test failed with status {response.status_code}")
+            except requests.exceptions.RequestException as e:
+                logger.warning(f"Groq not available: {e}")
+                self.provider_status['groq'] = False
         else:
-            self.technique_effectiveness[technique_name] = float((prev + observed_score) / 2)
+            logger.info("Groq API key not configured")
+            self.provider_status['groq'] = False
+        
+        logger.info(f"Provider status: {self.provider_status}")
+    
+    def generate_response(self, user_message: str, analysis: Dict[str, Any], 
+                         chat_history: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Generate therapeutic response using available LLM providers with fallbacks
+        
+        Args:
+            user_message: User's input message
+            analysis: Text analysis results
+            chat_history: Previous conversation context
+            
+        Returns:
+            Dictionary containing response and metadata
+        """
+        
+        # Handle crisis situations first
+        crisis_level = analysis.get('crisis_classification', 'LOW')
+        if crisis_level in ['HIGH', 'CRITICAL']:
+            return self._handle_crisis_response(user_message, analysis, crisis_level)
+        
+        # Try LLM providers in order
+        response = None
+        
+        # Try Ollama first
+        if self.provider_status['ollama']:
+            response = self._try_ollama(user_message, analysis, chat_history)
+            if response:
+                return response
+        
+        # Try Groq second
+        if self.provider_status['groq']:
+            response = self._try_groq(user_message, analysis, chat_history)
+            if response:
+                return response
+        
+        # Fallback to rule-based response
+        return self._generate_fallback_response(user_message, analysis)
+    
+    def _try_ollama(self, user_message: str, analysis: Dict[str, Any], 
+                   chat_history: List[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+        """Try generating response using Ollama"""
+        try:
+            logger.info("Attempting Ollama response generation...")
+            
+            # Build context
+            context = self._build_therapeutic_context(user_message, analysis, chat_history)
+            
+            # Ollama API call
+            payload = {
+                "model": "llama3.1:8b",  
+                "prompt": context,
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "max_tokens": 300
+                }
+            }
+            
+            response = requests.post(
+                f"{self.ollama_url}/api/generate",
+                json=payload,
+                timeout=60
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                content = result.get('response', '').strip()
+                
+                if content:
+                    logger.info("✓ Ollama response generated successfully")
+                    return {
+                        'content': content,
+                        'provider': 'ollama',
+                        'model': payload['model'],
+                        'technique': self._identify_technique(content),
+                        'confidence': 0.8,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                else:
+                    logger.warning("Ollama returned empty response")
+            else:
+                logger.warning(f"Ollama request failed with status {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Ollama request failed: {e}")
+            self.provider_status['ollama'] = False  # Mark as unavailable
+        except Exception as e:
+            logger.error(f"Unexpected error with Ollama: {e}")
+        
+        return None
+    
+    def _try_groq(self, user_message: str, analysis: Dict[str, Any], 
+                 chat_history: List[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+        """Try generating response using Groq"""
+        try:
+            logger.info("Attempting Groq response generation...")
+            
+            if not self.groq_api_key:
+                logger.warning("Groq API key not configured")
+                return None
+            
+            # Build messages for OpenAI-compatible API
+            messages = self._build_groq_messages(user_message, analysis, chat_history)
+            
+            headers = {
+                "Authorization": f"Bearer {self.groq_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "messages": messages,
+                "model": self.groq_model,
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+                "top_p": 0.9
+            }
+            
+            response = requests.post(
+                self.groq_url,
+                headers=headers,
+                json=payload,
+                timeout=20
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                content = result['choices'][0]['message']['content'].strip()
+                
+                if content:
+                    logger.info("✓ Groq response generated successfully")
+                    return {
+                        'content': content,
+                        'provider': 'groq',
+                        'model': payload['model'],
+                        'technique': self._identify_technique(content),
+                        'confidence': 0.7,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                else:
+                    logger.warning("Groq returned empty response")
+            else:
+                logger.warning(f"Groq request failed with status {response.status_code}")
+                logger.warning(f"Response: {response.text}")
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Groq request failed: {e}")
+            self.provider_status['groq'] = False  # Mark as unavailable
+        except Exception as e:
+            logger.error(f"Unexpected error with Groq: {e}")
+        
+        return None
+    
+    def _build_therapeutic_context(self, user_message: str, analysis: Dict[str, Any], 
+                                  chat_history: List[Dict[str, Any]] = None) -> str:
+        """Build therapeutic context for Ollama"""
+        
+        # Extract key analysis information
+        emotion = analysis.get('dominant_emotion', 'neutral')
+        sentiment = analysis.get('sentiment', 'neutral')
+        risk_level = analysis.get('risk_level', 'LOW')
+        topics = analysis.get('mental_health_topics', [])
+        techniques = analysis.get('suggested_techniques', [])
+        
+        # Build context
+        context = f"""You are a compassionate, professional mental health therapist. Respond to the user with empathy and therapeutic techniques.
+
+Analysis of user's message:
+- Emotion: {emotion}
+- Sentiment: {sentiment}
+- Risk level: {risk_level}
+- Topics: {', '.join([t[0] for t in topics[:3]])}
+- Suggested techniques: {', '.join(techniques)}
+
+User's message: "{user_message}"
+
+Provide a therapeutic response that:
+1. Acknowledges their feelings with empathy
+2. Uses appropriate therapeutic techniques
+3. Is supportive but not giving medical advice
+4. Encourages professional help if needed
+5. Keeps the response concise (2-3 sentences)
+
+Therapeutic response:"""
+        
+        return context
+    
+    def _build_groq_messages(self, user_message: str, analysis: Dict[str, Any], 
+                           chat_history: List[Dict[str, Any]] = None) -> List[Dict[str, str]]:
+        """Build message array for Groq OpenAI-compatible API"""
+        
+        # System message
+        emotion = analysis.get('dominant_emotion', 'neutral')
+        risk_level = analysis.get('risk_level', 'LOW')
+        techniques = analysis.get('suggested_techniques', [])
+        
+        system_message = f"""You are a compassionate mental health therapist. The user is expressing {emotion} emotions with {risk_level} risk level. Consider using these techniques: {', '.join(techniques)}. 
+
+Respond with empathy and professional therapeutic guidance. Provide specific, actionable suggestions rather than just asking questions. Keep responses concise and supportive. Do not provide medical advice."""
+        
+        messages = [
+            {"role": "system", "content": system_message}
+        ]
+        
+        # Add recent chat history if available
+        if chat_history:
+            for msg in chat_history[-4:]:  # Last 4 messages for context
+                role = "user" if msg.get('role') == 'user' else "assistant"
+                content = msg.get('content', '')
+                if content:
+                    messages.append({"role": role, "content": content})
+        
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+        
+        return messages
+    
+    def _handle_crisis_response(self, user_message: str, analysis: Dict[str, Any], 
+                              crisis_level: str) -> Dict[str, Any]:
+        """Handle high-risk crisis situations with immediate intervention guidance"""
+        
+        import random
+        
+        crisis_responses = self.crisis_responses.get(crisis_level, self.crisis_responses['MODERATE'])
+        base_response = random.choice(crisis_responses)
+        
+        # Add specific resources based on detected indicators
+        crisis_indicators = analysis.get('crisis_indicators', [])
+        additional_resources = []
+        
+        if any('suicide' in indicator for indicator in crisis_indicators):
+            additional_resources.append("National Suicide Prevention Lifeline: 988")
+        
+        if any('self_harm' in indicator for indicator in crisis_indicators):
+            additional_resources.append("Crisis Text Line: Text HOME to 741741")
+        
+        # Combine response with resources
+        full_response = base_response
+        if additional_resources:
+            full_response += "\n\nImmediate resources:\n" + "\n".join(f"• {resource}" for resource in additional_resources)
+        
+        return {
+            'content': full_response,
+            'provider': 'crisis_protocol',
+            'technique': 'crisis_intervention',
+            'confidence': 1.0,
+            'crisis_level': crisis_level,
+            'requires_immediate_attention': True,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def _generate_fallback_response(self, user_message: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate rule-based therapeutic response when LLMs are unavailable"""
+        
+        emotion = analysis.get('dominant_emotion', 'neutral')
+        topics = analysis.get('mental_health_topics', [])
+        primary_topic = topics[0][0] if topics else 'general'
+        suggested_techniques = analysis.get('suggested_techniques', ['supportive_counseling'])
+        
+        # Check for specific situations in user message
+        message_lower = user_message.lower()
+        
+        # Identify specific situations
+        if any(word in message_lower for word in ['broke up', 'breakup', 'break up', 'relationship ended']):
+            situation = 'breakup'
+        elif any(word in message_lower for word in ['depressed', 'depression', 'hopeless', 'worthless']):
+            situation = 'depression'
+        elif any(word in message_lower for word in ['anxious', 'anxiety', 'worried', 'nervous', 'panic']):
+            situation = 'anxiety'
+        elif any(word in message_lower for word in ['stressed', 'stress', 'overwhelmed', 'pressure']):
+            situation = 'stress'
+        else:
+            situation = emotion
+        
+        # Select appropriate response
+        response = self._select_fallback_response(situation, primary_topic, suggested_techniques[0] if suggested_techniques else 'supportive_counseling')
+        
+        return {
+            'content': response,
+            'provider': 'rule_based',
+            'technique': suggested_techniques[0] if suggested_techniques else 'supportive_counseling',
+            'confidence': 0.6,
+            'fallback_reason': 'llm_unavailable',
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def _select_fallback_response(self, situation: str, topic: str, technique: str) -> str:
+        """Select appropriate rule-based response with actionable suggestions"""
+        
+        import random
+        
+        # Check for actionable responses first
+        if situation in self.actionable_responses:
+            return random.choice(self.actionable_responses[situation])
+        
+        # Emotion-based responses with more specific guidance
+        emotion_responses = {
+            'sadness': [
+                "I can hear the sadness in your words. Here are some gentle steps that might help: 1) Allow yourself to feel these emotions without judgment, 2) Reach out to someone you trust, 3) Engage in a small self-care activity. What feels most manageable right now?",
+                "Sadness is a natural response to difficult situations. Consider: Writing in a journal for 10 minutes, taking a warm shower or bath, listening to music that soothes you. Which of these resonates with you?",
+                "When we're feeling sad, small acts of self-compassion can help. Try: Speaking to yourself as you would a good friend, doing one thing that usually brings comfort, or simply resting without guilt. What sounds possible today?"
+            ],
+            'anger': [
+                "I can sense the frustration and anger. Here are some ways to process these feelings: 1) Try physical movement like walking or stretching, 2) Write your thoughts down without editing, 3) Practice deep breathing for 2 minutes. What feels right for you?",
+                "Anger often signals that something important needs attention. Consider: Identifying what boundary was crossed, expressing your feelings in a journal, or talking to someone you trust. Which approach appeals to you?",
+                "When anger feels overwhelming, try: The 'STOP' technique (Stop, Take a breath, Observe, Proceed mindfully), physical exercise to release tension, or productive problem-solving. What would help most right now?"
+            ],
+            'fear': [
+                "Fear can feel overwhelming, but you can take back some control. Try: Breaking down your worry into smaller, specific concerns, focusing on what you can influence today, or using the 5-4-3-2-1 grounding technique. What feels most helpful?",
+                "When fear takes over, grounding can help: Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste. This brings you back to the present moment.",
+                "Fear often involves 'what if' thinking. Counter it by: Focusing on facts vs. fears, making a simple plan for what you can control, or practicing breathing exercises. Which strategy resonates with you?"
+            ]
+        }
+        
+        # Topic-based responses with actionable steps
+        topic_responses = {
+            'depression': self.actionable_responses['depression'],
+            'anxiety': self.actionable_responses['anxiety'],
+            'stress': self.actionable_responses['stress']
+        }
+        
+        # Select response
+        if situation in emotion_responses:
+            return random.choice(emotion_responses[situation])
+        elif topic in topic_responses:
+            return random.choice(topic_responses[topic])
+        else:
+            # Generic supportive responses with action items
+            generic_responses = [
+                "Thank you for sharing this with me. It takes courage to open up. Here are some things that might help: 1) Practice self-compassion, 2) Connect with supportive people, 3) Focus on small, manageable goals. What feels most important to you right now?",
+                "I hear you, and your feelings are completely valid. Consider these steps: Taking things one day at a time, identifying one person you can talk to, or doing one small thing that brings you comfort. What sounds most helpful?",
+                "You're going through a challenging time, and that's okay. Some things that often help: Maintaining basic self-care routines, reaching out for support, and being patient with yourself. Which area would you like to focus on first?"
+            ]
+            return random.choice(generic_responses)
+    
+    def _identify_technique(self, response_content: str) -> str:
+        """Identify the therapeutic technique used in a response"""
+        
+        content_lower = response_content.lower()
+        
+        # Check for technique keywords
+        technique_keywords = {
+            'cognitive_restructuring': ['thought', 'thinking', 'perspective', 'evidence', 'challenge'],
+            'behavioral_activation': ['activity', 'action', 'step', 'doing', 'behavior'],
+            'mindfulness': ['present', 'moment', 'aware', 'notice', 'breathing', 'focus'],
+            'grounding': ['ground', 'safe', 'here', 'now', 'calm', 'breathe'],
+            'validation': ['understand', 'hear', 'valid', 'normal', 'okay'],
+            'psychoeducation': ['depression', 'anxiety', 'common', 'treatable', 'condition']
+        }
+        
+        for technique, keywords in technique_keywords.items():
+            if any(keyword in content_lower for keyword in keywords):
+                return technique
+        
+        return 'supportive_counseling'
+    
+    def set_groq_api_key(self, api_key: str):
+        """Set Groq API key and recheck availability"""
+        self.groq_api_key = api_key
+        self.check_providers()
+    
+    def get_provider_status(self) -> Dict[str, Any]:
+        """Get current status of all providers"""
+        return {
+            'providers': self.provider_status,
+            'primary': 'ollama' if self.provider_status['ollama'] else 'groq' if self.provider_status['groq'] else 'rule_based',
+            'last_checked': datetime.now().isoformat()
+        }
+    
+    def test_providers(self) -> Dict[str, Any]:
+        """Test all providers and return detailed status"""
+        test_message = "I'm feeling a bit anxious about work."
+        test_analysis = {
+            'dominant_emotion': 'anxiety',
+            'sentiment': 'neutral',
+            'risk_level': 'LOW',
+            'crisis_classification': 'LOW',
+            'mental_health_topics': [('anxiety', 0.7)],
+            'suggested_techniques': ['mindfulness']
+        }
+        
+        results = {}
+        
+        # Test Ollama
+        if self.provider_status['ollama']:
+            ollama_result = self._try_ollama(test_message, test_analysis)
+            results['ollama'] = {
+                'available': ollama_result is not None,
+                'response_length': len(ollama_result['content']) if ollama_result else 0
+            }
+        else:
+            results['ollama'] = {'available': False, 'reason': 'not_connected'}
+        
+        # Test Groq
+        if self.provider_status['groq']:
+            groq_result = self._try_groq(test_message, test_analysis)
+            results['groq'] = {
+                'available': groq_result is not None,
+                'response_length': len(groq_result['content']) if groq_result else 0
+            }
+        else:
+            results['groq'] = {'available': False, 'reason': 'api_key_missing'}
+        
+        # Test fallback
+        fallback_result = self._generate_fallback_response(test_message, test_analysis)
+        results['fallback'] = {
+            'available': True,
+            'response_length': len(fallback_result['content'])
+        }
+        
+        return results
+
+
+# Test function
+def test_therapy_agent():
+    """Test the therapy agent with sample scenarios"""
+    agent = TherapyAgent()
+    
+    test_cases = [
+        {
+            'message': "I'm feeling really anxious about work",
+            'analysis': {
+                'dominant_emotion': 'anxiety',
+                'sentiment': 'negative',
+                'risk_level': 'LOW',
+                'crisis_classification': 'LOW',
+                'mental_health_topics': [('anxiety', 0.8)],
+                'suggested_techniques': ['mindfulness', 'relaxation']
+            }
+        },
+        {
+            'message': "I can't take this anymore",
+            'analysis': {
+                'dominant_emotion': 'sadness',
+                'sentiment': 'negative',
+                'risk_level': 'HIGH',
+                'crisis_classification': 'HIGH',
+                'crisis_indicators': ['desperation: "can\'t take this anymore"'],
+                'mental_health_topics': [('depression', 0.9)],
+                'suggested_techniques': ['crisis_intervention']
+            }
+        }
+    ]
+    
+    print("Testing Therapy Agent")
+    print("=" * 50)
+    
+    # Check provider status
+    status = agent.get_provider_status()
+    print(f"Provider Status: {status}")
+    print()
+    
+    # Test responses
+    for i, test_case in enumerate(test_cases, 1):
+        print(f"Test {i}: {test_case['message']}")
+        response = agent.generate_response(
+            test_case['message'],
+            test_case['analysis']
+        )
+        
+        print(f"Provider: {response['provider']}")
+        print(f"Technique: {response['technique']}")
+        print(f"Response: {response['content'][:100]}...")
+        if response.get('requires_immediate_attention'):
+            print("🚨 CRISIS RESPONSE TRIGGERED")
+        print("-" * 30)
+
+
+if __name__ == "__main__":
+    test_therapy_agent()

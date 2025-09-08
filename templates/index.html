@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapy AI - Mental Health Support</title>
+    <style>
+        /* Therapy AI - Black & White Theme */
+
+        :root {
+            /* Black & White Color System */
+            --primary-black: #000000;
+            --primary-dark: #1a1a1a;
+            --primary-gray-dark: #2d2d2d;
+            --primary-gray: #404040;
+            --primary-gray-medium: #666666;
+            --primary-gray-light: #999999;
+            --primary-light: #cccccc;
+            --primary-lighter: #e6e6e6;
+            --primary-lightest: #f5f5f5;
+            --primary-white: #ffffff;
+            
+            /* Functional Colors */
+            --text-primary: #000000;
+            --text-secondary: #404040;
+            --text-muted: #666666;
+            --text-inverse: #ffffff;
+            
+            /* Background Colors */
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2d2d2d;
+            --bg-light: #f5f5f5;
+            --bg-lighter: #ffffff;
+            
+            /* Border Colors */
+            --border-dark: #404040;
+            --border-medium: #999999;
+            --border-light: #cccccc;
+            --border-lighter: #e6e6e6;
+            
+            /* Alert Colors (Grayscale) */
+            --alert-dark: #1a1a1a;
+            --alert-medium: #404040;
+            --alert-light: #999999;
+            
+            /* Gradients */
+            --gradient-dark: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+            --gradient-medium: linear-gradient(135deg, #1a1a1a 0%, #404040 100%);
+            --gradient-light: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            --gradient-reverse: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            
+            /* Shadows */
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --shadow-dark: 0 8px 16px rgba(0, 0, 0, 0.3);
+            
+            /* Spacing */
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 15px;
+            --spacing-lg: 20px;
+            --spacing-xl: 25px;
+            --spacing-xxl: 40px;
+            
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 18px;
+            --radius-xxl: 20px;
+            --radius-round: 25px;
+            --radius-circle: 50%;
+            
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --font-size-xs: 0.7em;
+            --font-size-sm: 0.8em;
+            --font-size-md: 0.9em;
+            --font-size-base: 1em;
+            --font-size-lg: 1.2em;
+            --font-size-xl: 1.3em;
+            --font-size-xxl: 1.4em;
+            --font-size-title: 1.6em;
+            
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--gradient-dark);
+            height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            box-shadow: var(--shadow-heavy);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1400px;
+                height: calc(100vh - 20px);
+                margin: var(--spacing-sm) auto;
+                border-radius: var(--radius-xxl);
+                width: calc(100vw - 20px);
+            }
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 320px;
+            min-width: 300px;
+            background: var(--gradient-light);
+            border-right: 2px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: var(--spacing-lg);
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header h1 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .sidebar-header p {
+            font-size: var(--font-size-md);
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .section {
+            margin-bottom: var(--spacing-xl);
+            background: var(--bg-lighter);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-light);
+            border: 2px solid var(--border-lighter);
+        }
+
+        .section h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-secondary);
+            font-size: var(--font-size-md);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .select-field {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-lighter);
+            font-size: var(--font-size-md);
+            margin-bottom: var(--spacing-sm);
+            transition: all var(--transition-normal);
+            color: var(--text-primary);
+        }
+
+        .select-field:focus {
+            outline: none;
+            border-color: var(--primary-black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== MAIN AREA ===== */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-lighter);
+            min-width: 0;
+        }
+
+        .chat-header {
+            padding: var(--spacing-lg);
+            background: var(--gradient-medium);
+            color: var(--text-inverse);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .chat-header h2 {
+            font-size: var(--font-size-xxl);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .chat-header p {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ===== CHAT MESSAGES ===== */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+            background: var(--gradient-reverse);
+            scroll-behavior: smooth;
+            min-height: 0;
+        }
+
+        .message {
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: flex-start;
+            max-width: 100%;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-xl);
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: var(--shadow-light);
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message.user .message-content {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            border-bottom-right-radius: var(--radius-sm);
+            border: 2px solid var(--primary-black);
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg-lighter);
+            border: 2px solid var(--border-light);
+            border-bottom-left-radius: var(--radius-sm);
+            color: var(--text-primary);
+        }
+
+        .message-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-inverse);
+            font-size: var(--font-size-sm);
+            flex-shrink: 0;
+            border: 2px solid var(--primary-black);
+        }
+
+        .message.user .message-avatar {
+            background: var(--gradient-dark);
+        }
+
+        .message.assistant .message-avatar {
+            background: var(--gradient-medium);
+        }
+
+        .message-meta {
+            font-size: var(--font-size-xs);
+            margin-top: var(--spacing-sm);
+            opacity: 0.7;
+        }
+
+        .message.user .message-meta {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .message.assistant .message-meta {
+            color: var(--text-muted);
+        }
+
+        /* ===== ANALYSIS PANEL ===== */
+        .analysis-panel {
+            background: var(--primary-lightest);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .analysis-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .metric {
+            background: var(--bg-lighter);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            border: 2px solid var(--border-lighter);
+        }
+
+        .metric-value {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--primary-black);
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== CRISIS ALERT ===== */
+        .crisis-alert {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin: var(--spacing-md) 0;
+            font-weight: 500;
+            animation: pulse 2s infinite;
+            box-shadow: var(--shadow-dark);
+            border: 2px solid var(--primary-black);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.85; }
+            100% { opacity: 1; }
+        }
+
+        /* ===== INPUT AREA ===== */
+        .input-area {
+            padding: var(--spacing-lg);
+            background: var(--bg-lighter);
+            border-top: 2px solid var(--border-light);
+            flex-shrink: 0;
+        }
+
+        .input-container {
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: flex-end;
+            max-width: 100%;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-round);
+            font-size: var(--font-size-base);
+            resize: none;
+            max-height: 120px;
+            min-height: 50px;
+            transition: all var(--transition-normal);
+            font-family: inherit;
+            line-height: 1.4;
+            min-width: 0;
+            background: var(--bg-lighter);
+            color: var(--text-primary);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-button {
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            border: 2px solid var(--primary-black);
+            border-radius: var(--radius-round);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-dark);
+            background: var(--gradient-medium);
+        }
+
+        .send-button:disabled {
+            background: var(--primary-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: var(--border-light);
+        }
+
+        /* ===== CONSENT OVERLAY ===== */
+        .consent-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            padding: var(--spacing-lg);
+        }
+
+        .consent-modal {
+            background: var(--bg-lighter);
+            padding: var(--spacing-xxl);
+            border-radius: var(--radius-xxl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            box-shadow: var(--shadow-heavy);
+            border: 3px solid var(--primary-black);
+        }
+
+        .consent-modal h2 {
+            color: var(--primary-black);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-title);
+            font-weight: 600;
+        }
+
+        .consent-content {
+            text-align: left;
+            margin: var(--spacing-lg) 0;
+            padding: var(--spacing-lg);
+            background: var(--primary-lightest);
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-md);
+            line-height: 1.6;
+            border: 2px solid var(--border-light);
+        }
+
+        .consent-content h4 {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .consent-content ul {
+            padding-left: var(--spacing-lg);
+        }
+
+        .consent-content li {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .consent-input {
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            margin: var(--spacing-lg) 0;
+            font-size: var(--font-size-base);
+            text-align: center;
+            transition: all var(--transition-normal);
+            background: var(--bg-lighter);
+            color: var(--text-primary);
+        }
+
+        .consent-input:focus {
+            outline: none;
+            border-color: var(--primary-black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .consent-button {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            border: 2px solid var(--primary-black);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .consent-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-dark);
+            background: var(--gradient-medium);
+        }
+
+        /* ===== LOADING INDICATOR ===== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-muted);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--primary-black);
+            border-radius: var(--radius-circle);
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== SESSION STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-item {
+            background: var(--bg-lighter);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 2px solid var(--border-lighter);
+            box-shadow: var(--shadow-light);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--primary-black);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== PROVIDER STATUS ===== */
+        .provider-status {
+            background: var(--bg-lighter);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-sm);
+            border: 2px solid var(--border-lighter);
+        }
+
+        .provider-status .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-circle);
+            margin-right: var(--spacing-sm);
+            border: 1px solid var(--primary-black);
+        }
+
+        .provider-status .status-dot.online {
+            background: var(--primary-black);
+        }
+
+        .provider-status .status-dot.offline {
+            background: var(--border-light);
+        }
+
+        .provider-status .status-dot.unknown {
+            background: var(--primary-light);
+        }
+
+        /* ===== EMERGENCY RESOURCES ===== */
+        .emergency-resources {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-top: var(--spacing-lg);
+            box-shadow: var(--shadow-dark);
+            border: 2px solid var(--primary-black);
+        }
+
+        .emergency-resources h4 {
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-base);
+        }
+
+        .emergency-resources ul {
+            list-style: none;
+            font-size: var(--font-size-md);
+        }
+
+        .emergency-resources li {
+            margin-bottom: var(--spacing-sm);
+            padding: 2px 0;
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn var(--transition-slow) ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 280px;
+                min-width: 260px;
+            }
+            
+            .message-content {
+                max-width: 80%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            html {
+                overflow: auto;
+            }
+            
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+            }
+            
+            .container {
+                flex-direction: column;
+                height: 100vh;
+                width: 100vw;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: auto;
+                max-height: 250px;
+                order: 2;
+                border-right: none;
+                border-top: 2px solid var(--border-light);
+            }
+            
+            .sidebar-content {
+                padding: var(--spacing-md);
+            }
+            
+            .section {
+                padding: var(--spacing-sm);
+                margin-bottom: var(--spacing-md);
+            }
+
+            .main-area {
+                order: 1;
+                flex: 1;
+                min-height: 0;
+            }
+            
+            .chat-messages {
+                padding: var(--spacing-md);
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .analysis-metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .consent-modal {
+                margin: var(--spacing-lg);
+                padding: var(--spacing-lg);
+                max-height: 85vh;
+            }
+            
+            .input-area {
+                padding: var(--spacing-md);
+            }
+            
+            .input-container {
+                gap: var(--spacing-sm);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                height: 100vh;
+            }
+            
+            .sidebar {
+                max-height: 200px;
+            }
+            
+            .sidebar-header {
+                padding: var(--spacing-md);
+            }
+            
+            .sidebar-header h1 {
+                font-size: var(--font-size-lg);
+            }
+            
+            .chat-header {
+                padding: var(--spacing-md);
+            }
+            
+            .chat-header h2 {
+                font-size: var(--font-size-xl);
+            }
+            
+            .input-container {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .send-button {
+                width: 100%;
+                justify-content: center;
+                padding: var(--spacing-md);
+            }
+
+            .message-content {
+                max-width: 95%;
+            }
+
+            .analysis-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .consent-modal {
+                margin: var(--spacing-sm);
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* ===== SCROLLBAR STYLING ===== */
+        .chat-messages::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        .consent-modal::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track,
+        .consent-modal::-webkit-scrollbar-track {
+            background: var(--border-lighter);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb,
+        .consent-modal::-webkit-scrollbar-thumb {
+            background: var(--primary-black);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .consent-modal::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-gray);
+        }
+
+        /* ===== FOCUS STATES FOR ACCESSIBILITY ===== */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--primary-black);
+            outline-offset: 2px;
+        }
+
+        /* ===== SMOOTH TRANSITIONS ===== */
+        * {
+            transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+        }
+
+        .section:hover,
+        .stat-item:hover,
+        .metric:hover {
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-1px);
+        }
+
+        /* ===== REDUCED MOTION ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .fade-in {
+                animation: none;
+            }
+            
+            .crisis-alert {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Consent Overlay -->
+    <div id="consentOverlay" class="consent-overlay">
+        <div class="consent-modal">
+            <h2>Therapy AI</h2>
+            <p><strong>⚠️ This is an AI assistant for mental health support, not a replacement for professional therapy.</strong></p>
+            
+            <div class="consent-content">
+                <h4>Privacy Policy & Terms:</h4>
+                <ul>
+                    <li><strong>Data Collection:</strong> Text conversations analyzed for emotional content</li>
+                    <li><strong>Privacy:</strong> Data encrypted and anonymized, sessions expire after 24 hours</li>
+                    <li><strong>Crisis Detection:</strong> For safety purposes - emergency resources provided when needed</li>
+                    <li><strong>Limitations:</strong> AI responses are not medical advice</li>
+                    <li><strong>Your Rights:</strong> End session anytime, request data deletion</li>
+                    <li><strong>Emergency:</strong> Call 911 for immediate danger, 988 for crisis support</li>
+                </ul>
+            </div>
+            
+            <input type="text" id="consentInput" class="consent-input" placeholder="Type 'I CONSENT' to begin">
+            <br>
+            <button id="consentButton" class="consent-button">Begin Session</button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Therapy AI</h1>
+                <p>Compassionate Mental Health Support</p>
+                <div id="sessionInfo">
+                    <small>Session: <span id="sessionId">Loading...</span></small>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Analysis Settings -->
+                <div class="section">
+                    <h3>Analysis Settings</h3>
+                    <label>Crisis Detection:</label>
+                    <select class="select-field" id="crisisSensitivity">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    
+                    <label>Analysis Depth:</label>
+                    <select class="select-field" id="analysisDepth">
+                        <option value="basic">Basic</option>
+                        <option value="standard" selected>Standard</option>
+                        <option value="comprehensive">Comprehensive</option>
+                    </select>
+                </div>
+
+                <!-- Provider Status -->
+                <div class="section">
+                    <h3>System Status</h3>
+                    <div class="provider-status" id="providerStatus">
+                        <div>
+                            <span class="status-dot unknown"></span>
+                            <span>Checking providers...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Statistics -->
+                <div class="section" id="sessionStats">
+                    <h3>Session Overview</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="messageCount">0</div>
+                            <div class="stat-label">Messages</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="sessionDuration">0m</div>
+                            <div class="stat-label">Duration</div>
+                        </div>
+                    </div>
+                    <div id="emotionalTrend"></div>
+                </div>
+
+                <!-- Emergency Resources -->
+                <div class="emergency-resources">
+                    <h4>🆘 Emergency Resources</h4>
+                    <ul>
+                        <li>🇺🇸 988 - Crisis Lifeline</li>
+                        <li>🇺🇸 741741 - Crisis Text</li>
+                        <li>🚨 911 - Emergency</li>
+                    </ul>
+                </div>
+
+                <button class="consent-button" id="resetSession" style="width: 100%; margin-top: 15px;">
+                    🔄 New Session
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-area">
+            <div class="chat-header">
+                <h2>💭 Therapy Chat Session</h2>
+                <p>Share what's on your mind - I'm here to listen and support you</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will be added here -->
+                </div>
+
+                <!-- Loading indicator -->
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Thinking...</p>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-container">
+                        <textarea 
+                            id="messageInput" 
+                            class="input-field" 
+                            placeholder="Share your thoughts and feelings..."
+                            rows="1"
+                        ></textarea>
+                        <button id="sendButton" class="send-button">
+                            <span>Send</span>
+                            <span>➤</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Therapy AI - Mental Health Support Application
+        // JavaScript functionality for compassionate AI therapy chatbot
+
+        // Application state management
+        let appState = {
+            sessionId: null,
+            chatHistory: [],
+            settings: {
+                crisis_sensitivity: 'medium',
+                analysis_depth: 'standard'
+            },
+            sessionStartTime: null
+        };
+
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Therapy AI initializing...');
+            initializeApp();
+        });
+
+        /**
+         * Initialize the application
+         */
+        async function initializeApp() {
+            try {
+                setupEventListeners();
+                await createNewSession();
+                await checkProviderStatus();
+                console.log('Therapy AI initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Therapy AI:', error);
+                showError('Failed to initialize the application. Please refresh the page.');
+            }
+        }
+
+        /**
+         * Set up event listeners for user interactions
+         */
+        function setupEventListeners() {
+            // Consent handling
+            const consentButton = document.getElementById('consentButton');
+            const consentInput = document.getElementById('consentInput');
+            
+            consentButton.addEventListener('click', handleConsent);
+            consentInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleConsent();
+            });
+
+            // Chat functionality
+            const sendButton = document.getElementById('sendButton');
+            const messageInput = document.getElementById('messageInput');
+            
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize textarea for better UX
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Settings management
+            const crisisSensitivity = document.getElementById('crisisSensitivity');
+            const analysisDepth = document.getElementById('analysisDepth');
+            
+            crisisSensitivity.addEventListener('change', (e) => updateSetting('crisis_sensitivity', e.target.value));
+            analysisDepth.addEventListener('change', (e) => updateSetting('analysis_depth', e.target.value));
+
+            // Session management
+            const resetButton = document.getElementById('resetSession');
+            resetButton.addEventListener('click', resetSession);
+        }
+
+        /**
+         * Create a new therapy session
+         */
+        async function createNewSession() {
+            try {
+                const response = await fetch('/api/session/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    appState.sessionId = data.session_id;
+                    appState.sessionStartTime = new Date();
+                    
+                    // Update UI with session ID
+                    const sessionIdElement = document.getElementById('sessionId');
+                    sessionIdElement.textContent = data.session_id.substring(0, 8) + '...';
+                    
+                    console.log('New session created:', data.session_id);
+                } else {
+                    throw new Error(data.error || 'Failed to create session');
+                }
+            } catch (error) {
+                console.error('Error creating session:', error);
+                showError('Failed to create session. Please refresh the page and try again.');
+            }
+        }
+
+        /**
+         * Check the status of AI providers
+         */
+        async function checkProviderStatus() {
+            try {
+                const response = await fetch('/api/providers/status');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateProviderStatus(data.status);
+                }
+            } catch (error) {
+                console.error('Error checking provider status:', error);
+                // Set fallback status
+                updateProviderStatus({ primary: 'fallback' });
+            }
+        }
+
+        /**
+         * Update provider status display
+         */
+        function updateProviderStatus(status) {
+            const statusDiv = document.getElementById('providerStatus');
+            const primary = status.primary;
+            
+            let statusText = '';
+            let statusClass = 'unknown';
+            
+            switch (primary) {
+                case 'ollama':
+                    statusText = 'Ollama (Local AI)';
+                    statusClass = 'online';
+                    break;
+                case 'groq':
+                    statusText = 'Groq (Cloud AI)';
+                    statusClass = 'online';
+                    break;
+                case 'openai':
+                    statusText = 'OpenAI (Cloud AI)';
+                    statusClass = 'online';
+                    break;
+                default:
+                    statusText = 'Rule-based (Fallback)';
+                    statusClass = 'offline';
+            }
+            
+            statusDiv.innerHTML = `
+                <div>
+                    <span class="status-dot ${statusClass}"></span>
+                    <span>${statusText}</span>
+                </div>
+            `;
+        }
+
+        /**
+         * Handle user consent for therapy session
+         */
+        async function handleConsent() {
+            const consentInput = document.getElementById('consentInput');
+            const consentText = consentInput.value.trim().toUpperCase();
+            
+            if (consentText === 'I CONSENT') {
+                try {
+                    const response = await fetch('/api/session/consent', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            session_id: appState.sessionId,
+                            consent: true
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Hide consent overlay and show main interface
+                        document.getElementById('consentOverlay').style.display = 'none';
+                        addWelcomeMessage();
+                        
+                        // Focus on message input for better UX
+                        setTimeout(() => {
+                            document.getElementById('messageInput').focus();
+                        }, 500);
+                        
+                        console.log('Consent granted, session started');
+                    } else {
+                        throw new Error(data.error || 'Failed to process consent');
+                    }
+                } catch (error) {
+                    console.error('Error processing consent:', error);
+                    showError('Failed to process consent. Please try again.');
+                }
+            } else {
+                // Provide gentle guidance
+                alert("Please type 'I CONSENT' exactly as shown to begin your therapy session.");
+                consentInput.focus();
+            }
+        }
+
+        /**
+         * Add welcome message to start the therapy session
+         */
+        function addWelcomeMessage() {
+            const welcomeMsg = {
+                role: 'assistant',
+                content: "Hello, and welcome to Therapy AI. I'm here to provide compassionate mental health support through our conversation.\n\nI use evidence-based therapeutic techniques and can help you process your thoughts and feelings in a safe, judgment-free space. Please feel free to share what's on your mind - whether it's stress, anxiety, relationships, or anything else you'd like to talk about.\n\nRemember, while I'm here to support you, I'm an AI assistant and not a replacement for professional therapy. If you're experiencing a crisis, please reach out to emergency services or a crisis hotline.\n\nWhat would you like to talk about today?",
+                timestamp: new Date().toISOString(),
+                provider: 'System'
+            };
+            
+            addMessage(welcomeMsg);
+        }
+
+        /**
+         * Send user message and get AI response
+         */
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                messageInput.focus();
+                return;
+            }
+
+            // Disable input while processing
+            const sendButton = document.getElementById('sendButton');
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Clear input and reset height
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Add user message to chat
+            const userMsg = {
+                role: 'user',
+                content: message,
+                timestamp: new Date().toISOString()
+            };
+            
+            addMessage(userMsg);
+            appState.chatHistory.push(userMsg);
+
+            // Show loading indicator
+            showLoading(true);
+
+            try {
+                // Send message to backend
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        message: message,
+                        settings: appState.settings
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Add assistant response
+                    const assistantMsg = data.assistant_response;
+                    addMessage(assistantMsg);
+                    appState.chatHistory.push(assistantMsg);
+                    
+                    // Show analysis if available
+                    if (data.analysis) {
+                        showAnalysis(data.analysis);
+                    }
+                    
+                    // Handle crisis detection
+                    if (data.crisis_detected) {
+                        showCrisisAlert(data.analysis);
+                    }
+                    
+                    // Update session stats
+                    if (data.session_stats) {
+                        updateSessionStats(data.session_stats);
+                    }
+                    
+                } else {
+                    throw new Error(data.error || 'Failed to process message');
+                }
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                
+                // Add fallback response
+                const fallbackMsg = {
+                    role: 'assistant',
+                    content: 'I apologize, but I encountered a technical difficulty processing your message. Please try again in a moment.\n\nIf the problem persists, you might want to refresh the page or reach out to a human counselor for immediate support. Your wellbeing is important.',
+                    timestamp: new Date().toISOString(),
+                    provider: 'System'
+                };
+                
+                addMessage(fallbackMsg);
+                showError('Connection error. Please check your internet connection and try again.');
+            } finally {
+                // Re-enable input
+                showLoading(false);
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        /**
+         * Add message to chat interface
+         */
+        function addMessage(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Create message container
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.role} fade-in`;
+            
+            // Create avatar
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.textContent = message.role === 'user' ? 'You' : 'AI';
+            
+            // Create content container
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            // Format message content (preserve line breaks)
+            const messageText = document.createElement('div');
+            messageText.innerHTML = message.content.replace(/\n/g, '<br>');
+            contentDiv.appendChild(messageText);
+            
+            // Create metadata
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'message-meta';
+            const time = new Date(message.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            metaDiv.textContent = `⏰ ${time}`;
+            
+            // Add provider info if available
+            if (message.provider) {
+                metaDiv.textContent += ` • ${message.provider}`;
+            }
+            
+            // Add technique info if available
+            if (message.technique) {
+                metaDiv.textContent += ` • ${message.technique}`;
+            }
+            
+            contentDiv.appendChild(metaDiv);
+            
+            // Assemble message
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            
+            // Add to chat
+            chatMessages.appendChild(messageDiv);
+            
+            // Smooth scroll to bottom
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }
+
+        /**
+         * Show analysis panel for user message
+         */
+        function showAnalysis(analysis) {
+            // Find the last user message
+            const messages = document.querySelectorAll('.message.user');
+            const lastMessage = messages[messages.length - 1];
+            
+            if (lastMessage && !lastMessage.querySelector('.analysis-panel')) {
+                const analysisDiv = document.createElement('div');
+                analysisDiv.className = 'analysis-panel fade-in';
+                
+                // Extract analysis data with fallbacks
+                const emotion = analysis.dominant_emotion || 'neutral';
+                const sentiment = analysis.sentiment || 'neutral';
+                const crisisLevel = Math.round((analysis.crisis_level || 0) * 100);
+                
+                // Create metrics HTML
+                let metricsHTML = `
+                    <div class="analysis-metrics">
+                        <div class="metric">
+                            <div class="metric-value">${emotion}</div>
+                            <div class="metric-label">Emotion</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${sentiment}</div>
+                            <div class="metric-label">Sentiment</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${crisisLevel}%</div>
+                            <div class="metric-label">Crisis Risk</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add topics if available
+                if (analysis.mental_health_topics && analysis.mental_health_topics.length > 0) {
+                    const topics = analysis.mental_health_topics.slice(0, 3).map(t => 
+                        Array.isArray(t) ? t[0] : t
+                    ).join(', ');
+                    metricsHTML += `<div><strong>Topics:</strong> ${topics}</div>`;
+                }
+                
+                // Add suggested techniques if available
+                if (analysis.suggested_techniques && analysis.suggested_techniques.length > 0) {
+                    const techniques = analysis.suggested_techniques.slice(0, 2).join(', ');
+                    metricsHTML += `<div><strong>Techniques:</strong> ${techniques}</div>`;
+                }
+                
+                analysisDiv.innerHTML = metricsHTML;
+                lastMessage.appendChild(analysisDiv);
+            }
+        }
+
+        /**
+         * Show crisis alert when crisis indicators are detected
+         */
+        function showCrisisAlert(analysis) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'crisis-alert fade-in';
+            alertDiv.innerHTML = `
+                <strong>🚨 Crisis Indicators Detected</strong><br>
+                Your safety and wellbeing are my priority. Please consider reaching out for immediate support:
+                <br><br>
+                <strong>Immediate Resources:</strong><br>
+                • <strong>988</strong> - Suicide & Crisis Lifeline (24/7)<br>
+                • <strong>741741</strong> - Crisis Text Line (Text HOME)<br>
+                • <strong>911</strong> - Emergency services<br>
+                • Reach out to a trusted friend, family member, or mental health professional<br>
+                <br>
+                Remember: You are not alone, and help is available. These feelings can change with proper support.
+            `;
+            
+            chatMessages.appendChild(alertDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        /**
+         * Update application setting
+         */
+        function updateSetting(setting, value) {
+            appState.settings[setting] = value;
+            updateSettings();
+            console.log(`Setting updated: ${setting} = ${value}`);
+        }
+
+        /**
+         * Send updated settings to backend
+         */
+        async function updateSettings() {
+            try {
+                await fetch('/api/session/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        settings: appState.settings
+                    })
+                });
+            } catch (error) {
+                console.error('Error updating settings:', error);
+            }
+        }
+
+        /**
+         * Update session statistics display
+         */
+        function updateSessionStats(stats) {
+            if (stats) {
+                // Update message count
+                const messageCountElement = document.getElementById('messageCount');
+                if (messageCountElement) {
+                    messageCountElement.textContent = stats.message_count || appState.chatHistory.length;
+                }
+                
+                // Update session duration
+                const durationElement = document.getElementById('sessionDuration');
+                if (durationElement) {
+                    const duration = stats.duration_minutes || calculateSessionDuration();
+                    durationElement.textContent = `${duration}m`;
+                }
+                
+                // Update emotional trend
+                const trendDiv = document.getElementById('emotionalTrend');
+                if (trendDiv && stats.dominant_emotion && stats.dominant_emotion !== 'neutral') {
+                    trendDiv.innerHTML = `<strong>Recent Emotion:</strong><br>${stats.dominant_emotion}`;
+                }
+            }
+        }
+
+        /**
+         * Calculate session duration in minutes
+         */
+        function calculateSessionDuration() {
+            if (!appState.sessionStartTime) return 0;
+            
+            const now = new Date();
+            const diff = now - appState.sessionStartTime;
+            return Math.floor(diff / (1000 * 60)); // Convert to minutes
+        }
+
+        /**
+         * Reset therapy session
+         */
+        async function resetSession() {
+            const confirmReset = confirm(
+                'Are you sure you want to start a new session?\n\n' +
+                'This will:\n' +
+                '• Clear all chat history\n' +
+                '• Reset session statistics\n' +
+                '• Require new consent\n\n' +
+                'Consider saving any important insights before proceeding.'
+            );
+            
+            if (confirmReset) {
+                try {
+                    const response = await fetch(`/api/session/reset/${appState.sessionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Clear application state
+                        appState.chatHistory = [];
+                        appState.sessionStartTime = null;
+                        
+                        // Clear UI
+                        document.getElementById('chatMessages').innerHTML = '';
+                        document.getElementById('messageCount').textContent = '0';
+                        document.getElementById('sessionDuration').textContent = '0m';
+                        document.getElementById('emotionalTrend').innerHTML = '';
+                        
+                        // Show consent overlay
+                        document.getElementById('consentOverlay').style.display = 'flex';
+                        document.getElementById('consentInput').value = '';
+                        document.getElementById('consentInput').focus();
+                        
+                        console.log('Session reset successfully');
+                    } else {
+                        throw new Error(data.error || 'Failed to reset session');
+                    }
+                } catch (error) {
+                    console.error('Error resetting session:', error);
+                    showError('Failed to reset session. Please refresh the page to start over.');
+                }
+            }
+        }
+
+        /**
+         * Show/hide loading indicator
+         */
+        function showLoading(show) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (show) {
+                loadingIndicator.classList.add('show');
+            } else {
+                loadingIndicator.classList.remove('show');
+            }
+        }
+
+        /**
+         * Display error message to user
+         */
+        function showError(message) {
+            // Create a more user-friendly error notification
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'crisis-alert fade-in';
+            errorDiv.style.background = 'var(--gradient-medium)';
+            errorDiv.innerHTML = `
+                <strong>⚠️ Technical Issue</strong><br>
+                ${message}<br><br>
+                If this continues, please refresh the page or contact support.
+            `;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.appendChild(errorDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 10000);
+        }
+
+        /**
+         * Update session stats periodically
+         */
+        function startStatsUpdater() {
+            setInterval(async function() {
+                if (appState.sessionId) {
+                    try {
+                        const response = await fetch(`/api/session/stats/${appState.sessionId}`);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success) {
+                                updateSessionStats(data.stats);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error updating stats:', error);
+                    }
+                }
+            }, 30000); // Update every 30 seconds
+        }
+
+        /**
+         * Check provider status periodically
+         */
+        function startProviderStatusChecker() {
+            setInterval(checkProviderStatus, 60000); // Check every minute
+        }
+
+        /**
+         * Handle keyboard shortcuts for better UX
+         */
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to send message
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const messageInput = document.getElementById('messageInput');
+                if (messageInput === document.activeElement) {
+                    sendMessage();
+                }
+            }
+            
+            // Escape to focus message input
+            if (e.key === 'Escape') {
+                const messageInput = document.getElementById('messageInput');
+                messageInput.focus();
+            }
+        });
+
+        /**
+         * Handle page visibility changes
+         */
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && appState.sessionId) {
+                // Page became visible, refresh provider status
+                checkProviderStatus();
+            }
+        });
+
+        /**
+         * Initialize periodic updaters when session starts
+         */
+        window.addEventListener('load', function() {
+            startStatsUpdater();
+            startProviderStatusChecker();
+        });
+
+        /**
+         * Handle beforeunload for user warning
+         */
+        window.addEventListener('beforeunload', function(e) {
+            if (appState.chatHistory.length > 0) {
+                e.preventDefault();
+                e.returnValue = 'You have an active therapy session. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+
+        // Export functions for testing (if in Node.js environment)
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = {
+                appState,
+                initializeApp,
+                createNewSession,
+                sendMessage,
+                addMessage,
+                updateSetting,
+                resetSession
+            };
+        }
+    </script>
+</body>
+</html>

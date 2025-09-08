@@ -1,477 +1,535 @@
 """
-Multimodal Agentic AI Therapy System - Main Application
-A localhost-based therapy assistant processing text, audio, and video inputs
+Simplified Flask Backend for AI Therapy System
+Phase 1: Text-only analysis with robust error handling
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
-import json
-import os
+from flask import Flask, request, jsonify, render_template, session
+from flask_cors import CORS
+import uuid
+import logging
 from datetime import datetime, timedelta
-import time
+import os
+import json
+from typing import Dict, List, Any, Optional
 import threading
-import queue
-from pathlib import Path
-import base64
+import random
+from dotenv import load_dotenv
 
-# Import our custom modules (will be created next)
-try:
-    from sentiment_analyzer import SentimentAnalyzer
-    from audio_analyzer import AudioAnalyzer
-    from visual_analyzer import VisualAnalyzer
-    from multimodal_fusion import MultimodalFusion
-    from therapy_agent import TherapyAgent
-except ImportError as e:
-    st.error(f"Missing module: {e}. Please ensure all components are available.")
-    st.stop()
+# Import our simplified modules
+from text_analyzer import TextAnalyzer
+from therapy_agent import TherapyAgent
 
-# Configure page
-st.set_page_config(
-    page_title="AI Therapy Assistant",
-    page_icon="🧠",
-    layout="wide",
-    initial_sidebar_state="expanded"
+load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+logger = logging.getLogger(__name__)
 
-class MultimodalTherapyApp:
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+CORS(app)
+
+text_analyzer = None
+therapy_agent = None
+
+active_sessions = {}
+
+class SessionManager:
     def __init__(self):
-        self.setup_directories()
-        self.initialize_components()
-        self.setup_session_state()
-        
-    def setup_directories(self):
-        """Create necessary directories for data storage"""
-        self.directories = {
-            'sessions': Path('session_data'),
-            'audio': Path('audio_data'),
-            'video': Path('video_data'),
-            'profiles': Path('multimodal_profiles'),
-            'models': Path('models'),
-            'logs': Path('logs')
-        }
-        
-        for directory in self.directories.values():
-            directory.mkdir(exist_ok=True)
+        self.sessions = {}
+        self.cleanup_interval = timedelta(hours=24)
     
-    def initialize_components(self):
-        """Initialize all analysis components"""
-        try:
-            self.sentiment_analyzer = SentimentAnalyzer()
-            self.audio_analyzer = AudioAnalyzer()
-            self.visual_analyzer = VisualAnalyzer()
-            self.multimodal_fusion = MultimodalFusion()
-            self.therapy_agent = TherapyAgent()
-            
-            st.success("✅ All components initialized successfully!")
-        except Exception as e:
-            st.error(f"❌ Component initialization failed: {e}")
-            st.stop()
-    
-    def setup_session_state(self):
-        """Initialize Streamlit session state variables"""
-        defaults = {
-            'session_id': None,
-            'user_consents': {'text': False, 'audio': False, 'video': False},
+    def create_session(self) -> str:
+        session_id = str(uuid.uuid4())
+        self.sessions[session_id] = {
+            'id': session_id,
+            'created': datetime.now(),
+            'last_activity': datetime.now(),
+            'consent_given': False,
             'chat_history': [],
-            'analysis_results': [],
-            'current_session_data': {},
-            'audio_recording': False,
-            'video_recording': False,
-            'crisis_detected': False,
-            'agent_active': True,
-            'personalization_data': {},
-            'intervention_history': []
+            'settings': {
+                'crisis_sensitivity': 'medium',
+                'analysis_depth': 'standard'
+            },
+            'stats': {
+                'message_count': 0,
+                'session_duration': 0
+            }
         }
-        
-        for key, value in defaults.items():
-            if key not in st.session_state:
-                st.session_state[key] = value
+        logger.info(f"Created session: {session_id}")
+        return session_id
     
-    def render_privacy_consent(self):
-        """Render privacy consent interface"""
-        st.header("🔒 Privacy & Consent")
-        st.markdown("""
-        **Your Privacy is Our Priority**
-        
-        This AI therapy assistant processes your data locally on your device. 
-        Please review and consent to the modalities you want to use:
-        """)
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.subheader("📝 Text Analysis")
-            st.markdown("- Chat conversations\n- Emotional sentiment\n- Crisis detection")
-            st.session_state.user_consents['text'] = st.checkbox(
-                "Enable Text Analysis", 
-                value=st.session_state.user_consents['text'],
-                key="text_consent"
-            )
-        
-        with col2:
-            st.subheader("🎤 Audio Analysis")
-            st.markdown("- Voice tone analysis\n- Emotional prosody\n- Speech patterns")
-            st.session_state.user_consents['audio'] = st.checkbox(
-                "Enable Audio Analysis", 
-                value=st.session_state.user_consents['audio'],
-                key="audio_consent"
-            )
-        
-        with col3:
-            st.subheader("📹 Video Analysis")
-            st.markdown("- Facial expressions\n- Body language\n- Micro-expressions")
-            st.session_state.user_consents['video'] = st.checkbox(
-                "Enable Video Analysis", 
-                value=st.session_state.user_consents['video'],
-                key="video_consent"
-            )
-        
-        if any(st.session_state.user_consents.values()):
-            if st.button("✅ Start Therapy Session", type="primary"):
-                st.session_state.session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-                st.rerun()
-        else:
-            st.warning("Please enable at least one modality to continue.")
+    def get_session(self, session_id: str) -> Optional[Dict]:
+        session_data = self.sessions.get(session_id)
+        if session_data:
+            session_data['last_activity'] = datetime.now()
+        return session_data
     
-    def render_multimodal_interface(self):
-        """Render the main multimodal therapy interface"""
-        # Header with session info
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            st.title("🧠 AI Therapy Assistant")
-        with col2:
-            st.metric("Session", st.session_state.session_id.split('_')[1])
-        with col3:
-            if st.button("🚪 End Session"):
-                self.end_session()
-                return
-        
-        # Create main layout
-        left_col, right_col = st.columns([2, 1])
-        
-        with left_col:
-            self.render_chat_interface()
-        
-        with right_col:
-            self.render_analysis_dashboard()
-        
-        # Bottom row for multimodal controls
-        self.render_multimodal_controls()
+    def update_session(self, session_id: str, data: Dict):
+        if session_id in self.sessions:
+            self.sessions[session_id].update(data)
+            self.sessions[session_id]['last_activity'] = datetime.now()
     
-    def render_chat_interface(self):
-        """Render the text chat interface"""
-        st.subheader("💬 Therapy Chat")
-        
-        # Chat history
-        chat_container = st.container()
-        with chat_container:
-            for message in st.session_state.chat_history:
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-                    if "analysis" in message:
-                        with st.expander("📊 Analysis Details"):
-                            st.json(message["analysis"])
-        
-        # Chat input
-        user_input = st.chat_input("Share your thoughts...")
-        if user_input:
-            self.process_user_message(user_input)
+    def delete_session(self, session_id: str):
+        if session_id in self.sessions:
+            del self.sessions[session_id]
+            logger.info(f"Deleted session: {session_id}")
     
-    def render_analysis_dashboard(self):
-        """Render real-time analysis dashboard"""
-        st.subheader("📊 Real-time Analysis")
-        
-        if st.session_state.analysis_results:
-            latest_analysis = st.session_state.analysis_results[-1]
-            
-            # Sentiment Meter
-            sentiment_score = latest_analysis.get('sentiment_score', 0)
-            st.metric(
-                "Emotional State", 
-                f"{latest_analysis.get('sentiment_label', 'Neutral')}", 
-                f"{sentiment_score:.2f}"
-            )
-            
-            # Crisis Alert
-            if latest_analysis.get('crisis_risk', 0) > 0.7:
-                st.error("🚨 Crisis Risk Detected")
-                st.session_state.crisis_detected = True
-            elif latest_analysis.get('crisis_risk', 0) > 0.5:
-                st.warning("⚠️ Elevated Concern")
-            else:
-                st.success("✅ Normal Range")
-            
-            # Multimodal confidence
-            if 'confidence_scores' in latest_analysis:
-                st.subheader("🎯 Analysis Confidence")
-                conf_scores = latest_analysis['confidence_scores']
-                for modality, score in conf_scores.items():
-                    st.progress(score, text=f"{modality.title()}: {score:.1%}")
-        
-        # Agent Recommendations
-        self.render_agent_recommendations()
-    
-    def render_agent_recommendations(self):
-        """Render AI agent recommendations"""
-        st.subheader("🤖 AI Recommendations")
-        
-        if st.session_state.intervention_history:
-            latest_intervention = st.session_state.intervention_history[-1]
-            
-            st.info(f"💡 {latest_intervention.get('recommendation', 'Continue sharing')}")
-            
-            if latest_intervention.get('technique'):
-                technique = latest_intervention['technique']
-                st.markdown(f"**Suggested Technique:** {technique['name']}")
-                st.markdown(technique['description'])
-                
-                if st.button(f"Try {technique['name']}", key="try_technique"):
-                    self.execute_technique(technique)
-    
-    def render_multimodal_controls(self):
-        """Render controls for audio and video recording"""
-        st.divider()
-        st.subheader("🎛️ Multimodal Controls")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            if st.session_state.user_consents['audio']:
-                if st.button("🎤 Record Audio" if not st.session_state.audio_recording else "⏹️ Stop Recording"):
-                    self.toggle_audio_recording()
-        
-        with col2:
-            if st.session_state.user_consents['video']:
-                if st.button("📹 Start Video" if not st.session_state.video_recording else "⏹️ Stop Video"):
-                    self.toggle_video_recording()
-        
-        with col3:
-            st.metric("Audio", "🟢 Active" if st.session_state.audio_recording else "⚫ Inactive")
-        
-        with col4:
-            st.metric("Video", "🟢 Active" if st.session_state.video_recording else "⚫ Inactive")
-    
-    def process_user_message(self, message):
-        """Process user message through all available modalities"""
-        # Add user message to chat
-        st.session_state.chat_history.append({
-            "role": "user",
-            "content": message,
-            "timestamp": datetime.now()
-        })
-        
-        # Analyze message
-        analysis_results = self.analyze_multimodal_input(text=message)
-        
-        # Get AI agent response
-        agent_response = self.therapy_agent.generate_response(
-            message, 
-            analysis_results, 
-            st.session_state.chat_history
-        )
-        
-        # Add agent response to chat
-        st.session_state.chat_history.append({
-            "role": "assistant",
-            "content": agent_response['message'],
-            "analysis": analysis_results,
-            "timestamp": datetime.now()
-        })
-        
-        # Store analysis results
-        st.session_state.analysis_results.append(analysis_results)
-        
-        # Check for interventions
-        if agent_response.get('intervention'):
-            st.session_state.intervention_history.append(agent_response['intervention'])
-        
-        # Crisis handling
-        if analysis_results.get('crisis_risk', 0) > 0.8:
-            self.handle_crisis_situation(analysis_results)
-        
-        st.rerun()
-    
-    def analyze_multimodal_input(self, text=None, audio_data=None, video_data=None):
-        """Analyze input across all consented modalities"""
-        results = {}
-        
-        # Text analysis (if consented)
-        if text and st.session_state.user_consents['text']:
-            text_results = self.sentiment_analyzer.analyze(text)
-            results['text'] = text_results
-        
-        # Audio analysis (if consented and available)
-        if audio_data and st.session_state.user_consents['audio']:
-            audio_results = self.audio_analyzer.analyze(audio_data)
-            results['audio'] = audio_results
-        
-        # Video analysis (if consented and available)
-        if video_data and st.session_state.user_consents['video']:
-            video_results = self.visual_analyzer.analyze(video_data)
-            results['visual'] = video_results
-        
-        # Multimodal fusion
-        if len(results) > 1:
-            fused_results = self.multimodal_fusion.fuse_analyses(results)
-            results['fused'] = fused_results
-            
-            # Use fused results as primary analysis
-            primary_analysis = fused_results
-        elif results:
-            # Use single modality results
-            primary_analysis = list(results.values())[0]
-        else:
-            # Fallback
-            primary_analysis = {'sentiment_score': 0, 'sentiment_label': 'Neutral'}
-        
-        # Add metadata
-        results.update(primary_analysis)
-        results['timestamp'] = datetime.now()
-        results['modalities_used'] = list(results.keys())
-        
-        return results
-    
-    def toggle_audio_recording(self):
-        """Toggle audio recording state"""
-        st.session_state.audio_recording = not st.session_state.audio_recording
-        
-        if st.session_state.audio_recording:
-            st.success("🎤 Audio recording started")
-            # Start audio recording in background thread
-            self.start_audio_recording_thread()
-        else:
-            st.success("⏹️ Audio recording stopped")
-    
-    def toggle_video_recording(self):
-        """Toggle video recording state"""
-        st.session_state.video_recording = not st.session_state.video_recording
-        
-        if st.session_state.video_recording:
-            st.success("📹 Video recording started")
-            # Start video recording in background thread
-            self.start_video_recording_thread()
-        else:
-            st.success("⏹️ Video recording stopped")
-    
-    def start_audio_recording_thread(self):
-        """Start audio recording in background thread"""
-        # Implementation placeholder - will connect to audio_analyzer
-        pass
-    
-    def start_video_recording_thread(self):
-        """Start video recording in background thread"""
-        # Implementation placeholder - will connect to visual_analyzer
-        pass
-    
-    def execute_technique(self, technique):
-        """Execute a therapeutic technique"""
-        st.session_state.chat_history.append({
-            "role": "assistant",
-            "content": f"Let's try the {technique['name']} technique together.",
-            "timestamp": datetime.now()
-        })
-        
-        # Execute technique steps
-        for step in technique.get('steps', []):
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": step,
-                "timestamp": datetime.now()
-            })
-        
-        st.rerun()
-    
-    def handle_crisis_situation(self, analysis_results):
-        """Handle crisis situation with appropriate escalation"""
-        st.error("🚨 Crisis Situation Detected")
-        
-        crisis_response = {
-            "role": "assistant",
-            "content": """I'm concerned about what you're sharing. Your safety is important to me. 
-            
-If you're having thoughts of harming yourself or others, please reach out for immediate help:
-- Emergency Services: 911 (US) or your local emergency number
-- Crisis Hotline: 988 (US Suicide & Crisis Lifeline)
-- Text HOME to 741741 (Crisis Text Line)
+    def cleanup_expired_sessions(self):
+        cutoff = datetime.now() - self.cleanup_interval
+        expired = [
+            sid for sid, data in self.sessions.items()
+            if data['last_activity'] < cutoff
+        ]
+        for sid in expired:
+            self.delete_session(sid)
+        if expired:
+            logger.info(f"Cleaned up {len(expired)} expired sessions")
 
-Would you like me to help you find local crisis resources?""",
-            "timestamp": datetime.now(),
-            "crisis_alert": True
-        }
-        
-        st.session_state.chat_history.append(crisis_response)
-        st.session_state.crisis_detected = True
-    
-    def end_session(self):
-        """End current therapy session and save data"""
-        session_data = {
-            'session_id': st.session_state.session_id,
-            'start_time': st.session_state.get('session_start', datetime.now()),
-            'end_time': datetime.now(),
-            'chat_history': st.session_state.chat_history,
-            'analysis_results': st.session_state.analysis_results,
-            'intervention_history': st.session_state.intervention_history,
-            'crisis_detected': st.session_state.crisis_detected,
-            'modalities_used': st.session_state.user_consents
-        }
-        
-        # Save session data
-        session_file = self.directories['sessions'] / f"{st.session_state.session_id}.json"
-        with open(session_file, 'w') as f:
-            json.dump(session_data, f, default=str, indent=2)
-        
-        st.success(f"Session saved: {session_file}")
-        
-        # Reset session state
-        for key in ['session_id', 'chat_history', 'analysis_results', 
-                   'intervention_history', 'crisis_detected']:
-            if key in st.session_state:
-                if isinstance(st.session_state[key], list):
-                    st.session_state[key] = []
-                else:
-                    st.session_state[key] = None
-        
-        st.rerun()
-    
-    def run(self):
-        """Main application runner"""
-        # Sidebar with information
-        with st.sidebar:
-            st.title("ℹ️ System Info")
-            st.markdown("**Multimodal AI Therapy Assistant**")
-            st.markdown("Local processing for maximum privacy")
-            
-            enabled_modalities = [k for k, v in st.session_state.user_consents.items() if v]
-            st.markdown(f"**Active Modalities:** {', '.join(enabled_modalities) if enabled_modalities else 'None'}")
-            
-            if st.session_state.session_id:
-                st.markdown(f"**Session ID:** {st.session_state.session_id}")
-                st.markdown(f"**Messages:** {len(st.session_state.chat_history)}")
-                
-                if st.button("📊 View Analytics"):
-                    st.session_state.show_analytics = True
-        
-        # Main interface logic
-        if not st.session_state.session_id:
-            self.render_privacy_consent()
-        else:
-            self.render_multimodal_interface()
-        
-        # Footer
-        st.divider()
-        st.markdown("🔒 **Privacy Notice:** All processing occurs locally. No data leaves your device.")
+session_manager = SessionManager()
 
-
-def main():
-    """Main application entry point"""
+def initialize_components():
+    global text_analyzer, therapy_agent
+    
+    logger.info("Initializing AI components...")
+    
     try:
-        app = MultimodalTherapyApp()
-        app.run()
+        text_analyzer = TextAnalyzer()
+        logger.info("✓ Text analyzer initialized")
     except Exception as e:
-        st.error(f"Application Error: {e}")
-        st.stop()
+        logger.error(f"Failed to initialize text analyzer: {e}")
+        text_analyzer = None
+    
+    try:
+        therapy_agent = TherapyAgent()
+        logger.info("✓ Therapy agent initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize therapy agent: {e}")
+        therapy_agent = None
+    
+    if text_analyzer is None or therapy_agent is None:
+        logger.warning("Some components failed to initialize - app will run with limited functionality")
 
+_initialized = False
+_init_lock = threading.Lock()
 
-if __name__ == "__main__":
-    main()
+def ensure_initialized():
+    global _initialized
+    if not _initialized:
+        with _init_lock:
+            if not _initialized:
+                initialize_components()
+                _initialized = True
+
+@app.route('/')
+def index():
+    ensure_initialized()
+    return render_template('index.html')
+
+@app.route('/health')
+def health_check():
+    ensure_initialized()
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'components': {
+            'text_analyzer': text_analyzer is not None,
+            'therapy_agent': therapy_agent is not None
+        }
+    })
+
+@app.route('/api/session/new', methods=['POST'])
+def create_new_session():
+    try:
+        ensure_initialized()
+        session_id = session_manager.create_session()
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'message': 'Session created successfully'
+        })
+    except Exception as e:
+        logger.error(f"Error creating session: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to create session'
+        }), 500
+
+@app.route('/api/session/consent', methods=['POST'])
+def update_consent():
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        consent = data.get('consent', False)
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        session_manager.update_session(session_id, {
+            'consent_given': consent,
+            'consent_timestamp': datetime.now().isoformat()
+        })
+        
+        return jsonify({
+            'success': True,
+            'message': 'Consent updated'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error updating consent: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to update consent'
+        }), 500
+
+@app.route('/api/chat/send', methods=['POST'])
+def send_message():
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        message = data.get('message', '').strip()
+        
+        if not session_id or not message:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID and message required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        if not session_data.get('consent_given', False):
+            return jsonify({
+                'success': False,
+                'error': 'Consent required'
+            }), 403
+        
+        analysis_results = None
+        if text_analyzer:
+            try:
+                analysis_results = text_analyzer.analyze_text(message)
+                logger.info(f"Text analysis completed for session {session_id}")
+            except Exception as e:
+                logger.error(f"Text analysis failed: {e}")
+                analysis_results = _get_fallback_analysis(message)
+        else:
+            analysis_results = _get_fallback_analysis(message)
+        
+        therapy_response = None
+        if therapy_agent and analysis_results:
+            try:
+                therapy_response = therapy_agent.generate_response(
+                    message, 
+                    analysis_results, 
+                    session_data['chat_history']
+                )
+                logger.info(f"Therapy response generated for session {session_id}")
+            except Exception as e:
+                logger.error(f"Therapy response failed: {e}")
+                therapy_response = _get_fallback_response(message, analysis_results)
+        else:
+            therapy_response = _get_fallback_response(message, analysis_results)
+        
+        user_message = {
+            'role': 'user',
+            'content': message,
+            'timestamp': datetime.now().isoformat(),
+            'analysis': analysis_results
+        }
+        
+        assistant_message = {
+            'role': 'assistant',
+            'content': therapy_response['content'],
+            'timestamp': datetime.now().isoformat(),
+            'provider': therapy_response.get('provider', 'unknown'),
+            'technique': therapy_response.get('technique', 'unknown')
+        }
+        
+        session_data['chat_history'].extend([user_message, assistant_message])
+        
+        session_data['stats']['message_count'] += 1
+        session_duration = (datetime.now() - session_data['created']).total_seconds() / 60
+        session_data['stats']['session_duration'] = int(session_duration)
+        
+        session_manager.update_session(session_id, session_data)
+        
+        crisis_detected = analysis_results.get('crisis_classification', 'LOW') in ['HIGH', 'CRITICAL']
+        
+        if crisis_detected:
+            _log_crisis_event(session_id, analysis_results)
+        
+        return jsonify({
+            'success': True,
+            'assistant_response': assistant_message,
+            'analysis': analysis_results,
+            'crisis_detected': crisis_detected,
+            'session_stats': session_data['stats']
+        })
+        
+    except Exception as e:
+        logger.error(f"Error processing message: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to process message'
+        }), 500
+
+@app.route('/api/session/settings', methods=['POST'])
+def update_settings():
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        settings = data.get('settings', {})
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        session_data['settings'].update(settings)
+        session_manager.update_session(session_id, session_data)
+        
+        return jsonify({
+            'success': True,
+            'settings': session_data['settings']
+        })
+        
+    except Exception as e:
+        logger.error(f"Error updating settings: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to update settings'
+        }), 500
+
+@app.route('/api/session/stats/<session_id>')
+def get_session_stats(session_id):
+    try:
+        ensure_initialized()
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        chat_history = session_data['chat_history']
+        user_messages = [msg for msg in chat_history if msg['role'] == 'user']
+        
+        recent_emotions = []
+        for msg in user_messages[-3:]:
+            analysis = msg.get('analysis', {})
+            emotion = analysis.get('dominant_emotion')
+            if emotion and emotion != 'neutral':
+                recent_emotions.append(emotion)
+        
+        dominant_emotion = recent_emotions[-1] if recent_emotions else 'neutral'
+        
+        stats = session_data['stats'].copy()
+        stats.update({
+            'dominant_emotion': dominant_emotion,
+            'duration_minutes': stats['session_duration']
+        })
+        
+        return jsonify({
+            'success': True,
+            'stats': stats
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting session stats: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get session stats'
+        }), 500
+
+@app.route('/api/session/reset/<session_id>', methods=['POST'])
+def reset_session(session_id):
+    try:
+        ensure_initialized()
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        session_data['chat_history'] = []
+        session_data['stats'] = {
+            'message_count': 0,
+            'session_duration': 0
+        }
+        session_data['consent_given'] = False
+        
+        session_manager.update_session(session_id, session_data)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Session reset successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error resetting session: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to reset session'
+        }), 500
+
+@app.route('/api/providers/status')
+def get_provider_status():
+    try:
+        ensure_initialized()
+        if therapy_agent:
+            status = therapy_agent.get_provider_status()
+        else:
+            status = {
+                'providers': {'ollama': False, 'groq': False},
+                'primary': 'rule_based',
+                'last_checked': datetime.now().isoformat()
+            }
+        
+        return jsonify({
+            'success': True,
+            'status': status
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting provider status: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get provider status'
+        }), 500
+
+@app.route('/api/providers/test')
+def test_providers():
+    try:
+        ensure_initialized()
+        if therapy_agent:
+            results = therapy_agent.test_providers()
+        else:
+            results = {
+                'ollama': {'available': False, 'reason': 'agent_not_initialized'},
+                'groq': {'available': False, 'reason': 'agent_not_initialized'},
+                'fallback': {'available': True, 'response_length': 100}
+            }
+        
+        return jsonify({
+            'success': True,
+            'test_results': results
+        })
+        
+    except Exception as e:
+        logger.error(f"Error testing providers: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to test providers'
+        }), 500
+
+def _get_fallback_analysis(message: str) -> Dict[str, Any]:
+    return {
+        'input_text': message,
+        'timestamp': datetime.now().isoformat(),
+        'word_count': len(message.split()),
+        'dominant_emotion': 'neutral',
+        'emotion_confidence': 0.3,
+        'sentiment': 'neutral',
+        'sentiment_score': 0.5,
+        'crisis_level': 0.0,
+        'crisis_classification': 'LOW',
+        'crisis_indicators': [],
+        'mental_health_topics': [],
+        'primary_topic': 'general',
+        'overall_risk_score': 0.0,
+        'risk_level': 'LOW',
+        'suggested_techniques': ['Active Listening'],
+        'analysis_confidence': 0.3,
+        'analysis_method': 'fallback'
+    }
+
+def _get_fallback_response(message: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    fallback_responses = [
+        "I hear what you're sharing, and I want you to know that I'm here to listen. How are you feeling right now?",
+        "Thank you for opening up about this. It takes courage to share difficult feelings. What kind of support would be most helpful?",
+        "I can sense this is important to you. Sometimes just talking through our thoughts and feelings can be helpful.",
+        "What you're experiencing sounds challenging. Have you been able to talk to anyone else about this?"
+    ]
+    return {
+        'content': random.choice(fallback_responses),
+        'provider': 'fallback',
+        'technique': 'active_listening',
+        'confidence': 0.5,
+        'timestamp': datetime.now().isoformat()
+    }
+
+def _log_crisis_event(session_id: str, analysis: Dict[str, Any]):
+    try:
+        os.makedirs('logs', exist_ok=True)
+        log_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'session_id': session_id[:8] + '***',
+            'crisis_level': analysis.get('crisis_level', 0.0),
+            'crisis_classification': analysis.get('crisis_classification', 'UNKNOWN'),
+            'indicators': analysis.get('crisis_indicators', []),
+            'action_taken': 'resources_provided'
+        }
+        with open('logs/crisis_events.jsonl', 'a') as f:
+            f.write(json.dumps(log_entry) + '\n')
+        logger.warning(f"Crisis event logged for session {session_id[:8]}***")
+    except Exception as e:
+        logger.error(f"Failed to log crisis event: {e}")
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        'success': False,
+        'error': 'Endpoint not found'
+    }), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    logger.error(f"Internal server error: {error}")
+    return jsonify({
+        'success': False,
+        'error': 'Internal server error'
+    }), 500
+
+@app.before_request
+def pre_request_housekeeping():
+    ensure_initialized()
+    if random.random() < 0.01:
+        session_manager.cleanup_expired_sessions()
+
+if __name__ == '__main__':
+    if os.environ.get('FLASK_ENV') == 'development':
+        logging.getLogger().setLevel(logging.DEBUG)
+    ensure_initialized()
+    app.run(
+        host=os.environ.get('HOST', '127.0.0.1'),
+        port=int(os.environ.get('PORT', 5000)),
+        debug=os.environ.get('FLASK_ENV') == 'development'
+    )
