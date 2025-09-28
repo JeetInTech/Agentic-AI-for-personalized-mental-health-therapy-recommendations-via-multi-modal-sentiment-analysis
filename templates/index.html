@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Therapy AI - Mental Health Support</title>
+    <title>Agentic Therapy AI - Advanced Mental Health Support</title>
     <style>
-        /* Therapy AI - Black & White Theme */
+        /* Agentic Therapy AI - Enhanced Black & White Theme */
 
         :root {
             /* Black & White Color System */
@@ -105,6 +105,7 @@
             font-family: var(--font-family);
             background: var(--gradient-dark);
             height: 100vh;
+            width: 100vw;
             color: var(--text-primary);
             line-height: 1.6;
             overflow: hidden;
@@ -117,23 +118,12 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             overflow: hidden;
-            box-shadow: var(--shadow-heavy);
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                max-width: 1400px;
-                height: calc(100vh - 20px);
-                margin: var(--spacing-sm) auto;
-                border-radius: var(--radius-xxl);
-                width: calc(100vw - 20px);
-            }
         }
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 320px;
-            min-width: 300px;
+            width: 350px;
+            min-width: 320px;
             background: var(--gradient-light);
             border-right: 2px solid var(--border-light);
             display: flex;
@@ -160,6 +150,14 @@
             opacity: 0.9;
         }
 
+        .agentic-indicator {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+        }
+
         .sidebar-content {
             padding: var(--spacing-lg);
             flex: 1;
@@ -184,7 +182,7 @@
             font-weight: 600;
         }
 
-        .select-field {
+        .select-field, .input-field-sidebar {
             width: 100%;
             padding: var(--spacing-sm) var(--spacing-lg);
             border: 2px solid var(--border-light);
@@ -196,10 +194,39 @@
             color: var(--text-primary);
         }
 
-        .select-field:focus {
+        .select-field:focus, .input-field-sidebar:focus {
             outline: none;
             border-color: var(--primary-black);
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-sidebar {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            border: 2px solid var(--primary-black);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: var(--font-size-md);
+            transition: all var(--transition-normal);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .button-sidebar:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+            background: var(--gradient-medium);
+        }
+
+        .button-sidebar:disabled {
+            background: var(--primary-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: var(--border-light);
         }
 
         /* ===== MAIN AREA ===== */
@@ -285,6 +312,11 @@
             color: var(--text-primary);
         }
 
+        .message.assistant.agentic .message-content {
+            border-color: var(--primary-black);
+            background: var(--primary-lightest);
+        }
+
         .message-avatar {
             width: 38px;
             height: 38px;
@@ -307,6 +339,10 @@
             background: var(--gradient-medium);
         }
 
+        .message.assistant.agentic .message-avatar {
+            background: var(--gradient-dark);
+        }
+
         .message-meta {
             font-size: var(--font-size-xs);
             margin-top: var(--spacing-sm);
@@ -319,6 +355,43 @@
 
         .message.assistant .message-meta {
             color: var(--text-muted);
+        }
+
+        .agentic-features {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .goal-progress {
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: var(--spacing-xs) 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-dark);
+            transition: width var(--transition-normal);
+        }
+
+        .proactive-suggestion {
+            background: var(--primary-lightest);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-style: italic;
+            font-size: var(--font-size-sm);
+            border-left: 3px solid var(--primary-black);
         }
 
         /* ===== ANALYSIS PANEL ===== */
@@ -454,8 +527,8 @@
             border-color: var(--border-light);
         }
 
-        /* ===== CONSENT OVERLAY ===== */
-        .consent-overlay {
+        /* ===== PRIVACY CONSENT OVERLAY ===== */
+        .privacy-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -470,11 +543,11 @@
             padding: var(--spacing-lg);
         }
 
-        .consent-modal {
+        .privacy-modal {
             background: var(--bg-lighter);
             padding: var(--spacing-xxl);
             border-radius: var(--radius-xxl);
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -483,7 +556,7 @@
             border: 3px solid var(--primary-black);
         }
 
-        .consent-modal h2 {
+        .privacy-modal h2 {
             color: var(--primary-black);
             margin-bottom: var(--spacing-lg);
             font-size: var(--font-size-title);
@@ -514,20 +587,74 @@
             margin-bottom: var(--spacing-sm);
         }
 
-        .consent-input {
+        .privacy-options {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .privacy-option {
+            flex: 1;
+            padding: var(--spacing-lg);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-align: left;
+        }
+
+        .privacy-option:hover {
+            border-color: var(--primary-black);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .privacy-option.selected {
+            border-color: var(--primary-black);
+            background: var(--primary-lightest);
+        }
+
+        .privacy-option h4 {
+            margin-bottom: var(--spacing-sm);
+            color: var(--primary-black);
+        }
+
+        .privacy-option p {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .retention-selector {
+            margin-top: var(--spacing-md);
+            display: none;
+        }
+
+        .retention-selector.show {
+            display: block;
+        }
+
+        .user-credentials {
+            margin: var(--spacing-lg) 0;
+            display: none;
+        }
+
+        .user-credentials.show {
+            display: block;
+        }
+
+        .credential-field {
             padding: var(--spacing-md);
             border: 2px solid var(--border-light);
             border-radius: var(--radius-lg);
             width: 100%;
-            margin: var(--spacing-lg) 0;
+            margin: var(--spacing-sm) 0;
             font-size: var(--font-size-base);
-            text-align: center;
             transition: all var(--transition-normal);
             background: var(--bg-lighter);
             color: var(--text-primary);
         }
 
-        .consent-input:focus {
+        .credential-field:focus {
             outline: none;
             border-color: var(--primary-black);
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
@@ -545,12 +672,68 @@
             transition: all var(--transition-normal);
             width: 100%;
             max-width: 300px;
+            margin: var(--spacing-sm);
         }
 
         .consent-button:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-dark);
             background: var(--gradient-medium);
+        }
+
+        .consent-button:disabled {
+            background: var(--primary-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== GOALS PANEL ===== */
+        .goals-panel {
+            background: var(--bg-lighter);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .goal-item {
+            background: var(--primary-lightest);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .goal-item h5 {
+            color: var(--primary-black);
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-md);
+        }
+
+        .goal-item p {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* ===== DASHBOARD PANEL ===== */
+        .dashboard-panel {
+            background: var(--bg-lighter);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .insight-item {
+            background: var(--primary-lightest);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            border-left: 3px solid var(--primary-black);
         }
 
         /* ===== LOADING INDICATOR ===== */
@@ -642,6 +825,172 @@
             background: var(--primary-light);
         }
 
+        /* ===== VOICE AND VIDEO CONTROLS ===== */
+        .voice-status, .video-status {
+            background: var(--bg-lighter);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            border: 2px solid var(--border-lighter);
+        }
+
+        .voice-status .status-dot, .video-status .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-circle);
+            margin-right: var(--spacing-sm);
+            border: 1px solid var(--primary-black);
+        }
+
+        .voice-status .status-dot.online, .video-status .status-dot.online {
+            background: var(--primary-black);
+        }
+
+        .voice-status .status-dot.offline, .video-status .status-dot.offline {
+            background: var(--border-light);
+        }
+
+        .voice-status .status-dot.unknown, .video-status .status-dot.unknown {
+            background: var(--primary-light);
+        }
+
+        .video-stream-container {
+            margin: var(--spacing-sm) 0;
+            text-align: center;
+            background: var(--bg-lighter);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-light);
+        }
+
+        .video-emotion-display {
+            background: var(--primary-lightest);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin: var(--spacing-sm) 0;
+            text-align: center;
+            border: 2px solid var(--border-light);
+        }
+
+        .emotion-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-sm);
+        }
+
+        .emotion-emoji {
+            font-size: var(--font-size-lg);
+        }
+
+        .emotion-text {
+            font-weight: 600;
+            color: var(--primary-black);
+            flex: 1;
+        }
+
+        .emotion-confidence {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            background: var(--bg-lighter);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Voice and video buttons */
+        .button-sidebar.voice-active {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+        }
+
+        .button-sidebar.video-active {
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+        }
+
+        .button-sidebar.listening {
+            background: var(--gradient-medium);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .button-sidebar.analyzing {
+            background: var(--gradient-medium);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Multimodal input area */
+        .multimodal-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .multimodal-toggle {
+            padding: var(--spacing-sm);
+            background: var(--bg-lighter);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            font-size: var(--font-size-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .multimodal-toggle:hover {
+            border-color: var(--primary-black);
+        }
+
+        .multimodal-toggle.active {
+            background: var(--primary-lightest);
+            border-color: var(--primary-black);
+            color: var(--primary-black);
+            font-weight: 600;
+        }
+
+        .multimodal-toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Voice input button */
+        .voice-input-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-circle);
+            background: var(--gradient-dark);
+            color: var(--text-inverse);
+            border: 2px solid var(--primary-black);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-normal);
+            flex-shrink: 0;
+        }
+
+        .voice-input-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .voice-input-btn:disabled {
+            background: var(--primary-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .voice-input-btn.listening {
+            background: var(--gradient-medium);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
         /* ===== EMERGENCY RESOURCES ===== */
         .emergency-resources {
             background: var(--gradient-dark);
@@ -689,6 +1038,13 @@
         }
 
         /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 320px;
+                min-width: 300px;
+            }
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 width: 280px;
@@ -697,6 +1053,10 @@
             
             .message-content {
                 max-width: 80%;
+            }
+            
+            .privacy-options {
+                flex-direction: column;
             }
         }
 
@@ -715,14 +1075,12 @@
                 flex-direction: column;
                 height: 100vh;
                 width: 100vw;
-                margin: 0;
-                border-radius: 0;
             }
 
             .sidebar {
                 width: 100%;
                 min-width: auto;
-                max-height: 250px;
+                max-height: 300px;
                 order: 2;
                 border-right: none;
                 border-top: 2px solid var(--border-light);
@@ -755,7 +1113,7 @@
                 grid-template-columns: 1fr 1fr;
             }
 
-            .consent-modal {
+            .privacy-modal {
                 margin: var(--spacing-lg);
                 padding: var(--spacing-lg);
                 max-height: 85vh;
@@ -771,12 +1129,8 @@
         }
 
         @media (max-width: 480px) {
-            .container {
-                height: 100vh;
-            }
-            
             .sidebar {
-                max-height: 200px;
+                max-height: 250px;
             }
             
             .sidebar-header {
@@ -818,7 +1172,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .consent-modal {
+            .privacy-modal {
                 margin: var(--spacing-sm);
                 padding: var(--spacing-lg);
             }
@@ -827,27 +1181,27 @@
         /* ===== SCROLLBAR STYLING ===== */
         .chat-messages::-webkit-scrollbar,
         .sidebar::-webkit-scrollbar,
-        .consent-modal::-webkit-scrollbar {
+        .privacy-modal::-webkit-scrollbar {
             width: 6px;
         }
 
         .chat-messages::-webkit-scrollbar-track,
         .sidebar::-webkit-scrollbar-track,
-        .consent-modal::-webkit-scrollbar-track {
+        .privacy-modal::-webkit-scrollbar-track {
             background: var(--border-lighter);
             border-radius: 3px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb,
         .sidebar::-webkit-scrollbar-thumb,
-        .consent-modal::-webkit-scrollbar-thumb {
+        .privacy-modal::-webkit-scrollbar-thumb {
             background: var(--primary-black);
             border-radius: 3px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb:hover,
         .sidebar::-webkit-scrollbar-thumb:hover,
-        .consent-modal::-webkit-scrollbar-thumb:hover {
+        .privacy-modal::-webkit-scrollbar-thumb:hover {
             background: var(--primary-gray);
         }
 
@@ -894,27 +1248,77 @@
     </style>
 </head>
 <body>
-    <!-- Consent Overlay -->
-    <div id="consentOverlay" class="consent-overlay">
-        <div class="consent-modal">
-            <h2>Therapy AI</h2>
-            <p><strong>⚠️ This is an AI assistant for mental health support, not a replacement for professional therapy.</strong></p>
+    <!-- Privacy Consent Overlay -->
+    <div id="privacyOverlay" class="privacy-overlay">
+        <div class="privacy-modal">
+            <h2>Agentic Therapy AI</h2>
+            <p><strong>Advanced AI Assistant for Mental Health Support</strong></p>
             
             <div class="consent-content">
-                <h4>Privacy Policy & Terms:</h4>
+                <h4>Enhanced Features Available:</h4>
+                <p>I can now offer two levels of support:</p>
                 <ul>
-                    <li><strong>Data Collection:</strong> Text conversations analyzed for emotional content</li>
-                    <li><strong>Privacy:</strong> Data encrypted and anonymized, sessions expire after 24 hours</li>
-                    <li><strong>Crisis Detection:</strong> For safety purposes - emergency resources provided when needed</li>
-                    <li><strong>Limitations:</strong> AI responses are not medical advice</li>
-                    <li><strong>Your Rights:</strong> End session anytime, request data deletion</li>
-                    <li><strong>Emergency:</strong> Call 911 for immediate danger, 988 for crisis support</li>
+                    <li><strong>Private Sessions:</strong> Standard support, no memory between sessions</li>
+                    <li><strong>Agentic Mode:</strong> Remembers conversations, tracks goals, provides personalized insights</li>
+                </ul>
+                
+                <h4>Privacy & Data Policy:</h4>
+                <ul>
+                    <li><strong>Your Choice:</strong> You control how your data is handled</li>
+                    <li><strong>Local Only:</strong> All data stays on your device, never uploaded</li>
+                    <li><strong>Encrypted:</strong> Your conversations are encrypted with your password</li>
+                    <li><strong>Deletable:</strong> Delete your data anytime with one click</li>
+                    <li><strong>Time-Limited:</strong> Choose how long to keep your data</li>
+                </ul>
+                
+                <h4>Important Notes:</h4>
+                <ul>
+                    <li>This is an AI assistant, not a replacement for professional therapy</li>
+                    <li>Crisis detection and emergency resources provided for safety</li>
+                    <li>Emergency: Call 911 for immediate danger, 988 for crisis support</li>
                 </ul>
             </div>
             
-            <input type="text" id="consentInput" class="consent-input" placeholder="Type 'I CONSENT' to begin">
-            <br>
-            <button id="consentButton" class="consent-button">Begin Session</button>
+            <div class="privacy-options">
+                <div class="privacy-option" id="privateOption">
+                    <h4>Private Sessions</h4>
+                    <p>Each session is independent. No data stored between conversations. Maximum privacy.</p>
+                </div>
+                <div class="privacy-option" id="agenticOption">
+                    <h4>Agentic Mode</h4>
+                    <p>Remember conversations, track therapeutic goals, provide personalized insights and proactive support.</p>
+                    
+                    <div class="retention-selector" id="retentionSelector">
+                        <label for="retentionDays">Keep data for:</label>
+                        <select id="retentionDays" class="select-field">
+                            <option value="7">1 Week</option>
+                            <option value="30" selected>1 Month</option>
+                            <option value="90">3 Months</option>
+                            <option value="365">1 Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-credentials" id="userCredentials">
+                <h4>Setup Your Secure Account</h4>
+                <input type="text" id="preferredName" class="credential-field" placeholder="What should I call you? (e.g., Alex)">
+                <input type="password" id="userPassword" class="credential-field" placeholder="Create a secure password">
+                <small>Your password encrypts all data locally. Keep it safe - it cannot be recovered.</small>
+            </div>
+            
+            <div class="user-credentials" id="returningUser">
+                <h4>Welcome Back!</h4>
+                <input type="text" id="returningUserId" class="credential-field" placeholder="Your User ID">
+                <input type="password" id="returningPassword" class="credential-field" placeholder="Your Password">
+                <button class="consent-button" id="loginButton">Sign In</button>
+                <small>Forgot your credentials? You can start fresh with "Private Sessions"</small>
+            </div>
+            
+            <div>
+                <button class="consent-button" id="proceedButton" disabled>Begin Session</button>
+                <button class="consent-button" id="returningUserButton">Returning User</button>
+            </div>
         </div>
     </div>
 
@@ -923,14 +1327,93 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h1>Therapy AI</h1>
-                <p>Compassionate Mental Health Support</p>
+                <h1>Agentic Therapy AI</h1>
+                <p>Advanced Mental Health Support</p>
                 <div id="sessionInfo">
                     <small>Session: <span id="sessionId">Loading...</span></small>
+                    <div class="agentic-indicator" id="agenticIndicator">
+                        <span id="modeIndicator">Checking mode...</span>
+                    </div>
                 </div>
             </div>
 
             <div class="sidebar-content">
+                <!-- Agentic Features -->
+                <div class="section" id="agenticFeaturesSection" style="display: none;">
+                    <h3>Goals & Progress</h3>
+                    <div class="goals-panel" id="goalsPanel">
+                        <p>No goals set yet</p>
+                    </div>
+                    <button class="button-sidebar" id="createGoalBtn">Create Goal</button>
+                    <button class="button-sidebar" id="viewDashboardBtn">View Dashboard</button>
+                </div>
+
+                <!-- Goal Creation Form -->
+                <div class="section" id="goalCreationSection" style="display: none;">
+                    <h3>Create New Goal</h3>
+                    <input type="text" id="goalTitle" class="input-field-sidebar" placeholder="Goal title (e.g., Manage anxiety)">
+                    <textarea id="goalDescription" class="input-field-sidebar" rows="3" placeholder="Describe your goal in detail..."></textarea>
+                    <select id="goalDuration" class="select-field">
+                        <option value="7">1 Week</option>
+                        <option value="14">2 Weeks</option>
+                        <option value="30" selected>1 Month</option>
+                        <option value="60">2 Months</option>
+                        <option value="90">3 Months</option>
+                    </select>
+                    <button class="button-sidebar" id="saveGoalBtn">Save Goal</button>
+                    <button class="button-sidebar" id="cancelGoalBtn">Cancel</button>
+                </div>
+
+                <!-- User Management -->
+                <div class="section" id="userManagementSection" style="display: none;">
+                    <h3>Account Management</h3>
+                    <button class="button-sidebar" id="deleteDataBtn" style="background: var(--gradient-medium);">Delete All Data</button>
+                    <button class="button-sidebar" id="switchModeBtn">Switch to Private Mode</button>
+                </div>
+
+                <!-- Voice Controls -->
+                <div class="section" id="voiceControlsSection">
+                    <h3>Voice Features</h3>
+                    <div class="voice-status" id="voiceStatus">
+                        <div>
+                            <span class="status-dot unknown"></span>
+                            <span>Checking voice system...</span>
+                        </div>
+                    </div>
+                    <button class="button-sidebar" id="voiceToggleBtn" disabled>🎤 Enable Voice</button>
+                    <button class="button-sidebar" id="listenBtn" disabled>🎯 Listen Now</button>
+                    <small id="voiceInstructions">Enable voice features for speech input and audio responses</small>
+                </div>
+
+                <!-- Video Controls -->
+                <div class="section" id="videoControlsSection">
+                    <h3>Video Features</h3>
+                    <div class="video-status" id="videoStatus">
+                        <div>
+                            <span class="status-dot unknown"></span>
+                            <span>Checking video system...</span>
+                        </div>
+                    </div>
+                    <button class="button-sidebar" id="videoToggleBtn" disabled>📹 Enable Video</button>
+                    <button class="button-sidebar" id="analyzeVideoBtn" disabled>📊 Analyze Emotion</button>
+
+                    <!-- Video stream display -->
+                    <div class="video-stream-container" id="videoStreamContainer" style="display: none;">
+                        <video id="videoStream" width="320" height="240" autoplay muted style="border: 2px solid var(--border-light); border-radius: var(--radius-md); background: #000;"></video>
+                    </div>
+
+                    <!-- Video emotion display -->
+                    <div class="video-emotion-display" id="videoEmotionDisplay" style="display: none;">
+                        <div class="emotion-indicator">
+                            <span class="emotion-emoji" id="emotionEmoji">😐</span>
+                            <span class="emotion-text" id="emotionText">Neutral</span>
+                            <span class="emotion-confidence" id="emotionConfidence">0%</span>
+                        </div>
+                    </div>
+
+                    <small id="videoInstructions">Enable video for facial expression analysis</small>
+                </div>
+
                 <!-- Analysis Settings -->
                 <div class="section">
                     <h3>Analysis Settings</h3>
@@ -976,18 +1459,26 @@
                     <div id="emotionalTrend"></div>
                 </div>
 
+                <!-- Dashboard Insights -->
+                <div class="section" id="dashboardSection" style="display: none;">
+                    <h3>Insights</h3>
+                    <div class="dashboard-panel" id="dashboardPanel">
+                        <p>Loading insights...</p>
+                    </div>
+                </div>
+
                 <!-- Emergency Resources -->
                 <div class="emergency-resources">
-                    <h4>🆘 Emergency Resources</h4>
+                    <h4>Emergency Resources</h4>
                     <ul>
-                        <li>🇺🇸 988 - Crisis Lifeline</li>
-                        <li>🇺🇸 741741 - Crisis Text</li>
-                        <li>🚨 911 - Emergency</li>
+                        <li>988 - Crisis Lifeline</li>
+                        <li>741741 - Crisis Text</li>
+                        <li>911 - Emergency</li>
                     </ul>
                 </div>
 
-                <button class="consent-button" id="resetSession" style="width: 100%; margin-top: 15px;">
-                    🔄 New Session
+                <button class="button-sidebar" id="resetSession" style="margin-top: 15px;">
+                    New Session
                 </button>
             </div>
         </div>
@@ -995,8 +1486,8 @@
         <!-- Main Chat Area -->
         <div class="main-area">
             <div class="chat-header">
-                <h2>💭 Therapy Chat Session</h2>
-                <p>Share what's on your mind - I'm here to listen and support you</p>
+                <h2>Therapy Chat Session</h2>
+                <p>Share what's on your mind - I'm here to provide personalized support</p>
             </div>
 
             <div class="chat-container">
@@ -1012,11 +1503,26 @@
 
                 <!-- Input Area -->
                 <div class="input-area">
+                    <!-- Multimodal Controls -->
+                    <div class="multimodal-controls">
+                        <label class="multimodal-toggle" id="voiceToggle">
+                            <input type="checkbox" id="includeVoice">
+                            <span>🎤 Voice Response</span>
+                        </label>
+                        <label class="multimodal-toggle" id="videoToggle">
+                            <input type="checkbox" id="includeVideo">
+                            <span>📹 Video Analysis</span>
+                        </label>
+                    </div>
+
                     <div class="input-container">
-                        <textarea 
-                            id="messageInput" 
-                            class="input-field" 
-                            placeholder="Share your thoughts and feelings..."
+                        <button id="voiceInputBtn" class="voice-input-btn" disabled title="Voice Input">
+                            🎤
+                        </button>
+                        <textarea
+                            id="messageInput"
+                            class="input-field"
+                            placeholder="Share your thoughts and feelings... or click the mic for voice input"
                             rows="1"
                         ></textarea>
                         <button id="sendButton" class="send-button">
@@ -1030,8 +1536,8 @@
     </div>
 
     <script>
-        // Therapy AI - Mental Health Support Application
-        // JavaScript functionality for compassionate AI therapy chatbot
+        // Agentic Therapy AI - Enhanced Mental Health Support Application
+        // JavaScript functionality for advanced AI therapy with agentic capabilities
 
         // Application state management
         let appState = {
@@ -1041,12 +1547,22 @@
                 crisis_sensitivity: 'medium',
                 analysis_depth: 'standard'
             },
-            sessionStartTime: null
+            sessionStartTime: null,
+            agenticMode: false,
+            userId: null,
+            currentGoals: [],
+            // Multimodal features
+            voiceEnabled: false,
+            videoEnabled: false,
+            voiceAvailable: false,
+            videoAvailable: false,
+            isListening: false,
+            isAnalyzing: false
         };
 
         // Initialize application when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Therapy AI initializing...');
+            console.log('Agentic Therapy AI initializing...');
             initializeApp();
         });
 
@@ -1058,9 +1574,11 @@
                 setupEventListeners();
                 await createNewSession();
                 await checkProviderStatus();
-                console.log('Therapy AI initialized successfully');
+                await initializeMultimodalFeatures();
+                showPrivacyConsent();
+                console.log('Agentic Therapy AI initialized successfully');
             } catch (error) {
-                console.error('Failed to initialize Therapy AI:', error);
+                console.error('Failed to initialize Agentic Therapy AI:', error);
                 showError('Failed to initialize the application. Please refresh the page.');
             }
         }
@@ -1069,14 +1587,18 @@
          * Set up event listeners for user interactions
          */
         function setupEventListeners() {
-            // Consent handling
-            const consentButton = document.getElementById('consentButton');
-            const consentInput = document.getElementById('consentInput');
+            // Privacy consent handling
+            const privateOption = document.getElementById('privateOption');
+            const agenticOption = document.getElementById('agenticOption');
+            const proceedButton = document.getElementById('proceedButton');
+            const returningUserButton = document.getElementById('returningUserButton');
+            const loginButton = document.getElementById('loginButton');
             
-            consentButton.addEventListener('click', handleConsent);
-            consentInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleConsent();
-            });
+            privateOption.addEventListener('click', () => selectPrivacyOption('private'));
+            agenticOption.addEventListener('click', () => selectPrivacyOption('agentic'));
+            proceedButton.addEventListener('click', handlePrivacyConsent);
+            returningUserButton.addEventListener('click', showReturningUserForm);
+            loginButton.addEventListener('click', handleReturningUser);
 
             // Chat functionality
             const sendButton = document.getElementById('sendButton');
@@ -1090,7 +1612,7 @@
                 }
             });
 
-            // Auto-resize textarea for better UX
+            // Auto-resize textarea
             messageInput.addEventListener('input', function() {
                 this.style.height = 'auto';
                 this.style.height = Math.min(this.scrollHeight, 120) + 'px';
@@ -1103,9 +1625,258 @@
             crisisSensitivity.addEventListener('change', (e) => updateSetting('crisis_sensitivity', e.target.value));
             analysisDepth.addEventListener('change', (e) => updateSetting('analysis_depth', e.target.value));
 
+            // Agentic features
+            const createGoalBtn = document.getElementById('createGoalBtn');
+            const saveGoalBtn = document.getElementById('saveGoalBtn');
+            const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+            const viewDashboardBtn = document.getElementById('viewDashboardBtn');
+            const deleteDataBtn = document.getElementById('deleteDataBtn');
+            const switchModeBtn = document.getElementById('switchModeBtn');
+
+            createGoalBtn.addEventListener('click', showGoalCreation);
+            saveGoalBtn.addEventListener('click', saveGoal);
+            cancelGoalBtn.addEventListener('click', hideGoalCreation);
+            viewDashboardBtn.addEventListener('click', toggleDashboard);
+            deleteDataBtn.addEventListener('click', deleteAllUserData);
+            switchModeBtn.addEventListener('click', switchToPrivateMode);
+
             // Session management
             const resetButton = document.getElementById('resetSession');
             resetButton.addEventListener('click', resetSession);
+
+            // Voice and Video controls
+            const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+            const videoToggleBtn = document.getElementById('videoToggleBtn');
+            const listenBtn = document.getElementById('listenBtn');
+            const analyzeVideoBtn = document.getElementById('analyzeVideoBtn');
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+            const voiceToggle = document.getElementById('voiceToggle');
+            const videoToggle = document.getElementById('videoToggle');
+
+            voiceToggleBtn.addEventListener('click', toggleVoiceSystem);
+            videoToggleBtn.addEventListener('click', toggleVideoSystem);
+            listenBtn.addEventListener('click', startVoiceInput);
+            analyzeVideoBtn.addEventListener('click', analyzeVideoEmotion);
+            voiceInputBtn.addEventListener('click', startVoiceInput);
+            voiceToggle.addEventListener('change', toggleVoiceResponse);
+            videoToggle.addEventListener('change', toggleVideoAnalysis);
+        }
+
+        /**
+         * Show privacy consent interface
+         */
+        function showPrivacyConsent() {
+            document.getElementById('privacyOverlay').style.display = 'flex';
+        }
+
+        /**
+         * Handle privacy option selection
+         */
+        function selectPrivacyOption(option) {
+            const privateOption = document.getElementById('privateOption');
+            const agenticOption = document.getElementById('agenticOption');
+            const retentionSelector = document.getElementById('retentionSelector');
+            const userCredentials = document.getElementById('userCredentials');
+            const proceedButton = document.getElementById('proceedButton');
+
+            // Reset selections
+            privateOption.classList.remove('selected');
+            agenticOption.classList.remove('selected');
+            retentionSelector.classList.remove('show');
+            userCredentials.classList.remove('show');
+
+            if (option === 'private') {
+                privateOption.classList.add('selected');
+                proceedButton.disabled = false;
+                appState.agenticMode = false;
+            } else if (option === 'agentic') {
+                agenticOption.classList.add('selected');
+                retentionSelector.classList.add('show');
+                userCredentials.classList.add('show');
+                proceedButton.disabled = false;
+                appState.agenticMode = true;
+            }
+        }
+
+        /**
+         * Show returning user form
+         */
+        function showReturningUserForm() {
+            document.getElementById('userCredentials').classList.remove('show');
+            document.getElementById('returningUser').classList.add('show');
+        }
+
+        /**
+         * Handle returning user authentication
+         */
+        async function handleReturningUser() {
+            const userId = document.getElementById('returningUserId').value.trim();
+            const password = document.getElementById('returningPassword').value.trim();
+
+            if (!userId || !password) {
+                alert('Please enter both User ID and password.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/authenticate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        user_id: userId,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    appState.agenticMode = true;
+                    appState.userId = userId;
+                    document.getElementById('privacyOverlay').style.display = 'none';
+                    
+                    updateModeIndicator();
+                    showAgenticFeatures();
+                    addWelcomeMessage(true, data.auth_result);
+                    
+                    // Load user goals and dashboard
+                    await loadUserGoals();
+                    
+                    setTimeout(() => {
+                        document.getElementById('messageInput').focus();
+                    }, 500);
+                } else {
+                    alert('Authentication failed: ' + data.auth_result?.message || 'Invalid credentials');
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                alert('Authentication failed. Please check your connection and try again.');
+            }
+        }
+
+        /**
+         * Handle privacy consent decision
+         */
+        async function handlePrivacyConsent() {
+            let userChoice = {};
+
+            if (appState.agenticMode) {
+                const preferredName = document.getElementById('preferredName').value.trim();
+                const password = document.getElementById('userPassword').value.trim();
+                const retentionDays = parseInt(document.getElementById('retentionDays').value);
+
+                if (!preferredName || !password) {
+                    alert('Please fill in your name and create a password for agentic mode.');
+                    return;
+                }
+
+                userChoice = {
+                    choice: 'remember',
+                    retention_days: retentionDays,
+                    preferred_name: preferredName,
+                    password: password
+                };
+            } else {
+                userChoice = {
+                    choice: 'private'
+                };
+            }
+
+            try {
+                // First request privacy consent
+                const consentResponse = await fetch('/api/privacy/consent/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId
+                    })
+                });
+
+                if (!consentResponse.ok) {
+                    throw new Error('Failed to request consent');
+                }
+
+                // Then handle the user's choice
+                const response = await fetch('/api/privacy/consent/respond', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        user_choice: userChoice
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('privacyOverlay').style.display = 'none';
+                    
+                    if (data.agentic_mode) {
+                        appState.userId = data.consent_result?.user_id;
+                        showAgenticFeatures();
+                        
+                        // Show user credentials for first-time users
+                        if (data.consent_result?.user_id && data.consent_result?.password) {
+                            showUserCredentials(data.consent_result);
+                        }
+                    }
+                    
+                    updateModeIndicator();
+                    addWelcomeMessage(data.agentic_mode);
+                    
+                    setTimeout(() => {
+                        document.getElementById('messageInput').focus();
+                    }, 500);
+                } else {
+                    throw new Error(data.error || 'Failed to process consent');
+                }
+            } catch (error) {
+                console.error('Error processing consent:', error);
+                alert('Failed to process your choice. Please try again.');
+            }
+        }
+
+        /**
+         * Show user credentials for safekeeping
+         */
+        function showUserCredentials(credentials) {
+            const message = `Please save these credentials securely:
+
+User ID: ${credentials.user_id}
+Password: ${credentials.password}
+
+You'll need these to access your data in future sessions. This information cannot be recovered if lost.`;
+            
+            alert(message);
+        }
+
+        /**
+         * Update mode indicator in sidebar
+         */
+        function updateModeIndicator() {
+            const indicator = document.getElementById('modeIndicator');
+            if (appState.agenticMode) {
+                indicator.textContent = 'Agentic Mode: Learning & Remembering';
+                indicator.style.background = 'rgba(0, 0, 0, 0.2)';
+            } else {
+                indicator.textContent = 'Private Mode: No Memory';
+                indicator.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        }
+
+        /**
+         * Show agentic features in sidebar
+         */
+        function showAgenticFeatures() {
+            document.getElementById('agenticFeaturesSection').style.display = 'block';
+            document.getElementById('userManagementSection').style.display = 'block';
         }
 
         /**
@@ -1117,13 +1888,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
                     }
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
 
                 const data = await response.json();
                 
@@ -1131,7 +1897,6 @@
                     appState.sessionId = data.session_id;
                     appState.sessionStartTime = new Date();
                     
-                    // Update UI with session ID
                     const sessionIdElement = document.getElementById('sessionId');
                     sessionIdElement.textContent = data.session_id.substring(0, 8) + '...';
                     
@@ -1151,11 +1916,6 @@
         async function checkProviderStatus() {
             try {
                 const response = await fetch('/api/providers/status');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
                 const data = await response.json();
                 
                 if (data.success) {
@@ -1163,7 +1923,6 @@
                 }
             } catch (error) {
                 console.error('Error checking provider status:', error);
-                // Set fallback status
                 updateProviderStatus({ primary: 'fallback' });
             }
         }
@@ -1174,6 +1933,7 @@
         function updateProviderStatus(status) {
             const statusDiv = document.getElementById('providerStatus');
             const primary = status.primary;
+            const agenticAvailable = status.agentic_available;
             
             let statusText = '';
             let statusClass = 'unknown';
@@ -1187,10 +1947,6 @@
                     statusText = 'Groq (Cloud AI)';
                     statusClass = 'online';
                     break;
-                case 'openai':
-                    statusText = 'OpenAI (Cloud AI)';
-                    statusClass = 'online';
-                    break;
                 default:
                     statusText = 'Rule-based (Fallback)';
                     statusClass = 'offline';
@@ -1201,70 +1957,32 @@
                     <span class="status-dot ${statusClass}"></span>
                     <span>${statusText}</span>
                 </div>
+                <div style="margin-top: 5px; font-size: 0.8em;">
+                    Agentic: ${agenticAvailable ? 'Available' : 'Limited'}
+                </div>
             `;
-        }
-
-        /**
-         * Handle user consent for therapy session
-         */
-        async function handleConsent() {
-            const consentInput = document.getElementById('consentInput');
-            const consentText = consentInput.value.trim().toUpperCase();
-            
-            if (consentText === 'I CONSENT') {
-                try {
-                    const response = await fetch('/api/session/consent', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            session_id: appState.sessionId,
-                            consent: true
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Hide consent overlay and show main interface
-                        document.getElementById('consentOverlay').style.display = 'none';
-                        addWelcomeMessage();
-                        
-                        // Focus on message input for better UX
-                        setTimeout(() => {
-                            document.getElementById('messageInput').focus();
-                        }, 500);
-                        
-                        console.log('Consent granted, session started');
-                    } else {
-                        throw new Error(data.error || 'Failed to process consent');
-                    }
-                } catch (error) {
-                    console.error('Error processing consent:', error);
-                    showError('Failed to process consent. Please try again.');
-                }
-            } else {
-                // Provide gentle guidance
-                alert("Please type 'I CONSENT' exactly as shown to begin your therapy session.");
-                consentInput.focus();
-            }
         }
 
         /**
          * Add welcome message to start the therapy session
          */
-        function addWelcomeMessage() {
+        function addWelcomeMessage(agenticMode = false, authResult = null) {
+            let welcomeContent = '';
+            
+            if (agenticMode && authResult?.proactive_checkin) {
+                welcomeContent = authResult.checkin_message || "Welcome back! I'm glad to continue our therapeutic journey together.";
+            } else if (agenticMode) {
+                welcomeContent = "Welcome to Agentic Therapy AI! I'm excited to work with you on your mental health journey.\n\nIn this mode, I can remember our conversations, help you set and track therapeutic goals, and provide personalized insights based on our interactions over time. I'll learn what techniques work best for you and can even check in proactively when appropriate.\n\nWhat would you like to focus on today? We could set a therapeutic goal, discuss what's on your mind, or continue working on something we've talked about before.";
+            } else {
+                welcomeContent = "Hello, and welcome to Therapy AI. I'm here to provide compassionate mental health support through our conversation.\n\nI use evidence-based therapeutic techniques and can help you process your thoughts and feelings in a safe, judgment-free space. Please feel free to share what's on your mind.\n\nRemember, while I'm here to support you, I'm an AI assistant and not a replacement for professional therapy. If you're experiencing a crisis, please reach out to emergency services or a crisis hotline.\n\nWhat would you like to talk about today?";
+            }
+
             const welcomeMsg = {
                 role: 'assistant',
-                content: "Hello, and welcome to Therapy AI. I'm here to provide compassionate mental health support through our conversation.\n\nI use evidence-based therapeutic techniques and can help you process your thoughts and feelings in a safe, judgment-free space. Please feel free to share what's on your mind - whether it's stress, anxiety, relationships, or anything else you'd like to talk about.\n\nRemember, while I'm here to support you, I'm an AI assistant and not a replacement for professional therapy. If you're experiencing a crisis, please reach out to emergency services or a crisis hotline.\n\nWhat would you like to talk about today?",
+                content: welcomeContent,
                 timestamp: new Date().toISOString(),
-                provider: 'System'
+                provider: 'System',
+                personalized: agenticMode
             };
             
             addMessage(welcomeMsg);
@@ -1305,12 +2023,10 @@
             showLoading(true);
 
             try {
-                // Send message to backend
                 const response = await fetch('/api/chat/send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         session_id: appState.sessionId,
@@ -1319,16 +2035,11 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Add assistant response
                     const assistantMsg = data.assistant_response;
-                    addMessage(assistantMsg);
+                    addMessage(assistantMsg, data.agentic_features);
                     appState.chatHistory.push(assistantMsg);
                     
                     // Show analysis if available
@@ -1346,6 +2057,11 @@
                         updateSessionStats(data.session_stats);
                     }
                     
+                    // Update agentic features if available
+                    if (data.agentic_mode) {
+                        await loadUserGoals();
+                    }
+                    
                 } else {
                     throw new Error(data.error || 'Failed to process message');
                 }
@@ -1353,7 +2069,6 @@
             } catch (error) {
                 console.error('Error sending message:', error);
                 
-                // Add fallback response
                 const fallbackMsg = {
                     role: 'assistant',
                     content: 'I apologize, but I encountered a technical difficulty processing your message. Please try again in a moment.\n\nIf the problem persists, you might want to refresh the page or reach out to a human counselor for immediate support. Your wellbeing is important.',
@@ -1364,7 +2079,6 @@
                 addMessage(fallbackMsg);
                 showError('Connection error. Please check your internet connection and try again.');
             } finally {
-                // Re-enable input
                 showLoading(false);
                 messageInput.disabled = false;
                 sendButton.disabled = false;
@@ -1375,28 +2089,58 @@
         /**
          * Add message to chat interface
          */
-        function addMessage(message) {
+        function addMessage(message, agenticFeatures = null) {
             const chatMessages = document.getElementById('chatMessages');
             
-            // Create message container
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.role} fade-in`;
             
-            // Create avatar
+            // Add agentic styling if personalized
+            if (message.personalized || agenticFeatures) {
+                messageDiv.classList.add('agentic');
+            }
+            
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'message-avatar';
-            avatarDiv.textContent = message.role === 'user' ? 'You' : 'AI';
+            avatarDiv.textContent = message.role === 'user' ? 'You' : (message.personalized ? 'AI+' : 'AI');
             
-            // Create content container
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             
-            // Format message content (preserve line breaks)
             const messageText = document.createElement('div');
             messageText.innerHTML = message.content.replace(/\n/g, '<br>');
             contentDiv.appendChild(messageText);
             
-            // Create metadata
+            // Add agentic features if available
+            if (agenticFeatures) {
+                const featuresDiv = document.createElement('div');
+                featuresDiv.className = 'agentic-features';
+                
+                if (agenticFeatures.goal_progress) {
+                    const progressDiv = document.createElement('div');
+                    progressDiv.className = 'goal-progress';
+                    const progress = agenticFeatures.goal_progress;
+                    
+                    progressDiv.innerHTML = `
+                        <strong>Goal Progress: ${progress.goal_title}</strong>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress.progress_percentage}%"></div>
+                        </div>
+                        <small>${progress.progress_percentage}% complete • ${progress.encouragement}</small>
+                    `;
+                    featuresDiv.appendChild(progressDiv);
+                }
+                
+                if (agenticFeatures.proactive_suggestion) {
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.className = 'proactive-suggestion';
+                    suggestionDiv.textContent = agenticFeatures.proactive_suggestion;
+                    featuresDiv.appendChild(suggestionDiv);
+                }
+                
+                contentDiv.appendChild(featuresDiv);
+            }
+            
             const metaDiv = document.createElement('div');
             metaDiv.className = 'message-meta';
             const time = new Date(message.timestamp).toLocaleTimeString([], {
@@ -1405,26 +2149,25 @@
             });
             metaDiv.textContent = `⏰ ${time}`;
             
-            // Add provider info if available
             if (message.provider) {
                 metaDiv.textContent += ` • ${message.provider}`;
             }
             
-            // Add technique info if available
             if (message.technique) {
                 metaDiv.textContent += ` • ${message.technique}`;
             }
             
+            if (message.personalized) {
+                metaDiv.textContent += ' • Personalized';
+            }
+            
             contentDiv.appendChild(metaDiv);
             
-            // Assemble message
             messageDiv.appendChild(avatarDiv);
             messageDiv.appendChild(contentDiv);
             
-            // Add to chat
             chatMessages.appendChild(messageDiv);
             
-            // Smooth scroll to bottom
             setTimeout(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }, 100);
@@ -1434,7 +2177,6 @@
          * Show analysis panel for user message
          */
         function showAnalysis(analysis) {
-            // Find the last user message
             const messages = document.querySelectorAll('.message.user');
             const lastMessage = messages[messages.length - 1];
             
@@ -1442,12 +2184,10 @@
                 const analysisDiv = document.createElement('div');
                 analysisDiv.className = 'analysis-panel fade-in';
                 
-                // Extract analysis data with fallbacks
                 const emotion = analysis.dominant_emotion || 'neutral';
                 const sentiment = analysis.sentiment || 'neutral';
                 const crisisLevel = Math.round((analysis.crisis_level || 0) * 100);
                 
-                // Create metrics HTML
                 let metricsHTML = `
                     <div class="analysis-metrics">
                         <div class="metric">
@@ -1465,7 +2205,6 @@
                     </div>
                 `;
                 
-                // Add topics if available
                 if (analysis.mental_health_topics && analysis.mental_health_topics.length > 0) {
                     const topics = analysis.mental_health_topics.slice(0, 3).map(t => 
                         Array.isArray(t) ? t[0] : t
@@ -1473,7 +2212,6 @@
                     metricsHTML += `<div><strong>Topics:</strong> ${topics}</div>`;
                 }
                 
-                // Add suggested techniques if available
                 if (analysis.suggested_techniques && analysis.suggested_techniques.length > 0) {
                     const techniques = analysis.suggested_techniques.slice(0, 2).join(', ');
                     metricsHTML += `<div><strong>Techniques:</strong> ${techniques}</div>`;
@@ -1485,7 +2223,7 @@
         }
 
         /**
-         * Show crisis alert when crisis indicators are detected
+         * Show crisis alert
          */
         function showCrisisAlert(analysis) {
             const chatMessages = document.getElementById('chatMessages');
@@ -1510,12 +2248,246 @@
         }
 
         /**
+         * Show goal creation form
+         */
+        function showGoalCreation() {
+            document.getElementById('agenticFeaturesSection').style.display = 'none';
+            document.getElementById('goalCreationSection').style.display = 'block';
+        }
+
+        /**
+         * Hide goal creation form
+         */
+        function hideGoalCreation() {
+            document.getElementById('goalCreationSection').style.display = 'none';
+            document.getElementById('agenticFeaturesSection').style.display = 'block';
+        }
+
+        /**
+         * Save new goal
+         */
+        async function saveGoal() {
+            const title = document.getElementById('goalTitle').value.trim();
+            const description = document.getElementById('goalDescription').value.trim();
+            const duration = parseInt(document.getElementById('goalDuration').value);
+
+            if (!title) {
+                alert('Please enter a goal title.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/goals/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        title: title,
+                        description: description,
+                        target_days: duration
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.goal_result.status === 'success') {
+                    // Clear form
+                    document.getElementById('goalTitle').value = '';
+                    document.getElementById('goalDescription').value = '';
+                    
+                    hideGoalCreation();
+                    await loadUserGoals();
+                    
+                    showSuccess('Goal created successfully!');
+                } else {
+                    throw new Error(data.goal_result?.error || 'Failed to create goal');
+                }
+            } catch (error) {
+                console.error('Error creating goal:', error);
+                alert('Failed to create goal: ' + error.message);
+            }
+        }
+
+        /**
+         * Load user goals
+         */
+        async function loadUserGoals() {
+            if (!appState.agenticMode) return;
+
+            try {
+                const response = await fetch(`/api/goals/list?session_id=${appState.sessionId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    updateGoalsPanel(data.goals);
+                    appState.currentGoals = data.goals;
+                }
+            } catch (error) {
+                console.error('Error loading goals:', error);
+            }
+        }
+
+        /**
+         * Update goals panel display
+         */
+        function updateGoalsPanel(goals) {
+            const goalsPanel = document.getElementById('goalsPanel');
+            
+            if (goals.length === 0) {
+                goalsPanel.innerHTML = '<p>No goals set yet</p>';
+                return;
+            }
+
+            let goalsHTML = '';
+            goals.forEach(goal => {
+                goalsHTML += `
+                    <div class="goal-item">
+                        <h5>${goal.title}</h5>
+                        <p>${goal.description}</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${goal.progress_score}%"></div>
+                        </div>
+                        <small>${Math.round(goal.progress_score)}% complete • Status: ${goal.status}</small>
+                    </div>
+                `;
+            });
+            
+            goalsPanel.innerHTML = goalsHTML;
+        }
+
+        /**
+         * Toggle dashboard display
+         */
+        async function toggleDashboard() {
+            const dashboardSection = document.getElementById('dashboardSection');
+            
+            if (dashboardSection.style.display === 'none') {
+                await loadDashboard();
+                dashboardSection.style.display = 'block';
+            } else {
+                dashboardSection.style.display = 'none';
+            }
+        }
+
+        /**
+         * Load dashboard data
+         */
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`/api/dashboard?session_id=${appState.sessionId}`);
+                const data = await response.json();
+
+                if (data.success && data.dashboard) {
+                    updateDashboardPanel(data.dashboard);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('dashboardPanel').innerHTML = '<p>Failed to load dashboard</p>';
+            }
+        }
+
+        /**
+         * Update dashboard panel
+         */
+        function updateDashboardPanel(dashboard) {
+            const dashboardPanel = document.getElementById('dashboardPanel');
+            
+            if (dashboard.message) {
+                dashboardPanel.innerHTML = `<p>${dashboard.message}</p>`;
+                return;
+            }
+
+            let dashboardHTML = '';
+            
+            if (dashboard.insights) {
+                dashboardHTML += '<h5>Recent Insights</h5>';
+                dashboardHTML += `<div class="insight-item">Average session effectiveness: ${dashboard.insights.average_session_effectiveness.toFixed(1)}/10</div>`;
+                
+                if (dashboard.insights.most_effective_techniques.length > 0) {
+                    dashboardHTML += `<div class="insight-item">Most effective techniques: ${dashboard.insights.most_effective_techniques.join(', ')}</div>`;
+                }
+                
+                dashboardHTML += `<div class="insight-item">Progress trend: ${dashboard.insights.recent_progress}</div>`;
+            }
+            
+            if (dashboard.suggestions && dashboard.suggestions.length > 0) {
+                dashboardHTML += '<h5>Suggestions</h5>';
+                dashboard.suggestions.forEach(suggestion => {
+                    dashboardHTML += `<div class="insight-item">${suggestion}</div>`;
+                });
+            }
+            
+            dashboardPanel.innerHTML = dashboardHTML || '<p>No insights available yet</p>';
+        }
+
+        /**
+         * Delete all user data
+         */
+        async function deleteAllUserData() {
+            const confirmed = confirm(
+                'Are you sure you want to delete ALL your data?\n\n' +
+                'This will permanently remove:\n' +
+                '• All conversation history\n' +
+                '• Your therapeutic goals\n' +
+                '• Progress tracking\n' +
+                '• Personalization data\n\n' +
+                'This action cannot be undone.'
+            );
+
+            if (confirmed) {
+                try {
+                    const response = await fetch('/api/user/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            session_id: appState.sessionId
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('All data has been permanently deleted.');
+                        // Reset to private mode
+                        location.reload();
+                    } else {
+                        throw new Error('Failed to delete data');
+                    }
+                } catch (error) {
+                    console.error('Error deleting data:', error);
+                    alert('Failed to delete data. Please try again.');
+                }
+            }
+        }
+
+        /**
+         * Switch to private mode
+         */
+        function switchToPrivateMode() {
+            const confirmed = confirm(
+                'Switch to Private Mode?\n\n' +
+                'This will:\n' +
+                '• Stop remembering conversations\n' +
+                '• Disable goal tracking\n' +
+                '• Keep your existing data safe\n\n' +
+                'You can always return to Agentic Mode later.'
+            );
+
+            if (confirmed) {
+                location.reload();
+            }
+        }
+
+        /**
          * Update application setting
          */
         function updateSetting(setting, value) {
             appState.settings[setting] = value;
             updateSettings();
-            console.log(`Setting updated: ${setting} = ${value}`);
         }
 
         /**
@@ -1527,7 +2499,6 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         session_id: appState.sessionId,
@@ -1539,25 +2510,669 @@
             }
         }
 
+        // ===== MULTIMODAL FEATURES =====
+
+        /**
+         * Initialize multimodal features (voice and video)
+         */
+        async function initializeMultimodalFeatures() {
+            console.log('Initializing multimodal features...');
+
+            // Check voice system
+            try {
+                const voiceResponse = await fetch('/api/voice/status');
+                const voiceData = await voiceResponse.json();
+
+                if (voiceData.success) {
+                    appState.voiceAvailable = voiceData.status.speech_recognition_available && voiceData.status.text_to_speech_available;
+                    updateVoiceStatus(voiceData.status);
+                    console.log('Voice system:', appState.voiceAvailable ? 'Available' : 'Unavailable');
+                }
+            } catch (error) {
+                console.error('Error checking voice status:', error);
+                updateVoiceStatus({ speech_recognition_available: false, text_to_speech_available: false });
+            }
+
+            // Check video system
+            try {
+                const videoResponse = await fetch('/api/video/status');
+                const videoData = await videoResponse.json();
+
+                if (videoData.success) {
+                    appState.videoAvailable = videoData.status.face_detection_available && videoData.status.emotion_detection_available;
+                    updateVideoStatus(videoData.status);
+                    console.log('Video system:', appState.videoAvailable ? 'Available' : 'Unavailable');
+                }
+            } catch (error) {
+                console.error('Error checking video status:', error);
+                updateVideoStatus({ face_detection_available: false, emotion_detection_available: false });
+            }
+
+            // Enable controls if systems are available
+            enableMultimodalControls();
+        }
+
+        /**
+         * Update voice status display
+         */
+        function updateVoiceStatus(status) {
+            const voiceStatusDiv = document.getElementById('voiceStatus');
+            const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+            const listenBtn = document.getElementById('listenBtn');
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+
+            let statusText = '';
+            let statusClass = 'unknown';
+
+            if (status.speech_recognition_available && status.text_to_speech_available) {
+                statusText = 'Voice System Ready';
+                statusClass = 'online';
+            } else {
+                statusText = 'Voice System Unavailable';
+                statusClass = 'offline';
+            }
+
+            voiceStatusDiv.innerHTML = `
+                <div>
+                    <span class="status-dot ${statusClass}"></span>
+                    <span>${statusText}</span>
+                </div>
+            `;
+
+            // Enable/disable buttons
+            voiceToggleBtn.disabled = !appState.voiceAvailable;
+            listenBtn.disabled = !appState.voiceEnabled;
+            voiceInputBtn.disabled = !appState.voiceEnabled;
+        }
+
+        /**
+         * Update video status display
+         */
+        function updateVideoStatus(status) {
+            const videoStatusDiv = document.getElementById('videoStatus');
+            const videoToggleBtn = document.getElementById('videoToggleBtn');
+            const analyzeVideoBtn = document.getElementById('analyzeVideoBtn');
+
+            let statusText = '';
+            let statusClass = 'unknown';
+
+            if (status.face_detection_available && status.emotion_detection_available) {
+                statusText = 'Video System Ready';
+                statusClass = 'online';
+            } else {
+                statusText = 'Video System Unavailable';
+                statusClass = 'offline';
+            }
+
+            videoStatusDiv.innerHTML = `
+                <div>
+                    <span class="status-dot ${statusClass}"></span>
+                    <span>${statusText}</span>
+                </div>
+            `;
+
+            // Enable/disable buttons
+            videoToggleBtn.disabled = !appState.videoAvailable;
+            analyzeVideoBtn.disabled = !appState.videoEnabled;
+        }
+
+        /**
+         * Enable multimodal controls
+         */
+        function enableMultimodalControls() {
+            const voiceToggle = document.getElementById('voiceToggle');
+            const videoToggle = document.getElementById('videoToggle');
+
+            if (appState.voiceAvailable) {
+                voiceToggle.style.display = 'flex';
+            }
+
+            if (appState.videoAvailable) {
+                videoToggle.style.display = 'flex';
+            }
+        }
+
+        /**
+         * Toggle voice system on/off
+         */
+        async function toggleVoiceSystem() {
+            const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+
+            if (appState.voiceEnabled) {
+                // Disable voice
+                appState.voiceEnabled = false;
+                voiceToggleBtn.textContent = '🎤 Enable Voice';
+                voiceToggleBtn.classList.remove('voice-active');
+
+                document.getElementById('listenBtn').disabled = true;
+                document.getElementById('voiceInputBtn').disabled = true;
+                document.getElementById('voiceInstructions').textContent = 'Enable voice features for speech input and audio responses';
+            } else {
+                // Enable voice
+                appState.voiceEnabled = true;
+                voiceToggleBtn.textContent = '🔇 Disable Voice';
+                voiceToggleBtn.classList.add('voice-active');
+
+                document.getElementById('listenBtn').disabled = false;
+                document.getElementById('voiceInputBtn').disabled = false;
+                document.getElementById('voiceInstructions').textContent = 'Voice system active - use microphone button or "Listen Now"';
+            }
+        }
+
+        /**
+         * Toggle video system on/off
+         */
+        async function toggleVideoSystem() {
+            const videoToggleBtn = document.getElementById('videoToggleBtn');
+
+            if (appState.videoEnabled) {
+                // Disable video
+                try {
+                    await fetch('/api/video/stop', { method: 'POST' });
+                } catch (error) {
+                    console.error('Error stopping video:', error);
+                }
+
+                appState.videoEnabled = false;
+                videoToggleBtn.textContent = '📹 Enable Video';
+                videoToggleBtn.classList.remove('video-active');
+
+                document.getElementById('analyzeVideoBtn').disabled = true;
+                document.getElementById('videoEmotionDisplay').style.display = 'none';
+                document.getElementById('videoStreamContainer').style.display = 'none';
+                document.getElementById('videoInstructions').textContent = 'Enable video for facial expression analysis';
+
+                // Stop camera stream
+                stopVideoStream();
+            } else {
+                // Enable video
+                try {
+                    const response = await fetch('/api/video/start', { method: 'POST' });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        appState.videoEnabled = true;
+                        videoToggleBtn.textContent = '🚫 Disable Video';
+                        videoToggleBtn.classList.add('video-active');
+
+                        document.getElementById('analyzeVideoBtn').disabled = false;
+                        document.getElementById('videoInstructions').textContent = 'Video system active - camera is running';
+                        document.getElementById('videoStreamContainer').style.display = 'block';
+
+                        // Start camera stream
+                        startVideoStream();
+
+                        showSuccess('Camera started successfully');
+                    } else {
+                        showError('Failed to start camera: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error starting video:', error);
+                    showError('Error starting camera. Please check your camera permissions.');
+                }
+            }
+        }
+
+        /**
+         * Start voice input
+         */
+        async function startVoiceInput() {
+            if (!appState.voiceEnabled) {
+                showError('Voice system is not enabled');
+                return;
+            }
+
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+            const listenBtn = document.getElementById('listenBtn');
+
+            try {
+                // Set listening state
+                appState.isListening = true;
+                voiceInputBtn.classList.add('listening');
+                listenBtn.classList.add('listening');
+                listenBtn.textContent = '🎯 Listening...';
+
+                // Start listening
+                const response = await fetch('/api/voice/listen', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.text) {
+                    // Put recognized text in input field
+                    const messageInput = document.getElementById('messageInput');
+                    messageInput.value = data.text;
+                    messageInput.focus();
+
+                    showSuccess('Voice input recognized: "' + data.text.substring(0, 50) + '..."');
+
+                    // Optionally auto-send the message
+                    if (data.text.length > 5) {
+                        setTimeout(() => {
+                            sendMessage(true); // true indicates voice input
+                        }, 500);
+                    }
+                } else {
+                    showError('Could not understand speech: ' + (data.error || 'Unknown error'));
+                }
+
+            } catch (error) {
+                console.error('Error in voice input:', error);
+                showError('Voice input failed. Please try again.');
+            } finally {
+                // Reset listening state
+                appState.isListening = false;
+                voiceInputBtn.classList.remove('listening');
+                listenBtn.classList.remove('listening');
+                listenBtn.textContent = '🎯 Listen Now';
+            }
+        }
+
+        /**
+         * Analyze video emotion
+         */
+        async function analyzeVideoEmotion() {
+            if (!appState.videoEnabled) {
+                showError('Video system is not enabled');
+                return;
+            }
+
+            const analyzeVideoBtn = document.getElementById('analyzeVideoBtn');
+
+            try {
+                // Set analyzing state
+                appState.isAnalyzing = true;
+                analyzeVideoBtn.classList.add('analyzing');
+                analyzeVideoBtn.textContent = '📊 Analyzing...';
+
+                // Analyze current frame
+                const response = await fetch('/api/video/analyze', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    updateVideoEmotionDisplay(data);
+                    showSuccess(`Detected emotion: ${data.dominant_emotion} (${Math.round(data.confidence * 100)}% confidence)`);
+                } else {
+                    showError('Video analysis failed: ' + data.error);
+                }
+
+            } catch (error) {
+                console.error('Error in video analysis:', error);
+                showError('Video analysis failed. Please try again.');
+            } finally {
+                // Reset analyzing state
+                appState.isAnalyzing = false;
+                analyzeVideoBtn.classList.remove('analyzing');
+                analyzeVideoBtn.textContent = '📊 Analyze Emotion';
+            }
+        }
+
+        /**
+         * Update video emotion display
+         */
+        function updateVideoEmotionDisplay(analysisData) {
+            const emotionDisplay = document.getElementById('videoEmotionDisplay');
+            const emotionEmoji = document.getElementById('emotionEmoji');
+            const emotionText = document.getElementById('emotionText');
+            const emotionConfidence = document.getElementById('emotionConfidence');
+
+            const emotion = analysisData.dominant_emotion || 'neutral';
+            const confidence = Math.round((analysisData.confidence || 0) * 100);
+
+            // Emotion to emoji mapping
+            const emojiMap = {
+                'happy': '😊',
+                'sad': '😢',
+                'angry': '😠',
+                'fear': '😰',
+                'surprise': '😲',
+                'disgust': '🤢',
+                'neutral': '😐'
+            };
+
+            emotionEmoji.textContent = emojiMap[emotion] || '😐';
+            emotionText.textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+            emotionConfidence.textContent = `${confidence}%`;
+
+            emotionDisplay.style.display = 'block';
+
+            // Add therapeutic suggestion if available
+            if (analysisData.therapeutic_suggestion) {
+                setTimeout(() => {
+                    showInfo('Suggestion: ' + analysisData.therapeutic_suggestion);
+                }, 1000);
+            }
+        }
+
+        /**
+         * Toggle voice response in messages
+         */
+        function toggleVoiceResponse(event) {
+            const voiceToggle = document.getElementById('voiceToggle');
+            if (event.target.checked) {
+                voiceToggle.classList.add('active');
+            } else {
+                voiceToggle.classList.remove('active');
+            }
+        }
+
+        /**
+         * Toggle video analysis in messages
+         */
+        function toggleVideoAnalysis(event) {
+            const videoToggle = document.getElementById('videoToggle');
+            if (event.target.checked) {
+                videoToggle.classList.add('active');
+            } else {
+                videoToggle.classList.remove('active');
+            }
+        }
+
+        /**
+         * Start video stream display
+         */
+        async function startVideoStream() {
+            try {
+                const videoElement = document.getElementById('videoStream');
+
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: 320,
+                        height: 240,
+                        facingMode: 'user'
+                    }
+                });
+
+                videoElement.srcObject = stream;
+                console.log('Video stream started successfully');
+
+            } catch (error) {
+                console.error('Error starting video stream:', error);
+                showError('Unable to access camera. Please check permissions.');
+            }
+        }
+
+        /**
+         * Stop video stream display
+         */
+        function stopVideoStream() {
+            try {
+                const videoElement = document.getElementById('videoStream');
+                const stream = videoElement.srcObject;
+
+                if (stream) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                    videoElement.srcObject = null;
+                    console.log('Video stream stopped');
+                }
+            } catch (error) {
+                console.error('Error stopping video stream:', error);
+            }
+        }
+
+        /**
+         * Enhanced send message function with multimodal support
+         */
+        async function sendMessageMultimodal(voiceInput = false) {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            const includeVoice = document.getElementById('includeVoice').checked;
+            const includeVideo = document.getElementById('includeVideo').checked;
+
+            if (!message) {
+                messageInput.focus();
+                return;
+            }
+
+            // Disable input while processing
+            const sendButton = document.getElementById('sendButton');
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Clear input and reset height
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Add user message to chat
+            const userMsg = {
+                role: 'user',
+                content: message,
+                timestamp: new Date().toISOString(),
+                multimodal: {
+                    voice_input: voiceInput,
+                    video_analysis: includeVideo
+                }
+            };
+
+            addMessage(userMsg);
+            appState.chatHistory.push(userMsg);
+
+            // Show loading indicator
+            showLoading(true);
+
+            try {
+                const response = await fetch('/api/chat/multimodal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        message: message,
+                        include_voice: includeVoice,
+                        include_video: includeVideo,
+                        settings: appState.settings
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const assistantMsg = data.assistant_response;
+                    addMessage(assistantMsg, data.multimodal_features);
+                    appState.chatHistory.push(assistantMsg);
+
+                    // Show analysis if available
+                    if (data.analysis) {
+                        showAnalysis(data.analysis);
+                    }
+
+                    // Handle crisis detection
+                    if (data.crisis_detected) {
+                        showCrisisAlert(data.analysis);
+                    }
+
+                    // Update session stats
+                    if (data.session_stats) {
+                        updateSessionStats(data.session_stats);
+                    }
+
+                    // Update video emotion display if analysis was done
+                    if (data.multimodal_features?.video_emotion) {
+                        updateVideoEmotionDisplay(data.multimodal_features.video_emotion);
+                    }
+
+                    // Show voice synthesis feedback
+                    if (data.multimodal_features?.voice_synthesis?.speech_generated) {
+                        showInfo('🔊 AI response is being spoken');
+                    }
+
+                } else {
+                    throw new Error(data.error || 'Failed to process message');
+                }
+
+            } catch (error) {
+                console.error('Error sending multimodal message:', error);
+
+                const fallbackMsg = {
+                    role: 'assistant',
+                    content: 'I apologize, but I encountered a technical difficulty processing your message. Please try again in a moment.',
+                    timestamp: new Date().toISOString(),
+                    provider: 'System'
+                };
+
+                addMessage(fallbackMsg);
+                showError('Connection error. Please check your internet connection and try again.');
+            } finally {
+                showLoading(false);
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Update original sendMessage to use multimodal version
+        async function sendMessage(voiceInput = false) {
+            // Check if multimodal features are being used
+            const includeVoice = document.getElementById('includeVoice').checked;
+            const includeVideo = document.getElementById('includeVideo').checked;
+
+            if (includeVoice || includeVideo) {
+                return sendMessageMultimodal(voiceInput);
+            } else {
+                return sendMessageOriginal();
+            }
+        }
+
+        // Rename original function
+        async function sendMessageOriginal() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                messageInput.focus();
+                return;
+            }
+
+            // Disable input while processing
+            const sendButton = document.getElementById('sendButton');
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Clear input and reset height
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Add user message to chat
+            const userMsg = {
+                role: 'user',
+                content: message,
+                timestamp: new Date().toISOString()
+            };
+
+            addMessage(userMsg);
+            appState.chatHistory.push(userMsg);
+
+            // Show loading indicator
+            showLoading(true);
+
+            try {
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        message: message,
+                        settings: appState.settings
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const assistantMsg = data.assistant_response;
+                    addMessage(assistantMsg, data.agentic_features);
+                    appState.chatHistory.push(assistantMsg);
+
+                    // Show analysis if available
+                    if (data.analysis) {
+                        showAnalysis(data.analysis);
+                    }
+
+                    // Handle crisis detection
+                    if (data.crisis_detected) {
+                        showCrisisAlert(data.analysis);
+                    }
+
+                    // Update session stats
+                    if (data.session_stats) {
+                        updateSessionStats(data.session_stats);
+                    }
+
+                    // Update agentic features if available
+                    if (data.agentic_mode) {
+                        await loadUserGoals();
+                    }
+
+                } else {
+                    throw new Error(data.error || 'Failed to process message');
+                }
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+
+                const fallbackMsg = {
+                    role: 'assistant',
+                    content: 'I apologize, but I encountered a technical difficulty processing your message. Please try again in a moment.\n\nIf the problem persists, you might want to refresh the page or reach out to a human counselor for immediate support. Your wellbeing is important.',
+                    timestamp: new Date().toISOString(),
+                    provider: 'System'
+                };
+
+                addMessage(fallbackMsg);
+                showError('Connection error. Please check your internet connection and try again.');
+            } finally {
+                showLoading(false);
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        /**
+         * Show info message (less prominent than success/error)
+         */
+        function showInfo(message) {
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'crisis-alert fade-in';
+            infoDiv.style.background = 'var(--primary-lightest)';
+            infoDiv.style.color = 'var(--text-primary)';
+            infoDiv.style.border = '2px solid var(--border-light)';
+            infoDiv.innerHTML = `<strong>💡 ${message}</strong>`;
+
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.appendChild(infoDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                if (infoDiv.parentNode) {
+                    infoDiv.remove();
+                }
+            }, 4000);
+        }
+
         /**
          * Update session statistics display
          */
         function updateSessionStats(stats) {
             if (stats) {
-                // Update message count
                 const messageCountElement = document.getElementById('messageCount');
                 if (messageCountElement) {
                     messageCountElement.textContent = stats.message_count || appState.chatHistory.length;
                 }
                 
-                // Update session duration
                 const durationElement = document.getElementById('sessionDuration');
                 if (durationElement) {
                     const duration = stats.duration_minutes || calculateSessionDuration();
                     durationElement.textContent = `${duration}m`;
                 }
                 
-                // Update emotional trend
                 const trendDiv = document.getElementById('emotionalTrend');
                 if (trendDiv && stats.dominant_emotion && stats.dominant_emotion !== 'neutral') {
                     trendDiv.innerHTML = `<strong>Recent Emotion:</strong><br>${stats.dominant_emotion}`;
@@ -1573,7 +3188,7 @@
             
             const now = new Date();
             const diff = now - appState.sessionStartTime;
-            return Math.floor(diff / (1000 * 60)); // Convert to minutes
+            return Math.floor(diff / (1000 * 60));
         }
 
         /**
@@ -1581,54 +3196,17 @@
          */
         async function resetSession() {
             const confirmReset = confirm(
-                'Are you sure you want to start a new session?\n\n' +
+                'Start a new session?\n\n' +
                 'This will:\n' +
-                '• Clear all chat history\n' +
+                '• Clear current chat history\n' +
                 '• Reset session statistics\n' +
-                '• Require new consent\n\n' +
-                'Consider saving any important insights before proceeding.'
+                '• Require new consent\n' +
+                (appState.agenticMode ? '• Keep your saved goals and data safe\n' : '') +
+                '\nContinue?'
             );
             
             if (confirmReset) {
-                try {
-                    const response = await fetch(`/api/session/reset/${appState.sessionId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Clear application state
-                        appState.chatHistory = [];
-                        appState.sessionStartTime = null;
-                        
-                        // Clear UI
-                        document.getElementById('chatMessages').innerHTML = '';
-                        document.getElementById('messageCount').textContent = '0';
-                        document.getElementById('sessionDuration').textContent = '0m';
-                        document.getElementById('emotionalTrend').innerHTML = '';
-                        
-                        // Show consent overlay
-                        document.getElementById('consentOverlay').style.display = 'flex';
-                        document.getElementById('consentInput').value = '';
-                        document.getElementById('consentInput').focus();
-                        
-                        console.log('Session reset successfully');
-                    } else {
-                        throw new Error(data.error || 'Failed to reset session');
-                    }
-                } catch (error) {
-                    console.error('Error resetting session:', error);
-                    showError('Failed to reset session. Please refresh the page to start over.');
-                }
+                location.reload();
             }
         }
 
@@ -1645,10 +3223,9 @@
         }
 
         /**
-         * Display error message to user
+         * Display error message
          */
         function showError(message) {
-            // Create a more user-friendly error notification
             const errorDiv = document.createElement('div');
             errorDiv.className = 'crisis-alert fade-in';
             errorDiv.style.background = 'var(--gradient-medium)';
@@ -1662,7 +3239,6 @@
             chatMessages.appendChild(errorDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Auto-remove after 10 seconds
             setTimeout(() => {
                 if (errorDiv.parentNode) {
                     errorDiv.remove();
@@ -1671,14 +3247,34 @@
         }
 
         /**
-         * Update session stats periodically
+         * Display success message
          */
-        function startStatsUpdater() {
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'crisis-alert fade-in';
+            successDiv.style.background = 'var(--gradient-dark)';
+            successDiv.innerHTML = `<strong>✓ ${message}</strong>`;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.appendChild(successDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 3000);
+        }
+
+        /**
+         * Periodic updates
+         */
+        function startPeriodicUpdates() {
+            // Update session stats every 30 seconds
             setInterval(async function() {
                 if (appState.sessionId) {
                     try {
                         const response = await fetch(`/api/session/stats/${appState.sessionId}`);
-                        
                         if (response.ok) {
                             const data = await response.json();
                             if (data.success) {
@@ -1689,21 +3285,16 @@
                         console.error('Error updating stats:', error);
                     }
                 }
-            }, 30000); // Update every 30 seconds
+            }, 30000);
+
+            // Check provider status every minute
+            setInterval(checkProviderStatus, 60000);
         }
 
         /**
-         * Check provider status periodically
-         */
-        function startProviderStatusChecker() {
-            setInterval(checkProviderStatus, 60000); // Check every minute
-        }
-
-        /**
-         * Handle keyboard shortcuts for better UX
+         * Handle keyboard shortcuts
          */
         document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + Enter to send message
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 const messageInput = document.getElementById('messageInput');
                 if (messageInput === document.activeElement) {
@@ -1711,7 +3302,6 @@
                 }
             }
             
-            // Escape to focus message input
             if (e.key === 'Escape') {
                 const messageInput = document.getElementById('messageInput');
                 messageInput.focus();
@@ -1723,21 +3313,22 @@
          */
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden && appState.sessionId) {
-                // Page became visible, refresh provider status
                 checkProviderStatus();
+                if (appState.agenticMode) {
+                    loadUserGoals();
+                }
             }
         });
 
         /**
-         * Initialize periodic updaters when session starts
+         * Initialize periodic updaters
          */
         window.addEventListener('load', function() {
-            startStatsUpdater();
-            startProviderStatusChecker();
+            startPeriodicUpdates();
         });
 
         /**
-         * Handle beforeunload for user warning
+         * Handle beforeunload warning
          */
         window.addEventListener('beforeunload', function(e) {
             if (appState.chatHistory.length > 0) {
@@ -1746,19 +3337,6 @@
                 return e.returnValue;
             }
         });
-
-        // Export functions for testing (if in Node.js environment)
-        if (typeof module !== 'undefined' && module.exports) {
-            module.exports = {
-                appState,
-                initializeApp,
-                createNewSession,
-                sendMessage,
-                addMessage,
-                updateSetting,
-                resetSession
-            };
-        }
     </script>
 </body>
 </html>

@@ -30,7 +30,7 @@ class TherapyAgent:
             self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
             
             # Groq configuration from config
-            self.groq_model = "llama-3.1-70b-versatile"  # Default model
+            self.groq_model = "llama-3.3-70b-versatile"  # Current supported model
             self.temperature = config.get("llm", {}).get("temperature", 0.7)
             self.max_tokens = config.get("llm", {}).get("max_tokens", 300)
             
@@ -43,7 +43,7 @@ class TherapyAgent:
             self.ollama_url = "http://localhost:11434"
             self.groq_api_key = os.getenv("GROQ_API_KEY")
             self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
-            self.groq_model = "llama-3.1-70b-versatile"
+            self.groq_model = "mixtral-8x7b-32768"
             self.temperature = 0.7
             self.max_tokens = 300
         except Exception as e:
@@ -52,7 +52,7 @@ class TherapyAgent:
             self.ollama_url = "http://localhost:11434"
             self.groq_api_key = os.getenv("GROQ_API_KEY")
             self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
-            self.groq_model = "llama-3.1-70b-versatile"
+            self.groq_model = "mixtral-8x7b-32768"
             self.temperature = 0.7
             self.max_tokens = 300
         
@@ -241,7 +241,7 @@ class TherapyAgent:
             
             # Ollama API call
             payload = {
-                "model": "llama3.1:8b",  
+                "model": "llama3.1:8b",  # Default model, can be configured
                 "prompt": context,
                 "stream": False,
                 "options": {

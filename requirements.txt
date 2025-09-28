@@ -1,80 +1,62 @@
-# Core Dependencies
-streamlit>=1.28.0
-pandas>=1.5.0
-numpy>=1.24.0
+streamlit
+pandas
+numpy
 
-# NLP and ML Core
-torch>=2.0.0
-transformers>=4.30.0
-sentencepiece>=0.1.99
-tokenizers>=0.13.3
+torch
+transformers
+sentencepiece
+tokenizers
 
-# Text Processing
-nltk>=3.8.1
-textblob>=0.17.1
-vaderSentiment>=3.3.2
+nltk
+textblob
+vaderSentiment
 
-# Audio Processing
-librosa>=0.10.0
-sounddevice>=0.4.6
-soundfile>=0.12.1
-speechrecognition>=3.10.0
-pyaudio>=0.2.11
-openai-whisper>=20230314
+librosa
+sounddevice
+soundfile
+speechrecognition
+pyaudio
+openai-whisper
 
-# Video and Image Processing
-opencv-python>=4.8.0
-mediapipe>=0.10.0
-pillow>=9.5.0
+opencv-python
+mediapipe
+pillow
 
-# Computer Vision and Deep Learning
-torch-audio>=2.0.0
-torchaudio>=2.0.0
+torchaudio
 
-# Privacy and Security
-cryptography>=41.0.0
+cryptography
 
-# LLM Integration Options
-groq>=0.4.1  # For Groq API
-ollama>=0.1.7  # For local Ollama
+groq
+ollama
 
-# Visualization and UI
-matplotlib>=3.7.0
-plotly>=5.15.0
-seaborn>=0.12.0
+matplotlib
+plotly
+seaborn
 
-# Data Processing
-scikit-learn>=1.3.0
-scipy>=1.11.0
+scikit-learn
+scipy
 
-# Utilities
-python-dateutil>=2.8.0
-requests>=2.31.0
-aiohttp>=3.8.0
-asyncio-mqtt>=0.13.0
+python-dateutil
+requests
+aiohttp
+asyncio-mqtt
 
-# Development and Testing (Optional)
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-black>=23.7.0
-flake8>=6.0.0
-pydub>=0.25.0
-# Optional: For enhanced emotion recognition
-# facenet-pytorch>=2.5.0
-# deepface>=0.0.79
+pytest
+pytest-asyncio
+black
+flake8
+pydub
 
-# Optional: For advanced NLP
-# spacy>=3.6.0
-# sentence-transformers>=2.2.0
+# Optional
+# facenet-pytorch
+# deepface
+# spacy
+# sentence-transformers
+# noisereduce
 
-# Optional: For audio enhancement
-# noisereduce>=3.0.0
-# pydub>=0.25.0
+# For Apple Silicon Macs
+# tensorflow-macos
+# tensorflow-metal
 
-# Note: Some packages may require specific versions depending on your system
-# For Apple Silicon Macs, you might need:
-# tensorflow-macos>=2.13.0
-# tensorflow-metal>=1.0.0
-
-# For CUDA support (NVIDIA GPUs), install:
-# torch with CUDA: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# For CUDA support (NVIDIA GPUs)
+# torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118

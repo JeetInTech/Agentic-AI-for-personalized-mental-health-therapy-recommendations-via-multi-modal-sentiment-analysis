@@ -1,9 +1,9 @@
 """
-Simplified Flask Backend for AI Therapy System
-Phase 1: Text-only analysis with robust error handling
+Enhanced Flask Backend for Agentic AI Therapy System
+Integrates user-controlled persistence, goal tracking, and adaptive learning
 """
 
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template, session, Response
 from flask_cors import CORS
 import uuid
 import logging
@@ -15,9 +15,12 @@ import threading
 import random
 from dotenv import load_dotenv
 
-# Import our simplified modules
+# Import our modules
 from text_analyzer import TextAnalyzer
 from therapy_agent import TherapyAgent
+from agentic_therapy_system import AgenticTherapySystem
+from voice_agent import VoiceAgent
+from video_agent import VideoAgent
 
 load_dotenv()
 
@@ -31,10 +34,12 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 CORS(app)
 
+# Global components
 text_analyzer = None
 therapy_agent = None
-
-active_sessions = {}
+agentic_system = None
+voice_agent = None
+video_agent = None
 
 class SessionManager:
     def __init__(self):
@@ -48,6 +53,9 @@ class SessionManager:
             'created': datetime.now(),
             'last_activity': datetime.now(),
             'consent_given': False,
+            'privacy_consent_requested': False,
+            'agentic_mode': False,
+            'user_id': None,
             'chat_history': [],
             'settings': {
                 'crisis_sensitivity': 'medium',
@@ -91,8 +99,8 @@ class SessionManager:
 session_manager = SessionManager()
 
 def initialize_components():
-    global text_analyzer, therapy_agent
-    
+    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent
+
     logger.info("Initializing AI components...")
     
     try:
@@ -109,7 +117,28 @@ def initialize_components():
         logger.error(f"Failed to initialize therapy agent: {e}")
         therapy_agent = None
     
-    if text_analyzer is None or therapy_agent is None:
+    try:
+        agentic_system = AgenticTherapySystem()
+        logger.info("✓ Agentic therapy system initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize agentic therapy system: {e}")
+        agentic_system = None
+
+    try:
+        voice_agent = VoiceAgent()
+        logger.info("✓ Voice agent initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize voice agent: {e}")
+        voice_agent = None
+
+    try:
+        video_agent = VideoAgent()
+        logger.info("✓ Video agent initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize video agent: {e}")
+        video_agent = None
+
+    if text_analyzer is None or agentic_system is None:
         logger.warning("Some components failed to initialize - app will run with limited functionality")
 
 _initialized = False
@@ -136,7 +165,10 @@ def health_check():
         'timestamp': datetime.now().isoformat(),
         'components': {
             'text_analyzer': text_analyzer is not None,
-            'therapy_agent': therapy_agent is not None
+            'therapy_agent': therapy_agent is not None,
+            'agentic_system': agentic_system is not None,
+            'voice_agent': voice_agent is not None,
+            'video_agent': video_agent is not None
         }
     })
 
@@ -157,8 +189,167 @@ def create_new_session():
             'error': 'Failed to create session'
         }), 500
 
+@app.route('/api/privacy/consent/request', methods=['POST'])
+def request_privacy_consent():
+    """Request privacy consent from user for agentic features"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        # Get consent request from agentic system
+        if agentic_system:
+            consent_request = agentic_system.request_privacy_consent()
+        else:
+            consent_request = {
+                "message": "Would you like me to remember our conversations to provide better support?",
+                "options": [
+                    {"id": "remember", "text": "Yes, remember our conversations", "retention_days": [7, 30, 90]},
+                    {"id": "private", "text": "No, keep sessions private", "retention_days": 0}
+                ]
+            }
+        
+        session_manager.update_session(session_id, {
+            'privacy_consent_requested': True
+        })
+        
+        return jsonify({
+            'success': True,
+            'consent_request': consent_request
+        })
+        
+    except Exception as e:
+        logger.error(f"Error requesting privacy consent: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to request privacy consent'
+        }), 500
+
+@app.route('/api/privacy/consent/respond', methods=['POST'])
+def handle_privacy_consent():
+    """Handle user's privacy consent response"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        user_choice = data.get('user_choice', {})
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        # Handle consent with agentic system
+        if agentic_system:
+            consent_result = agentic_system.handle_privacy_consent(user_choice)
+        else:
+            consent_result = {
+                "status": "success",
+                "message": "Privacy settings updated"
+            }
+        
+        # Update session based on consent choice
+        agentic_mode = user_choice.get("choice") == "remember"
+        updates = {
+            'consent_given': True,
+            'agentic_mode': agentic_mode,
+            'consent_timestamp': datetime.now().isoformat()
+        }
+        
+        if agentic_mode and consent_result.get("status") == "success":
+            updates['user_id'] = consent_result.get('user_id')
+        
+        session_manager.update_session(session_id, updates)
+        
+        return jsonify({
+            'success': True,
+            'consent_result': consent_result,
+            'agentic_mode': agentic_mode
+        })
+        
+    except Exception as e:
+        logger.error(f"Error handling privacy consent: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to handle privacy consent'
+        }), 500
+
+@app.route('/api/user/authenticate', methods=['POST'])
+def authenticate_user():
+    """Authenticate returning user"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        user_id = data.get('user_id')
+        password = data.get('password')
+        
+        if not all([session_id, user_id, password]):
+            return jsonify({
+                'success': False,
+                'error': 'Session ID, user ID, and password required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        # Authenticate with agentic system
+        if agentic_system:
+            auth_result = agentic_system.authenticate_returning_user(user_id, password)
+        else:
+            auth_result = {
+                "status": "error",
+                "message": "Agentic system not available"
+            }
+        
+        if auth_result.get("status") == "success":
+            session_manager.update_session(session_id, {
+                'consent_given': True,
+                'agentic_mode': True,
+                'user_id': user_id,
+                'authenticated': True
+            })
+        
+        return jsonify({
+            'success': auth_result.get("status") == "success",
+            'auth_result': auth_result
+        })
+        
+    except Exception as e:
+        logger.error(f"Error authenticating user: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Authentication failed'
+        }), 500
+
 @app.route('/api/session/consent', methods=['POST'])
 def update_consent():
+    """Legacy consent endpoint - redirects to privacy consent"""
     try:
         ensure_initialized()
         data = request.get_json()
@@ -185,7 +376,8 @@ def update_consent():
         
         return jsonify({
             'success': True,
-            'message': 'Consent updated'
+            'message': 'Consent updated',
+            'privacy_consent_available': agentic_system is not None
         })
         
     except Exception as e:
@@ -222,6 +414,7 @@ def send_message():
                 'error': 'Consent required'
             }), 403
         
+        # Analyze text
         analysis_results = None
         if text_analyzer:
             try:
@@ -233,13 +426,25 @@ def send_message():
         else:
             analysis_results = _get_fallback_analysis(message)
         
+        # Generate response using agentic system if available and enabled
         therapy_response = None
-        if therapy_agent and analysis_results:
+        if agentic_system and session_data.get('agentic_mode', False):
+            try:
+                therapy_response = agentic_system.generate_agentic_response(message, analysis_results)
+                logger.info(f"Agentic response generated for session {session_id}")
+            except Exception as e:
+                logger.error(f"Agentic response failed: {e}")
+                # Fallback to regular therapy agent
+                if therapy_agent:
+                    therapy_response = therapy_agent.generate_response(
+                        message, analysis_results, session_data['chat_history']
+                    )
+                else:
+                    therapy_response = _get_fallback_response(message, analysis_results)
+        elif therapy_agent:
             try:
                 therapy_response = therapy_agent.generate_response(
-                    message, 
-                    analysis_results, 
-                    session_data['chat_history']
+                    message, analysis_results, session_data['chat_history']
                 )
                 logger.info(f"Therapy response generated for session {session_id}")
             except Exception as e:
@@ -248,6 +453,7 @@ def send_message():
         else:
             therapy_response = _get_fallback_response(message, analysis_results)
         
+        # Create message objects
         user_message = {
             'role': 'user',
             'content': message,
@@ -260,35 +466,233 @@ def send_message():
             'content': therapy_response['content'],
             'timestamp': datetime.now().isoformat(),
             'provider': therapy_response.get('provider', 'unknown'),
-            'technique': therapy_response.get('technique', 'unknown')
+            'technique': therapy_response.get('technique', 'unknown'),
+            'personalized': therapy_response.get('personalized', False)
         }
         
-        session_data['chat_history'].extend([user_message, assistant_message])
+        # Add agentic features if available
+        agentic_features = {}
+        if therapy_response.get('proactive_suggestion'):
+            agentic_features['proactive_suggestion'] = therapy_response['proactive_suggestion']
+        if therapy_response.get('goal_progress'):
+            agentic_features['goal_progress'] = therapy_response['goal_progress']
         
+        # Update session
+        session_data['chat_history'].extend([user_message, assistant_message])
         session_data['stats']['message_count'] += 1
         session_duration = (datetime.now() - session_data['created']).total_seconds() / 60
         session_data['stats']['session_duration'] = int(session_duration)
         
         session_manager.update_session(session_id, session_data)
         
+        # Check for crisis
         crisis_detected = analysis_results.get('crisis_classification', 'LOW') in ['HIGH', 'CRITICAL']
-        
         if crisis_detected:
             _log_crisis_event(session_id, analysis_results)
         
-        return jsonify({
+        response_data = {
             'success': True,
             'assistant_response': assistant_message,
             'analysis': analysis_results,
             'crisis_detected': crisis_detected,
-            'session_stats': session_data['stats']
-        })
+            'session_stats': session_data['stats'],
+            'agentic_mode': session_data.get('agentic_mode', False)
+        }
+        
+        # Add agentic features to response
+        if agentic_features:
+            response_data['agentic_features'] = agentic_features
+        
+        return jsonify(response_data)
         
     except Exception as e:
         logger.error(f"Error processing message: {e}")
         return jsonify({
             'success': False,
             'error': 'Failed to process message'
+        }), 500
+
+@app.route('/api/goals/create', methods=['POST'])
+def create_goal():
+    """Create a new therapeutic goal"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        title = data.get('title', '').strip()
+        description = data.get('description', '').strip()
+        target_days = data.get('target_days', 30)
+        
+        if not session_id or not title:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID and goal title required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        if not session_data.get('agentic_mode', False):
+            return jsonify({
+                'success': False,
+                'error': 'Goal tracking requires persistent memory mode'
+            }), 403
+        
+        # Create goal using agentic system
+        if agentic_system:
+            goal_result = agentic_system.create_user_goal(title, description, target_days)
+        else:
+            goal_result = {"error": "Agentic system not available"}
+        
+        return jsonify({
+            'success': 'error' not in goal_result,
+            'goal_result': goal_result
+        })
+        
+    except Exception as e:
+        logger.error(f"Error creating goal: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to create goal'
+        }), 500
+
+@app.route('/api/goals/list', methods=['GET'])
+def list_goals():
+    """Get user's active goals"""
+    try:
+        ensure_initialized()
+        session_id = request.args.get('session_id')
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        if not session_data.get('agentic_mode', False):
+            return jsonify({
+                'success': False,
+                'error': 'Goal tracking requires persistent memory mode'
+            }), 403
+        
+        # Get goals from agentic system
+        if agentic_system and session_data.get('user_id'):
+            goals = agentic_system.memory_manager.get_active_goals(session_data['user_id'])
+            goals_data = [goal.__dict__ for goal in goals]
+        else:
+            goals_data = []
+        
+        return jsonify({
+            'success': True,
+            'goals': goals_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Error listing goals: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to list goals'
+        }), 500
+
+@app.route('/api/dashboard', methods=['GET'])
+def get_dashboard():
+    """Get user dashboard with goals, progress, and insights"""
+    try:
+        ensure_initialized()
+        session_id = request.args.get('session_id')
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        if not session_data.get('agentic_mode', False):
+            return jsonify({
+                'success': False,
+                'message': 'Dashboard requires persistent memory mode'
+            })
+        
+        # Get dashboard from agentic system
+        if agentic_system:
+            dashboard = agentic_system.get_user_dashboard()
+        else:
+            dashboard = {"message": "Agentic system not available"}
+        
+        return jsonify({
+            'success': True,
+            'dashboard': dashboard
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting dashboard: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get dashboard'
+        }), 500
+
+@app.route('/api/user/delete', methods=['POST'])
+def delete_user_data():
+    """Delete all user data"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        # Delete data using agentic system
+        if agentic_system:
+            deletion_result = agentic_system.delete_all_user_data()
+        else:
+            deletion_result = {"message": "No data to delete"}
+        
+        # Reset session to privacy mode
+        session_manager.update_session(session_id, {
+            'agentic_mode': False,
+            'user_id': None,
+            'authenticated': False
+        })
+        
+        return jsonify({
+            'success': True,
+            'deletion_result': deletion_result
+        })
+        
+    except Exception as e:
+        logger.error(f"Error deleting user data: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to delete user data'
         }), 500
 
 @app.route('/api/session/settings', methods=['POST'])
@@ -353,7 +757,9 @@ def get_session_stats(session_id):
         stats = session_data['stats'].copy()
         stats.update({
             'dominant_emotion': dominant_emotion,
-            'duration_minutes': stats['session_duration']
+            'duration_minutes': stats['session_duration'],
+            'agentic_mode': session_data.get('agentic_mode', False),
+            'user_authenticated': session_data.get('authenticated', False)
         })
         
         return jsonify({
@@ -385,6 +791,9 @@ def reset_session(session_id):
             'session_duration': 0
         }
         session_data['consent_given'] = False
+        session_data['agentic_mode'] = False
+        session_data['user_id'] = None
+        session_data['authenticated'] = False
         
         session_manager.update_session(session_id, session_data)
         
@@ -404,14 +813,16 @@ def reset_session(session_id):
 def get_provider_status():
     try:
         ensure_initialized()
+        status = {
+            'providers': {'ollama': False, 'groq': False},
+            'primary': 'rule_based',
+            'last_checked': datetime.now().isoformat(),
+            'agentic_available': agentic_system is not None
+        }
+        
         if therapy_agent:
-            status = therapy_agent.get_provider_status()
-        else:
-            status = {
-                'providers': {'ollama': False, 'groq': False},
-                'primary': 'rule_based',
-                'last_checked': datetime.now().isoformat()
-            }
+            agent_status = therapy_agent.get_provider_status()
+            status.update(agent_status)
         
         return jsonify({
             'success': True,
@@ -429,14 +840,16 @@ def get_provider_status():
 def test_providers():
     try:
         ensure_initialized()
+        results = {
+            'ollama': {'available': False, 'reason': 'agent_not_initialized'},
+            'groq': {'available': False, 'reason': 'agent_not_initialized'},
+            'fallback': {'available': True, 'response_length': 100},
+            'agentic_system': {'available': agentic_system is not None}
+        }
+        
         if therapy_agent:
-            results = therapy_agent.test_providers()
-        else:
-            results = {
-                'ollama': {'available': False, 'reason': 'agent_not_initialized'},
-                'groq': {'available': False, 'reason': 'agent_not_initialized'},
-                'fallback': {'available': True, 'response_length': 100}
-            }
+            agent_results = therapy_agent.test_providers()
+            results.update(agent_results)
         
         return jsonify({
             'success': True,
@@ -450,7 +863,389 @@ def test_providers():
             'error': 'Failed to test providers'
         }), 500
 
+# ===== VOICE AGENT ENDPOINTS =====
+
+@app.route('/api/voice/status')
+def get_voice_status():
+    """Get voice agent status"""
+    try:
+        ensure_initialized()
+        if voice_agent:
+            status = voice_agent.get_voice_status()
+            capabilities = voice_agent.get_voice_capabilities()
+            return jsonify({
+                'success': True,
+                'status': status,
+                'capabilities': capabilities
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Voice agent not available'
+            }), 503
+    except Exception as e:
+        logger.error(f"Error getting voice status: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get voice status'
+        }), 500
+
+@app.route('/api/voice/speak', methods=['POST'])
+def speak_text():
+    """Convert text to speech"""
+    try:
+        ensure_initialized()
+        if not voice_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Voice agent not available'
+            }), 503
+
+        data = request.get_json()
+        text = data.get('text', '').strip()
+        async_mode = data.get('async', True)
+
+        if not text:
+            return jsonify({
+                'success': False,
+                'error': 'No text provided'
+            }), 400
+
+        result = voice_agent.speak_text(text, async_mode=async_mode)
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error in text-to-speech: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Text-to-speech failed'
+        }), 500
+
+@app.route('/api/voice/listen', methods=['POST'])
+def listen_for_speech():
+    """Listen for speech input and convert to text"""
+    try:
+        ensure_initialized()
+        if not voice_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Voice agent not available'
+            }), 503
+
+        data = request.get_json() or {}
+        duration = data.get('duration')  # Optional duration limit
+
+        if duration:
+            result = voice_agent.capture_audio(duration=duration)
+        else:
+            result = voice_agent.process_voice_interaction()
+
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error in speech recognition: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Speech recognition failed'
+        }), 500
+
+# ===== VIDEO AGENT ENDPOINTS =====
+
+@app.route('/api/video/status')
+def get_video_status():
+    """Get video agent status"""
+    try:
+        ensure_initialized()
+        if video_agent:
+            status = video_agent.get_video_status()
+            capabilities = video_agent.get_video_capabilities()
+            return jsonify({
+                'success': True,
+                'status': status,
+                'capabilities': capabilities
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Video agent not available'
+            }), 503
+    except Exception as e:
+        logger.error(f"Error getting video status: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to get video status'
+        }), 500
+
+@app.route('/api/video/start', methods=['POST'])
+def start_video_camera():
+    """Start video camera"""
+    try:
+        ensure_initialized()
+        if not video_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Video agent not available'
+            }), 503
+
+        result = video_agent.start_camera()
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error starting camera: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to start camera'
+        }), 500
+
+@app.route('/api/video/analyze', methods=['POST'])
+def analyze_video_emotion():
+    """Analyze current video frame for emotions"""
+    try:
+        ensure_initialized()
+        if not video_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Video agent not available'
+            }), 503
+
+        result = video_agent.analyze_current_frame()
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error analyzing video: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Video analysis failed'
+        }), 500
+
+@app.route('/api/video/stream')
+def video_stream():
+    """Video stream endpoint for live camera feed"""
+    try:
+        ensure_initialized()
+        if not video_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Video agent not available'
+            }), 503
+
+        def generate_video():
+            """Generate video frames"""
+            while True:
+                try:
+                    frame_result = video_agent.capture_and_encode_frame()
+                    if frame_result['success']:
+                        yield f"data: {frame_result['frame_base64']}\n\n"
+                    else:
+                        yield f"data: error\n\n"
+                        break
+                except Exception as e:
+                    logger.error(f"Error generating video frame: {e}")
+                    break
+                import time
+                time.sleep(0.1)  # 10 FPS
+
+        return Response(generate_video(), mimetype='text/plain')
+
+    except Exception as e:
+        logger.error(f"Error starting video stream: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Video stream failed'
+        }), 500
+
+@app.route('/api/video/stop', methods=['POST'])
+def stop_video_camera():
+    """Stop video camera"""
+    try:
+        ensure_initialized()
+        if not video_agent:
+            return jsonify({
+                'success': False,
+                'error': 'Video agent not available'
+            }), 503
+
+        result = video_agent.stop_camera()
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error stopping camera: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to stop camera'
+        }), 500
+
+# ===== MULTIMODAL CHAT ENDPOINT =====
+
+@app.route('/api/chat/multimodal', methods=['POST'])
+def send_multimodal_message():
+    """Enhanced chat endpoint with voice and video integration"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        message = data.get('message', '').strip()
+        include_voice = data.get('include_voice', False)
+        include_video = data.get('include_video', False)
+
+        if not session_id or not message:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID and message required'
+            }), 400
+
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+
+        if not session_data.get('consent_given', False):
+            return jsonify({
+                'success': False,
+                'error': 'Consent required'
+            }), 403
+
+        # Get video emotion analysis if requested
+        video_analysis = None
+        if include_video and video_agent:
+            video_result = video_agent.analyze_current_frame()
+            if video_result["success"]:
+                video_analysis = {
+                    'dominant_emotion': video_result.get('dominant_emotion'),
+                    'confidence': video_result.get('confidence'),
+                    'faces_detected': video_result.get('faces_detected'),
+                    'therapy_priority': video_result.get('therapy_priority'),
+                    'therapeutic_suggestion': video_result.get('therapeutic_suggestion')
+                }
+
+        # Analyze text
+        analysis_results = None
+        if text_analyzer:
+            try:
+                analysis_results = text_analyzer.analyze_text(message)
+
+                # Enhance analysis with video data
+                if video_analysis:
+                    analysis_results['video_emotion'] = video_analysis
+                    # Combine text and video emotions for better analysis
+                    if video_analysis['confidence'] > 0.6:
+                        analysis_results['multimodal_emotion'] = video_analysis['dominant_emotion']
+                        analysis_results['multimodal_confidence'] = video_analysis['confidence']
+
+                logger.info(f"Multimodal analysis completed for session {session_id}")
+            except Exception as e:
+                logger.error(f"Text analysis failed: {e}")
+                analysis_results = _get_fallback_analysis(message)
+                if video_analysis:
+                    analysis_results['video_emotion'] = video_analysis
+        else:
+            analysis_results = _get_fallback_analysis(message)
+            if video_analysis:
+                analysis_results['video_emotion'] = video_analysis
+
+        # Generate response
+        therapy_response = None
+        if agentic_system and session_data.get('agentic_mode', False):
+            try:
+                therapy_response = agentic_system.generate_agentic_response(message, analysis_results)
+            except Exception as e:
+                logger.error(f"Agentic response failed: {e}")
+                if therapy_agent:
+                    therapy_response = therapy_agent.generate_response(
+                        message, analysis_results, session_data['chat_history']
+                    )
+                else:
+                    therapy_response = _get_fallback_response(message, analysis_results)
+        elif therapy_agent:
+            try:
+                therapy_response = therapy_agent.generate_response(
+                    message, analysis_results, session_data['chat_history']
+                )
+            except Exception as e:
+                logger.error(f"Therapy response failed: {e}")
+                therapy_response = _get_fallback_response(message, analysis_results)
+        else:
+            therapy_response = _get_fallback_response(message, analysis_results)
+
+        # Convert response to speech if requested
+        voice_response = None
+        if include_voice and voice_agent and therapy_response:
+            try:
+                voice_result = voice_agent.speak_text(therapy_response['content'], async_mode=True)
+                if voice_result['success']:
+                    voice_response = {
+                        'speech_generated': True,
+                        'speech_length': voice_result.get('text_length', 0),
+                        'async_mode': voice_result.get('async', True)
+                    }
+            except Exception as e:
+                logger.error(f"Voice synthesis failed: {e}")
+                voice_response = {'speech_generated': False, 'error': str(e)}
+
+        # Create message objects
+        user_message = {
+            'role': 'user',
+            'content': message,
+            'timestamp': datetime.now().isoformat(),
+            'analysis': analysis_results,
+            'multimodal': {
+                'voice_input': False,  # This would be True if message came from voice
+                'video_analysis': video_analysis is not None
+            }
+        }
+
+        assistant_message = {
+            'role': 'assistant',
+            'content': therapy_response['content'],
+            'timestamp': datetime.now().isoformat(),
+            'provider': therapy_response.get('provider', 'unknown'),
+            'technique': therapy_response.get('technique', 'unknown'),
+            'personalized': therapy_response.get('personalized', False),
+            'multimodal': {
+                'voice_output': voice_response is not None,
+                'video_aware': video_analysis is not None
+            }
+        }
+
+        # Update session
+        session_data['chat_history'].extend([user_message, assistant_message])
+        session_data['stats']['message_count'] += 1
+        session_duration = (datetime.now() - session_data['created']).total_seconds() / 60
+        session_data['stats']['session_duration'] = int(session_duration)
+
+        session_manager.update_session(session_id, session_data)
+
+        # Check for crisis
+        crisis_detected = analysis_results.get('crisis_classification', 'LOW') in ['HIGH', 'CRITICAL']
+        if crisis_detected:
+            _log_crisis_event(session_id, analysis_results)
+
+        response_data = {
+            'success': True,
+            'assistant_response': assistant_message,
+            'analysis': analysis_results,
+            'crisis_detected': crisis_detected,
+            'session_stats': session_data['stats'],
+            'agentic_mode': session_data.get('agentic_mode', False),
+            'multimodal_features': {
+                'voice_synthesis': voice_response,
+                'video_emotion': video_analysis
+            }
+        }
+
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.error(f"Error processing multimodal message: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to process multimodal message'
+        }), 500
+
 def _get_fallback_analysis(message: str) -> Dict[str, Any]:
+    """Fallback analysis when text analyzer is unavailable"""
     return {
         'input_text': message,
         'timestamp': datetime.now().isoformat(),
@@ -472,6 +1267,7 @@ def _get_fallback_analysis(message: str) -> Dict[str, Any]:
     }
 
 def _get_fallback_response(message: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    """Fallback response when therapy agents are unavailable"""
     fallback_responses = [
         "I hear what you're sharing, and I want you to know that I'm here to listen. How are you feeling right now?",
         "Thank you for opening up about this. It takes courage to share difficult feelings. What kind of support would be most helpful?",
@@ -485,8 +1281,12 @@ def _get_fallback_response(message: str, analysis: Dict[str, Any]) -> Dict[str, 
         'confidence': 0.5,
         'timestamp': datetime.now().isoformat()
     }
+    
+
+
 
 def _log_crisis_event(session_id: str, analysis: Dict[str, Any]):
+    """Log crisis events for monitoring"""
     try:
         os.makedirs('logs', exist_ok=True)
         log_entry = {

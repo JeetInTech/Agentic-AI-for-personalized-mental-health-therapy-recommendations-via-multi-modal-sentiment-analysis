@@ -9,7 +9,7 @@
     "ollama_url": "http://localhost:11434",
     "ollama_model": "llama3.1:8b",
     "groq_api_key": "REMOVED_API_KEY_SEE_ENV_FILE",
-    "groq_model": "llama-3.1-70b-versatile",
+    "groq_model": "llama-3.3-70b-versatile",
     "temperature": 0.7,
     "max_tokens": 300
   },
@@ -33,5 +33,24 @@
     "log_crisis_events": true,
     "anonymize_logs": true,
     "data_retention_days": 30
+  },
+  "voice": {
+    "recognition_timeout": 5,
+    "recognition_phrase_timeout": 10,
+    "tts_rate": 180,
+    "tts_volume": 0.8,
+    "tts_voice_gender": "female",
+    "noise_adjustment_duration": 1,
+    "language": "en-US"
+  },
+  "video": {
+    "camera_index": 0,
+    "frame_width": 640,
+    "frame_height": 480,
+    "fps": 30,
+    "analysis_interval": 1.0,
+    "emotion_threshold": 0.4,
+    "face_detection_scale": 1.1,
+    "min_neighbors": 5
   }
 }
