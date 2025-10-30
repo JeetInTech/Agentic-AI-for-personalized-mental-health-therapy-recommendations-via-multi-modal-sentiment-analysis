@@ -221,7 +221,7 @@ class TherapySystemSetup:
                 'mental_health_model': 'rabiaqayyum/autotrain-mental-health-analysis',
                 'audio_emotion_model': 'ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition',
                 'llm_provider': 'groq',  # or 'ollama'
-                'llm_model': 'llama-3.1-70b-versatile'
+                'llm_model': 'llama-3.3-70b-versatile'
             },
             'privacy': {
                 'default_level': 'standard',

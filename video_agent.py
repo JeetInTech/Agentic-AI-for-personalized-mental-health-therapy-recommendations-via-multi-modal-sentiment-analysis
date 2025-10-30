@@ -1,6 +1,7 @@
 """
 Video Agent for Agentic Therapy AI System
 Handles facial expression recognition and emotional analysis from video streams
+WITH CONTINUOUS MONITORING & FER EMOTION DETECTION
 """
 
 import logging
@@ -11,7 +12,7 @@ import queue
 import base64
 import json
 import time
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Callable
 from datetime import datetime
 import os
 
@@ -38,6 +39,7 @@ class VideoAgent:
     """
     Video processing agent for therapeutic AI system
     Handles facial expression recognition and emotion analysis
+    WITH CONTINUOUS MONITORING SUPPORT
     """
 
     def __init__(self, config_path="config.json"):
@@ -45,6 +47,7 @@ class VideoAgent:
         self.camera = None
         self.is_recording = False
         self.is_analyzing = False
+        self.analysis_thread = None
 
         # Video settings
         self.video_settings = self.config.get("video", {
@@ -52,26 +55,72 @@ class VideoAgent:
             "frame_width": 640,
             "frame_height": 480,
             "fps": 30,
-            "analysis_interval": 1.0,  # Analyze every 1 second
-            "emotion_threshold": 0.4,
+            "analysis_interval": 2.0,  # Analyze every 2 seconds
+            "emotion_threshold": 0.2,  # Lower threshold for better detection (was 0.3)
             "face_detection_scale": 1.1,
-            "min_neighbors": 5
+            "min_neighbors": 5,
+            "continuous_monitoring": True,  # Enable by default
+            "use_frame_enhancement": True  # Enable contrast enhancement
         })
 
-        # Emotion mapping
+        # Emotion mapping with detailed therapeutic context
         self.emotion_mapping = {
-            'angry': {'valence': -0.8, 'arousal': 0.8, 'therapy_priority': 'high'},
-            'disgust': {'valence': -0.6, 'arousal': 0.4, 'therapy_priority': 'medium'},
-            'fear': {'valence': -0.7, 'arousal': 0.9, 'therapy_priority': 'high'},
-            'happy': {'valence': 0.8, 'arousal': 0.6, 'therapy_priority': 'low'},
-            'sad': {'valence': -0.8, 'arousal': -0.4, 'therapy_priority': 'high'},
-            'surprise': {'valence': 0.2, 'arousal': 0.8, 'therapy_priority': 'low'},
-            'neutral': {'valence': 0.0, 'arousal': 0.0, 'therapy_priority': 'low'}
+            'angry': {
+                'valence': -0.8, 
+                'arousal': 0.8, 
+                'therapy_priority': 'high',
+                'color': '#FF4444',
+                'icon': '😠'
+            },
+            'disgust': {
+                'valence': -0.6, 
+                'arousal': 0.4, 
+                'therapy_priority': 'medium',
+                'color': '#AA4444',
+                'icon': '🤢'
+            },
+            'fear': {
+                'valence': -0.7, 
+                'arousal': 0.9, 
+                'therapy_priority': 'high',
+                'color': '#8844FF',
+                'icon': '😨'
+            },
+            'happy': {
+                'valence': 0.8, 
+                'arousal': 0.6, 
+                'therapy_priority': 'low',
+                'color': '#44FF44',
+                'icon': '😊'
+            },
+            'sad': {
+                'valence': -0.8, 
+                'arousal': -0.4, 
+                'therapy_priority': 'high',
+                'color': '#4444FF',
+                'icon': '😢'
+            },
+            'surprise': {
+                'valence': 0.2, 
+                'arousal': 0.8, 
+                'therapy_priority': 'low',
+                'color': '#FFAA44',
+                'icon': '😲'
+            },
+            'neutral': {
+                'valence': 0.0, 
+                'arousal': 0.0, 
+                'therapy_priority': 'low',
+                'color': '#888888',
+                'icon': '😐'
+            }
         }
 
         # Analysis history
         self.emotion_history = []
         self.analysis_queue = queue.Queue(maxsize=100)
+        self.latest_analysis = None
+        self.analysis_callbacks = []
 
         # Initialize components
         self.face_cascade = None
@@ -81,6 +130,10 @@ class VideoAgent:
         self.init_emotion_detection()
 
         logger.info("Video agent initialized successfully")
+        if FER_AVAILABLE:
+            logger.info("✓ FER library available - using deep learning emotion detection")
+        else:
+            logger.warning("⚠ FER library not available - install with: pip install fer")
 
     def load_config(self, config_path: str) -> dict:
         """Load configuration from file"""
@@ -112,20 +165,41 @@ class VideoAgent:
             self.face_cascade = None
 
     def init_emotion_detection(self):
-        """Initialize emotion detection system"""
+        """Initialize emotion detection system with FER"""
         try:
             if FER_AVAILABLE:
                 # Use FER library for emotion detection
-                self.emotion_detector = FER(mtcnn=False)  # Use OpenCV for face detection
-                logger.info("✓ Emotion detection initialized (FER library)")
+                # mtcnn=True provides better face detection and more accurate emotions
+                # mtcnn=False uses OpenCV (faster but less accurate)
+                # Try mtcnn=True first for better accuracy
+                try:
+                    self.emotion_detector = FER(mtcnn=True)
+                    logger.info("✓ Emotion detection initialized (FER Deep Learning with MTCNN)")
+                except Exception as mtcnn_error:
+                    logger.warning(f"MTCNN not available: {mtcnn_error}")
+                    logger.info("Falling back to OpenCV face detection")
+                    self.emotion_detector = FER(mtcnn=False)
+                    logger.info("✓ Emotion detection initialized (FER Deep Learning with OpenCV)")
             else:
                 # Fallback to rule-based emotion detection
                 self.emotion_detector = None
-                logger.info("✓ Using rule-based emotion analysis (FER not available)")
+                logger.info("⚠ Using basic emotion analysis (install FER for better accuracy)")
 
         except Exception as e:
             logger.error(f"Failed to initialize emotion detection: {e}")
             self.emotion_detector = None
+
+    def register_analysis_callback(self, callback: Callable):
+        """Register a callback function to be called when analysis is complete"""
+        if callback not in self.analysis_callbacks:
+            self.analysis_callbacks.append(callback)
+            logger.info(f"Registered analysis callback: {callback.__name__}")
+
+    def unregister_analysis_callback(self, callback: Callable):
+        """Unregister an analysis callback"""
+        if callback in self.analysis_callbacks:
+            self.analysis_callbacks.remove(callback)
+            logger.info(f"Unregistered analysis callback: {callback.__name__}")
 
     def get_video_status(self) -> Dict[str, Any]:
         """Get current video system status"""
@@ -135,6 +209,10 @@ class VideoAgent:
             "emotion_detection_available": self.emotion_detector is not None or self.face_cascade is not None,
             "is_recording": self.is_recording,
             "is_analyzing": self.is_analyzing,
+            "continuous_monitoring": self.video_settings.get("continuous_monitoring", False),
+            "analysis_interval": self.video_settings.get("analysis_interval", 2.0),
+            "latest_emotion": self.latest_analysis.get("dominant_emotion") if self.latest_analysis else None,
+            "emotion_history_count": len(self.emotion_history),
             "settings": self.video_settings,
             "libraries_status": {
                 "opencv": True,  # Required for this agent
@@ -143,47 +221,112 @@ class VideoAgent:
             }
         }
 
-    def start_camera(self) -> Dict[str, Any]:
-        """Initialize and start camera"""
+    def start_camera(self, auto_start_monitoring: bool = True) -> Dict[str, Any]:
+        """Initialize and start camera with improved error handling"""
         try:
             if self.camera and self.camera.isOpened():
+                # If continuous monitoring is enabled and not analyzing, start it
+                if auto_start_monitoring and self.video_settings.get("continuous_monitoring", True) and not self.is_analyzing:
+                    self.start_continuous_analysis()
+                
                 return {
                     "success": True,
-                    "message": "Camera already running"
+                    "message": "Camera already running",
+                    "continuous_monitoring": self.is_analyzing
                 }
 
-            # Initialize camera
             camera_index = self.video_settings["camera_index"]
-            self.camera = cv2.VideoCapture(camera_index)
-
-            if not self.camera.isOpened():
+            
+            # Try different backends in order of preference (Windows)
+            backends = [
+                cv2.CAP_DSHOW,      # DirectShow (Windows) - most compatible
+                cv2.CAP_MSMF,       # Media Foundation (Windows) - default
+                cv2.CAP_ANY         # Let OpenCV choose
+            ]
+            
+            camera_opened = False
+            backend_used = None
+            
+            for backend in backends:
+                logger.info(f"Trying camera with backend: {backend}")
+                self.camera = cv2.VideoCapture(camera_index, backend)
+                
+                if self.camera.isOpened():
+                    # Wait a moment for camera to initialize
+                    time.sleep(0.5)
+                    
+                    # Try to read a test frame
+                    ret, frame = self.camera.read()
+                    if ret and frame is not None:
+                        camera_opened = True
+                        backend_used = backend
+                        logger.info(f"✓ Camera opened successfully with backend: {backend}")
+                        break
+                    else:
+                        logger.warning(f"Camera opened but cannot read frames with backend {backend}")
+                        self.camera.release()
+                        self.camera = None
+                else:
+                    logger.warning(f"Failed to open camera with backend {backend}")
+            
+            if not camera_opened:
                 return {
                     "success": False,
-                    "error": f"Failed to open camera at index {camera_index}"
+                    "error": "Failed to open camera with any backend. Please check:\n" +
+                            "1. Camera is not in use by another application\n" +
+                            "2. Camera permissions are enabled in Windows settings\n" +
+                            "3. Camera drivers are up to date"
                 }
 
-            # Configure camera settings
-            self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.video_settings["frame_width"])
-            self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.video_settings["frame_height"])
-            self.camera.set(cv2.CAP_PROP_FPS, self.video_settings["fps"])
+            # Try to configure camera settings (may fail on some cameras, that's OK)
+            try:
+                self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.video_settings["frame_width"])
+                self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.video_settings["frame_height"])
+                self.camera.set(cv2.CAP_PROP_FPS, self.video_settings["fps"])
+                
+                # Verify settings were applied (they might not be)
+                actual_width = self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)
+                actual_height = self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
+                actual_fps = self.camera.get(cv2.CAP_PROP_FPS)
+                
+                logger.info(f"Camera settings - Requested: {self.video_settings['frame_width']}x{self.video_settings['frame_height']}@{self.video_settings['fps']}fps")
+                logger.info(f"Camera settings - Actual: {actual_width}x{actual_height}@{actual_fps}fps")
+            except Exception as e:
+                logger.warning(f"Could not set all camera properties: {e}")
+                # Continue anyway - camera is working
 
-            # Test camera by taking a frame
+            # Get actual frame to verify everything works
             ret, frame = self.camera.read()
-            if not ret:
+            if not ret or frame is None:
                 self.camera.release()
                 self.camera = None
                 return {
                     "success": False,
-                    "error": "Camera opened but cannot read frames"
+                    "error": "Camera opened but failed to read frames"
                 }
 
-            logger.info(f"Camera initialized: {frame.shape[1]}x{frame.shape[0]}")
+            logger.info(f"Camera initialized successfully: {frame.shape[1]}x{frame.shape[0]}")
+
+            # Auto-start continuous monitoring if enabled
+            monitoring_started = False
+            if auto_start_monitoring and self.video_settings.get("continuous_monitoring", True):
+                monitor_result = self.start_continuous_analysis()
+                monitoring_started = monitor_result.get("success", False)
+                if monitoring_started:
+                    logger.info("✓ Continuous emotion monitoring started automatically")
 
             return {
                 "success": True,
                 "message": "Camera started successfully",
                 "resolution": f"{frame.shape[1]}x{frame.shape[0]}",
-                "camera_index": camera_index
+                "camera_index": camera_index,
+                "backend": backend_used,
+                "continuous_monitoring": monitoring_started,
+                "actual_settings": {
+                    "width": int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    "height": int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                    "fps": int(self.camera.get(cv2.CAP_PROP_FPS))
+                }
             }
 
         except Exception as e:
@@ -199,16 +342,20 @@ class VideoAgent:
     def stop_camera(self) -> Dict[str, Any]:
         """Stop camera and release resources"""
         try:
+            # Stop continuous analysis first
+            if self.is_analyzing:
+                self.stop_continuous_analysis()
+            
             if self.camera and self.camera.isOpened():
                 self.camera.release()
                 self.camera = None
                 self.is_recording = False
-                self.is_analyzing = False
                 logger.info("Camera stopped and resources released")
 
             return {
                 "success": True,
-                "message": "Camera stopped"
+                "message": "Camera stopped",
+                "emotion_history_saved": len(self.emotion_history)
             }
 
         except Exception as e:
@@ -242,21 +389,38 @@ class VideoAgent:
             return []
 
     def analyze_emotion_fer(self, frame: np.ndarray) -> Dict[str, Any]:
-        """Analyze emotions using FER library"""
+        """Analyze emotions using FER library with deep learning"""
         if not FER_AVAILABLE or self.emotion_detector is None:
             return self.analyze_emotion_basic(frame)
 
         try:
-            # Analyze emotions using FER
-            emotions = self.emotion_detector.detect_emotions(frame)
+            # Preprocess frame for better emotion detection
+            # Convert BGR to RGB (FER expects RGB)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Enhance contrast for better feature detection
+            lab = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2LAB)
+            l, a, b = cv2.split(lab)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            l = clahe.apply(l)
+            enhanced = cv2.merge([l, a, b])
+            frame_enhanced = cv2.cvtColor(enhanced, cv2.COLOR_LAB2RGB)
+            
+            # Analyze emotions using FER on enhanced frame
+            emotions = self.emotion_detector.detect_emotions(frame_enhanced)
 
+            if not emotions:
+                # Try with original frame if enhanced didn't work
+                emotions = self.emotion_detector.detect_emotions(frame_rgb)
+                
             if not emotions:
                 return {
                     "faces_detected": 0,
                     "emotions": [],
                     "dominant_emotion": "neutral",
                     "confidence": 0.0,
-                    "analysis_method": "fer"
+                    "analysis_method": "fer",
+                    "all_emotions": {}
                 }
 
             # Process each face
@@ -264,9 +428,21 @@ class VideoAgent:
             for face_data in emotions:
                 emotions_dict = face_data['emotions']
 
-                # Find dominant emotion
-                dominant = max(emotions_dict, key=emotions_dict.get)
-                confidence = emotions_dict[dominant]
+                # Find dominant emotion (excluding neutral if other emotions are strong)
+                # Sort emotions by score
+                sorted_emotions = sorted(emotions_dict.items(), key=lambda x: x[1], reverse=True)
+                
+                # If top emotion is neutral but second emotion is > 0.25, use second
+                if sorted_emotions[0][0] == 'neutral' and len(sorted_emotions) > 1:
+                    if sorted_emotions[1][1] > 0.25:
+                        dominant = sorted_emotions[1][0]
+                        confidence = sorted_emotions[1][1]
+                    else:
+                        dominant = sorted_emotions[0][0]
+                        confidence = sorted_emotions[0][1]
+                else:
+                    dominant = sorted_emotions[0][0]
+                    confidence = sorted_emotions[0][1]
 
                 # Get face box
                 box = face_data['box']
@@ -276,21 +452,31 @@ class VideoAgent:
                     "emotions": emotions_dict,
                     "dominant_emotion": dominant,
                     "confidence": confidence,
-                    "therapy_analysis": self.get_therapy_analysis(dominant, confidence)
+                    "therapy_analysis": self.get_therapy_analysis(dominant, confidence),
+                    "all_emotion_scores": sorted_emotions  # Include all for debugging
                 })
 
             # Overall analysis
             if face_emotions:
                 # Use first face for overall emotion
                 primary_face = face_emotions[0]
+                
+                # Get emotion metadata
+                emotion_meta = self.emotion_mapping.get(primary_face["dominant_emotion"], self.emotion_mapping['neutral'])
+                
                 return {
                     "faces_detected": len(face_emotions),
                     "emotions": face_emotions,
                     "dominant_emotion": primary_face["dominant_emotion"],
                     "confidence": primary_face["confidence"],
-                    "analysis_method": "fer",
+                    "all_emotions": primary_face["emotions"],
+                    "analysis_method": "fer_deep_learning",
                     "therapy_priority": primary_face["therapy_analysis"]["priority"],
-                    "therapeutic_suggestion": primary_face["therapy_analysis"]["suggestion"]
+                    "therapeutic_suggestion": primary_face["therapy_analysis"]["suggestion"],
+                    "emotion_color": emotion_meta["color"],
+                    "emotion_icon": emotion_meta["icon"],
+                    "valence": emotion_meta["valence"],
+                    "arousal": emotion_meta["arousal"]
                 }
             else:
                 return {
@@ -298,7 +484,8 @@ class VideoAgent:
                     "emotions": [],
                     "dominant_emotion": "neutral",
                     "confidence": 0.0,
-                    "analysis_method": "fer"
+                    "analysis_method": "fer",
+                    "all_emotions": {}
                 }
 
         except Exception as e:
@@ -316,7 +503,8 @@ class VideoAgent:
                     "emotions": [],
                     "dominant_emotion": "neutral",
                     "confidence": 0.0,
-                    "analysis_method": "basic"
+                    "analysis_method": "basic_heuristic",
+                    "all_emotions": {"neutral": 1.0}
                 }
 
             # Simple heuristic-based emotion analysis
@@ -340,7 +528,7 @@ class VideoAgent:
                     emotion = "happy"
                     confidence = 0.6
                 elif contrast > 50:
-                    emotion = "surprised"
+                    emotion = "surprise"
                     confidence = 0.5
                 else:
                     emotion = "neutral"
@@ -360,14 +548,19 @@ class VideoAgent:
 
             # Return analysis for primary face
             primary_face = face_emotions[0]
+            emotion_meta = self.emotion_mapping.get(primary_face["dominant_emotion"], self.emotion_mapping['neutral'])
+            
             return {
                 "faces_detected": len(face_emotions),
                 "emotions": face_emotions,
                 "dominant_emotion": primary_face["dominant_emotion"],
                 "confidence": primary_face["confidence"],
+                "all_emotions": primary_face["emotions"],
                 "analysis_method": "basic_heuristic",
                 "therapy_priority": primary_face["therapy_analysis"]["priority"],
-                "therapeutic_suggestion": primary_face["therapy_analysis"]["suggestion"]
+                "therapeutic_suggestion": primary_face["therapy_analysis"]["suggestion"],
+                "emotion_color": emotion_meta["color"],
+                "emotion_icon": emotion_meta["icon"]
             }
 
         except Exception as e:
@@ -378,22 +571,34 @@ class VideoAgent:
                 "dominant_emotion": "neutral",
                 "confidence": 0.0,
                 "analysis_method": "error",
-                "error": str(e)
+                "error": str(e),
+                "all_emotions": {"neutral": 1.0}
             }
 
     def get_therapy_analysis(self, emotion: str, confidence: float) -> Dict[str, Any]:
         """Get therapeutic analysis for detected emotion"""
         emotion_info = self.emotion_mapping.get(emotion, self.emotion_mapping['neutral'])
 
-        # Determine intervention suggestions
+        # Determine intervention suggestions based on emotion
         suggestions = {
-            'angry': "Consider deep breathing exercises or progressive muscle relaxation",
-            'sad': "Would you like to talk about what's making you feel this way?",
-            'fear': "Let's work on some grounding techniques to help you feel more secure",
-            'happy': "I'm glad to see you're feeling positive! What's contributing to your good mood?",
-            'surprise': "You seem surprised - is there something unexpected we should discuss?",
-            'neutral': "How are you feeling today? I'm here to listen",
-            'disgust': "Something seems to be bothering you - would you like to explore that?"
+            'angry': "I notice you might be feeling frustrated. Let's take a moment - would deep breathing or talking about what's bothering you help?",
+            'sad': "I can see you're going through something difficult. Would you like to share what's on your mind? I'm here to listen.",
+            'fear': "You seem anxious or worried. Let's try some grounding techniques together. Can you name 5 things you can see right now?",
+            'happy': "It's wonderful to see you in good spirits! What's bringing you joy today? Let's celebrate that.",
+            'surprise': "You seem surprised or caught off guard. Is there something unexpected we should talk about?",
+            'neutral': "How are you feeling today? I'm here to support you in whatever way you need.",
+            'disgust': "Something seems to be bothering you. Would you like to explore what's causing this discomfort?"
+        }
+
+        # Additional coping strategies
+        coping_strategies = {
+            'angry': ["Deep breathing (4-7-8 technique)", "Progressive muscle relaxation", "Physical exercise", "Journaling"],
+            'sad': ["Talking with someone", "Self-compassion exercises", "Gentle activity", "Mindfulness meditation"],
+            'fear': ["Grounding techniques (5-4-3-2-1)", "Safe space visualization", "Breathing exercises", "Reality testing"],
+            'happy': ["Gratitude practice", "Savoring the moment", "Sharing joy with others", "Positive reflection"],
+            'surprise': ["Processing the information", "Taking time to adjust", "Seeking clarification"],
+            'neutral': ["Emotional check-in", "Mood journaling", "Mindful awareness"],
+            'disgust': ["Identifying triggers", "Boundary setting", "Value clarification"]
         }
 
         return {
@@ -401,7 +606,10 @@ class VideoAgent:
             "valence": emotion_info["valence"],
             "arousal": emotion_info["arousal"],
             "suggestion": suggestions.get(emotion, "Let's talk about how you're feeling"),
-            "confidence_level": "high" if confidence > 0.7 else "medium" if confidence > 0.4 else "low"
+            "confidence_level": "high" if confidence > 0.7 else "medium" if confidence > 0.4 else "low",
+            "coping_strategies": coping_strategies.get(emotion, []),
+            "color": emotion_info["color"],
+            "icon": emotion_info["icon"]
         }
 
     def analyze_current_frame(self) -> Dict[str, Any]:
@@ -426,16 +634,28 @@ class VideoAgent:
             analysis["success"] = True
             analysis["timestamp"] = datetime.now().isoformat()
 
+            # Store as latest analysis
+            self.latest_analysis = analysis
+
             # Add to history
             self.emotion_history.append({
                 "timestamp": analysis["timestamp"],
                 "emotion": analysis["dominant_emotion"],
-                "confidence": analysis["confidence"]
+                "confidence": analysis["confidence"],
+                "all_emotions": analysis.get("all_emotions", {}),
+                "faces_detected": analysis.get("faces_detected", 0)
             })
 
             # Keep only recent history (last 100 analyses)
             if len(self.emotion_history) > 100:
                 self.emotion_history = self.emotion_history[-100:]
+
+            # Notify callbacks
+            for callback in self.analysis_callbacks:
+                try:
+                    callback(analysis)
+                except Exception as e:
+                    logger.error(f"Error in analysis callback: {e}")
 
             return analysis
 
@@ -490,6 +710,9 @@ class VideoAgent:
             dominant_emotion = max(emotion_counts, key=emotion_counts.get)
             avg_confidence = confidence_sum / total_count
 
+            # Get emotion metadata
+            emotion_meta = self.emotion_mapping.get(dominant_emotion, self.emotion_mapping['neutral'])
+
             return {
                 "success": True,
                 "duration_minutes": duration_minutes,
@@ -499,7 +722,9 @@ class VideoAgent:
                     "average_confidence": avg_confidence,
                     "emotion_distribution": emotion_percentages,
                     "emotion_counts": emotion_counts,
-                    "therapy_recommendations": self.get_trend_therapy_recommendations(emotion_percentages)
+                    "therapy_recommendations": self.get_trend_therapy_recommendations(emotion_percentages),
+                    "emotion_icon": emotion_meta["icon"],
+                    "emotion_color": emotion_meta["color"]
                 },
                 "timestamp": datetime.now().isoformat()
             }
@@ -517,22 +742,26 @@ class VideoAgent:
 
         # Check for concerning patterns
         if emotion_percentages.get('sad', 0) > 40:
-            recommendations.append("Frequent sadness detected - consider exploring underlying causes")
+            recommendations.append("Persistent sadness detected - consider exploring underlying causes and practicing self-compassion")
 
         if emotion_percentages.get('angry', 0) > 30:
-            recommendations.append("Anger patterns noticed - anger management techniques might be helpful")
+            recommendations.append("Recurring anger patterns - anger management and emotional regulation techniques recommended")
 
         if emotion_percentages.get('fear', 0) > 25:
-            recommendations.append("Anxiety/fear levels elevated - relaxation techniques recommended")
+            recommendations.append("Elevated anxiety/fear levels - grounding techniques and relaxation exercises suggested")
 
         if emotion_percentages.get('neutral', 0) > 70:
-            recommendations.append("Emotional expression seems limited - consider exploring feelings more deeply")
+            recommendations.append("Limited emotional expression observed - gentle exploration of feelings might be beneficial")
 
         if emotion_percentages.get('happy', 0) > 60:
-            recommendations.append("Positive emotional state - good time to reinforce coping strategies")
+            recommendations.append("Positive emotional state maintained - excellent time to build resilience and coping skills")
+
+        # Check for emotional variability
+        if len(emotion_percentages) > 4:
+            recommendations.append("High emotional variability - mood tracking might provide helpful insights")
 
         if not recommendations:
-            recommendations.append("Emotional patterns appear balanced")
+            recommendations.append("Emotional patterns appear balanced - continue current therapeutic approach")
 
         return recommendations
 
@@ -545,13 +774,20 @@ class VideoAgent:
             }
 
         if not self.camera or not self.camera.isOpened():
-            camera_result = self.start_camera()
+            camera_result = self.start_camera(auto_start_monitoring=False)
             if not camera_result["success"]:
                 return camera_result
+
+        # Add callback if provided
+        if callback:
+            self.register_analysis_callback(callback)
 
         def analysis_thread():
             self.is_analyzing = True
             last_analysis = 0
+            analysis_count = 0
+
+            logger.info("🎥 Continuous emotion monitoring started")
 
             try:
                 while self.is_analyzing:
@@ -561,8 +797,18 @@ class VideoAgent:
                     if current_time - last_analysis >= self.video_settings["analysis_interval"]:
                         result = self.analyze_current_frame()
 
-                        if result["success"] and callback:
-                            callback(result)
+                        if result["success"]:
+                            analysis_count += 1
+                            
+                            # Show all emotion scores for debugging
+                            all_emotions_str = ""
+                            if result.get("all_emotions"):
+                                emotion_scores = ", ".join([f"{k}:{v:.2f}" for k, v in result["all_emotions"].items()])
+                                all_emotions_str = f" | All: [{emotion_scores}]"
+                            
+                            logger.info(f"📊 Analysis #{analysis_count}: {result['dominant_emotion']} "
+                                      f"({result['confidence']:.2f} confidence) - "
+                                      f"{result['faces_detected']} face(s) detected{all_emotions_str}")
 
                         last_analysis = current_time
 
@@ -572,25 +818,51 @@ class VideoAgent:
                 logger.error(f"Error in analysis thread: {e}")
             finally:
                 self.is_analyzing = False
+                logger.info(f"🛑 Continuous monitoring stopped. Total analyses: {analysis_count}")
 
         # Start analysis thread
-        thread = threading.Thread(target=analysis_thread, daemon=True)
-        thread.start()
+        self.analysis_thread = threading.Thread(target=analysis_thread, daemon=True)
+        self.analysis_thread.start()
 
         return {
             "success": True,
-            "message": "Continuous analysis started",
-            "analysis_interval": self.video_settings["analysis_interval"]
+            "message": "Continuous emotion monitoring started",
+            "analysis_interval": self.video_settings["analysis_interval"],
+            "emotion_detection_method": "FER Deep Learning" if FER_AVAILABLE else "Basic Heuristic"
         }
 
     def stop_continuous_analysis(self) -> Dict[str, Any]:
         """Stop continuous emotion analysis"""
+        if not self.is_analyzing:
+            return {
+                "success": True,
+                "message": "Continuous analysis not running"
+            }
+
         self.is_analyzing = False
+
+        # Wait for thread to finish (max 2 seconds)
+        if self.analysis_thread:
+            self.analysis_thread.join(timeout=2.0)
 
         return {
             "success": True,
-            "message": "Continuous analysis stopped"
+            "message": "Continuous analysis stopped",
+            "total_analyses": len(self.emotion_history)
         }
+
+    def get_latest_analysis(self) -> Dict[str, Any]:
+        """Get the most recent emotion analysis"""
+        if self.latest_analysis:
+            return {
+                "success": True,
+                **self.latest_analysis
+            }
+        else:
+            return {
+                "success": False,
+                "message": "No analysis available yet"
+            }
 
     def capture_and_encode_frame(self) -> Dict[str, Any]:
         """Capture current frame and return as base64 encoded image"""
@@ -636,14 +908,17 @@ class VideoAgent:
             },
             "emotion_recognition": {
                 "available": True,
-                "methods": ["fer_library"] if FER_AVAILABLE else ["basic_heuristic"],
+                "methods": ["fer_deep_learning"] if FER_AVAILABLE else ["basic_heuristic"],
                 "emotions_supported": list(self.emotion_mapping.keys()),
-                "accuracy": "high" if FER_AVAILABLE else "low"
+                "accuracy": "high" if FER_AVAILABLE else "low",
+                "model": "Deep Neural Network (FER)" if FER_AVAILABLE else "Rule-based Heuristics"
             },
             "video_processing": {
                 "real_time_analysis": True,
+                "continuous_monitoring": True,
                 "trend_analysis": True,
-                "therapeutic_suggestions": True
+                "therapeutic_suggestions": True,
+                "callback_support": True
             },
             "hardware_requirements": {
                 "camera_required": True,
@@ -660,7 +935,7 @@ class VideoAgent:
         }
 
         # Test camera initialization
-        camera_result = self.start_camera()
+        camera_result = self.start_camera(auto_start_monitoring=False)
         results["tests"]["camera"] = camera_result
 
         if camera_result["success"]:
@@ -676,7 +951,19 @@ class VideoAgent:
             results["tests"]["emotion_analysis"] = {
                 "success": analysis_result["success"],
                 "faces_detected": analysis_result.get("faces_detected", 0),
-                "method": analysis_result.get("analysis_method", "unknown")
+                "method": analysis_result.get("analysis_method", "unknown"),
+                "dominant_emotion": analysis_result.get("dominant_emotion", "unknown"),
+                "confidence": analysis_result.get("confidence", 0.0)
+            }
+
+            # Test continuous monitoring
+            monitor_result = self.start_continuous_analysis()
+            time.sleep(3)  # Let it run for 3 seconds
+            stop_result = self.stop_continuous_analysis()
+            
+            results["tests"]["continuous_monitoring"] = {
+                "success": monitor_result["success"] and stop_result["success"],
+                "analyses_performed": len(self.emotion_history)
             }
 
             # Stop camera after testing
@@ -686,7 +973,8 @@ class VideoAgent:
         results["overall_status"] = (
             results["tests"]["camera"]["success"] and
             results["tests"].get("frame_capture", {}).get("success", False) and
-            results["tests"].get("emotion_analysis", {}).get("success", False)
+            results["tests"].get("emotion_analysis", {}).get("success", False) and
+            results["tests"].get("continuous_monitoring", {}).get("success", False)
         )
 
         return results
@@ -694,8 +982,8 @@ class VideoAgent:
 # Test function for video agent
 def test_video_agent():
     """Test the video agent functionality"""
-    print("Testing Video Agent")
-    print("=" * 50)
+    print("Testing Video Agent with Continuous Monitoring & FER")
+    print("=" * 60)
 
     agent = VideoAgent()
 
@@ -705,6 +993,8 @@ def test_video_agent():
     print(f"Face Detection: {capabilities['face_detection']['available']}")
     print(f"Emotion Recognition: {capabilities['emotion_recognition']['available']}")
     print(f"Methods: {capabilities['emotion_recognition']['methods']}")
+    print(f"Accuracy: {capabilities['emotion_recognition']['accuracy']}")
+    print(f"Model: {capabilities['emotion_recognition']['model']}")
 
     # Test status
     print("\n2. Testing Video Status:")
@@ -712,18 +1002,25 @@ def test_video_agent():
     print(f"System Status: {status}")
 
     # Run system test
-    print("\n3. Running System Test:")
+    print("\n3. Running Comprehensive System Test:")
     test_results = agent.test_video_system()
-    print(f"Overall System Status: {'✓ PASS' if test_results['overall_status'] else '❌ FAIL'}")
+    print(f"\nOverall System Status: {'✅ PASS' if test_results['overall_status'] else '❌ FAIL'}")
 
     if test_results["tests"]["camera"]["success"]:
-        print(f"Camera: ✓ Working")
-        print(f"Frame Capture: {'✓ Working' if test_results['tests']['frame_capture']['success'] else '❌ Failed'}")
-        print(f"Emotion Analysis: {'✓ Working' if test_results['tests']['emotion_analysis']['success'] else '❌ Failed'}")
+        print(f"✅ Camera: Working")
+        print(f"✅ Frame Capture: {'Working' if test_results['tests']['frame_capture']['success'] else 'Failed'}")
+        print(f"✅ Emotion Analysis: {'Working' if test_results['tests']['emotion_analysis']['success'] else 'Failed'}")
+        print(f"   - Method: {test_results['tests']['emotion_analysis']['method']}")
+        print(f"   - Detected: {test_results['tests']['emotion_analysis']['dominant_emotion']}")
+        print(f"   - Confidence: {test_results['tests']['emotion_analysis']['confidence']:.2f}")
+        print(f"✅ Continuous Monitoring: {'Working' if test_results['tests']['continuous_monitoring']['success'] else 'Failed'}")
+        print(f"   - Analyses: {test_results['tests']['continuous_monitoring']['analyses_performed']}")
     else:
-        print("❌ Camera not available - check if camera is connected and not in use by other applications")
+        print("❌ Camera not available - check if camera is connected and not in use")
 
-    print("\nVideo Agent Test Complete!")
+    print("\n" + "=" * 60)
+    print("Video Agent Test Complete!")
+    print("=" * 60)
 
 if __name__ == "__main__":
     test_video_agent()

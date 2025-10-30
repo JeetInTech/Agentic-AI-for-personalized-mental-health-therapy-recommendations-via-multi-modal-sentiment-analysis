@@ -1,5 +1,6 @@
 """
 Phase 1: Ollama → Groq → Rule-based fallback system
+Enhanced with Crisis Counselling Mode integration
 """
 
 import logging
@@ -9,6 +10,14 @@ import requests
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import time
+
+# Import Crisis Counselling Mode
+try:
+    from crisis_counselling_mode import CrisisCounsellingMode
+    CRISIS_MODE_AVAILABLE = True
+except ImportError:
+    CRISIS_MODE_AVAILABLE = False
+    logging.warning("Crisis Counselling Mode not available")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -61,7 +70,16 @@ class TherapyAgent:
             'ollama': False,
             'groq': False
         }
-        
+
+        # Initialize Crisis Counselling Mode
+        self.crisis_counselor = None
+        if CRISIS_MODE_AVAILABLE:
+            try:
+                self.crisis_counselor = CrisisCounsellingMode(config_path)
+                logger.info("✓ Crisis Counselling Mode initialized")
+            except Exception as e:
+                logger.error(f"Failed to initialize Crisis Counselling Mode: {e}")
+
         # Therapeutic techniques database
         self.techniques = {
             'cognitive_restructuring': {
@@ -193,23 +211,33 @@ class TherapyAgent:
         
         logger.info(f"Provider status: {self.provider_status}")
     
-    def generate_response(self, user_message: str, analysis: Dict[str, Any], 
-                         chat_history: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def generate_response(self, user_message: str, analysis: Dict[str, Any],
+                         chat_history: List[Dict[str, Any]] = None,
+                         use_crisis_mode: bool = True) -> Dict[str, Any]:
         """
         Generate therapeutic response using available LLM providers with fallbacks
-        
+        Enhanced with Crisis Counselling Mode for compassionate, context-aware responses
+
         Args:
             user_message: User's input message
             analysis: Text analysis results
             chat_history: Previous conversation context
-            
+            use_crisis_mode: Whether to use enhanced crisis counseling mode
+
         Returns:
             Dictionary containing response and metadata
         """
-        
-        # Handle crisis situations first
+
+        # Enhanced crisis handling with Crisis Counselling Mode
         crisis_level = analysis.get('crisis_classification', 'LOW')
-        if crisis_level in ['HIGH', 'CRITICAL']:
+
+        # Use Crisis Counselling Mode for moderate to critical situations
+        if use_crisis_mode and self.crisis_counselor and crisis_level in ['MODERATE', 'HIGH', 'CRITICAL']:
+            logger.info(f"Activating Crisis Counselling Mode for {crisis_level} situation")
+            return self._use_crisis_counselling_mode(user_message, analysis, chat_history)
+
+        # Legacy crisis handling for backward compatibility
+        if crisis_level in ['HIGH', 'CRITICAL'] and not self.crisis_counselor:
             return self._handle_crisis_response(user_message, analysis, crisis_level)
         
         # Try LLM providers in order
@@ -408,8 +436,72 @@ Respond with empathy and professional therapeutic guidance. Provide specific, ac
         messages.append({"role": "user", "content": user_message})
         
         return messages
-    
-    def _handle_crisis_response(self, user_message: str, analysis: Dict[str, Any], 
+
+    def _use_crisis_counselling_mode(self, user_message: str, analysis: Dict[str, Any],
+                                    chat_history: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Use enhanced Crisis Counselling Mode for compassionate, context-aware responses
+
+        Args:
+            user_message: User's input message
+            analysis: Text analysis results
+            chat_history: Previous conversation context
+
+        Returns:
+            Enhanced crisis response with empathy, strategies, and resources
+        """
+        try:
+            # First, try to get an LLM response for enhanced empathy
+            llm_response = None
+
+            # Try Groq first (faster)
+            if self.provider_status['groq']:
+                groq_result = self._try_groq(user_message, analysis, chat_history)
+                if groq_result:
+                    llm_response = groq_result['content']
+
+            # Try Ollama if Groq failed
+            if not llm_response and self.provider_status['ollama']:
+                ollama_result = self._try_ollama(user_message, analysis, chat_history)
+                if ollama_result:
+                    llm_response = ollama_result['content']
+
+            # Analyze crisis context
+            crisis_analysis = self.crisis_counselor.analyze_crisis_context(
+                user_message,
+                text_analysis=analysis
+            )
+
+            # Generate crisis response with optional LLM enhancement
+            crisis_response = self.crisis_counselor.generate_crisis_response(
+                user_message,
+                crisis_analysis=crisis_analysis,
+                llm_response=llm_response
+            )
+
+            # Format for therapy agent response structure
+            return {
+                'content': crisis_response['response'],
+                'provider': f"crisis_counseling_mode_{crisis_response.get('emotional_tone', 'unknown')}",
+                'technique': 'crisis_counseling',
+                'confidence': 0.95,
+                'crisis_level': crisis_response['severity'],
+                'crisis_type': crisis_response['crisis_type'],
+                'requires_immediate_attention': crisis_response['immediate_response_needed'],
+                'coping_strategies': crisis_response.get('coping_strategies', {}),
+                'professional_resources': crisis_response.get('resources', {}),
+                'conversation_context': crisis_response.get('conversation_context', {}),
+                'timestamp': datetime.now().isoformat(),
+                'enhanced_mode': True
+            }
+
+        except Exception as e:
+            logger.error(f"Error in Crisis Counselling Mode: {e}")
+            # Fall back to legacy crisis handling
+            crisis_level = analysis.get('crisis_classification', 'HIGH')
+            return self._handle_crisis_response(user_message, analysis, crisis_level)
+
+    def _handle_crisis_response(self, user_message: str, analysis: Dict[str, Any],
                               crisis_level: str) -> Dict[str, Any]:
         """Handle high-risk crisis situations with immediate intervention guidance"""
         

@@ -81,8 +81,7 @@ checkpoints/
 *.ipynb
 
 # Configuration (remove config.json if it contains secrets)
-# config.json  # Uncomment if config has API keys
-
+config.json
 # OS specific
 Thumbs.db
 .DS_Store

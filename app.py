@@ -21,6 +21,8 @@ from therapy_agent import TherapyAgent
 from agentic_therapy_system import AgenticTherapySystem
 from voice_agent import VoiceAgent
 from video_agent import VideoAgent
+from crisis_counselling_mode import CrisisCounsellingMode
+from crisis_api import crisis_bp, init_crisis_api
 
 load_dotenv()
 
@@ -34,12 +36,16 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 CORS(app)
 
+# Register blueprints
+app.register_blueprint(crisis_bp)
+
 # Global components
 text_analyzer = None
 therapy_agent = None
 agentic_system = None
 voice_agent = None
 video_agent = None
+crisis_counselor = None
 
 class SessionManager:
     def __init__(self):
@@ -99,24 +105,24 @@ class SessionManager:
 session_manager = SessionManager()
 
 def initialize_components():
-    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent
+    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent, crisis_counselor
 
     logger.info("Initializing AI components...")
-    
+
     try:
         text_analyzer = TextAnalyzer()
         logger.info("✓ Text analyzer initialized")
     except Exception as e:
         logger.error(f"Failed to initialize text analyzer: {e}")
         text_analyzer = None
-    
+
     try:
         therapy_agent = TherapyAgent()
         logger.info("✓ Therapy agent initialized")
     except Exception as e:
         logger.error(f"Failed to initialize therapy agent: {e}")
         therapy_agent = None
-    
+
     try:
         agentic_system = AgenticTherapySystem()
         logger.info("✓ Agentic therapy system initialized")
@@ -137,6 +143,15 @@ def initialize_components():
     except Exception as e:
         logger.error(f"Failed to initialize video agent: {e}")
         video_agent = None
+
+    try:
+        crisis_counselor = CrisisCounsellingMode()
+        logger.info("✓ Crisis counselor initialized")
+        # Initialize crisis API with components
+        init_crisis_api(crisis_counselor, text_analyzer)
+    except Exception as e:
+        logger.error(f"Failed to initialize crisis counselor: {e}")
+        crisis_counselor = None
 
     if text_analyzer is None or agentic_system is None:
         logger.warning("Some components failed to initialize - app will run with limited functionality")
@@ -168,7 +183,8 @@ def health_check():
             'therapy_agent': therapy_agent is not None,
             'agentic_system': agentic_system is not None,
             'voice_agent': voice_agent is not None,
-            'video_agent': video_agent is not None
+            'video_agent': video_agent is not None,
+            'crisis_counselor': crisis_counselor is not None
         }
     })
 
@@ -394,6 +410,7 @@ def send_message():
         data = request.get_json()
         session_id = data.get('session_id')
         message = data.get('message', '').strip()
+        include_video = data.get('include_video', False)  # Check if video is enabled
         
         if not session_id or not message:
             return jsonify({
@@ -426,11 +443,63 @@ def send_message():
         else:
             analysis_results = _get_fallback_analysis(message)
         
+        # Analyze video if enabled and available
+        video_analysis = None
+        if include_video and video_agent:
+            try:
+                video_result = video_agent.get_latest_analysis()
+                if video_result.get('success'):
+                    video_analysis = video_result
+                    logger.info(f"Video analysis included: {video_analysis.get('dominant_emotion')} detected")
+                    
+                    # Merge video emotion into text analysis
+                    if analysis_results:
+                        analysis_results['video_emotion'] = video_analysis.get('dominant_emotion')
+                        analysis_results['video_confidence'] = video_analysis.get('confidence', 0.0)
+                        analysis_results['faces_detected'] = video_analysis.get('faces_detected', 0)
+            except Exception as e:
+                logger.error(f"Video analysis failed: {e}")
+                video_analysis = None
+        
         # Generate response using agentic system if available and enabled
         therapy_response = None
+        
+        # Prepare context for video-enhanced response
+        enhanced_context = {
+            'text_analysis': analysis_results,
+            'video_analysis': video_analysis,
+            'has_video': video_analysis is not None and video_analysis.get('faces_detected', 0) > 0
+        }
+        
         if agentic_system and session_data.get('agentic_mode', False):
             try:
                 therapy_response = agentic_system.generate_agentic_response(message, analysis_results)
+                
+                # Enhance response with video observation if available
+                if enhanced_context['has_video']:
+                    video_emotion = video_analysis.get('dominant_emotion', 'neutral')
+                    video_confidence = video_analysis.get('confidence', 0.0)
+                    
+                    # Prepend video observation to response
+                    emotion_observations = {
+                        'happy': "I can see from your facial expression that you're feeling happy",
+                        'sad': "I notice from your facial expression that you seem sad",
+                        'angry': "I can see from your face that you might be feeling frustrated or angry",
+                        'fear': "Your facial expression suggests you might be feeling anxious or worried",
+                        'surprise': "You look surprised! ",
+                        'neutral': "I'm looking at your facial expression",
+                        'disgust': "Your expression suggests something is bothering you"
+                    }
+                    
+                    observation = emotion_observations.get(video_emotion, f"I can see your {video_emotion} expression")
+                    
+                    if video_confidence > 0.6:
+                        video_prefix = f"{observation}. "
+                    else:
+                        video_prefix = f"{observation}, though I'm not entirely certain. "
+                    
+                    therapy_response['content'] = video_prefix + therapy_response['content']
+                
                 logger.info(f"Agentic response generated for session {session_id}")
             except Exception as e:
                 logger.error(f"Agentic response failed: {e}")
@@ -439,6 +508,24 @@ def send_message():
                     therapy_response = therapy_agent.generate_response(
                         message, analysis_results, session_data['chat_history']
                     )
+                    
+                    # Add video observation to fallback response too
+                    if enhanced_context['has_video']:
+                        video_emotion = video_analysis.get('dominant_emotion', 'neutral')
+                        video_confidence = video_analysis.get('confidence', 0.0)
+                        
+                        emotion_observations = {
+                            'happy': "I can see you're smiling",
+                            'sad': "I notice you look a bit down",
+                            'angry': "I can see you might be feeling upset",
+                            'fear': "You seem worried or anxious",
+                            'surprise': "You look surprised",
+                            'neutral': "I'm observing your expression",
+                            'disgust': "Something seems to be troubling you"
+                        }
+                        
+                        observation = emotion_observations.get(video_emotion, f"I notice your {video_emotion} expression")
+                        therapy_response['content'] = f"{observation}. {therapy_response['content']}"
                 else:
                     therapy_response = _get_fallback_response(message, analysis_results)
         elif therapy_agent:
@@ -446,12 +533,43 @@ def send_message():
                 therapy_response = therapy_agent.generate_response(
                     message, analysis_results, session_data['chat_history']
                 )
+                
+                # Add video observation to therapy response
+                if enhanced_context['has_video']:
+                    video_emotion = video_analysis.get('dominant_emotion', 'neutral')
+                    video_confidence = video_analysis.get('confidence', 0.0)
+                    
+                    emotion_observations = {
+                        'happy': "I can see from your facial expression that you're feeling positive",
+                        'sad': "I notice from your face that you seem sad or down",
+                        'angry': "I can see you might be feeling frustrated or angry right now",
+                        'fear': "Your facial expression shows you might be anxious or worried",
+                        'surprise': "You look surprised! ",
+                        'neutral': "I'm watching your expression as we talk",
+                        'disgust': "Your expression tells me something is bothering you"
+                    }
+                    
+                    observation = emotion_observations.get(video_emotion, f"I notice your {video_emotion} expression")
+                    
+                    if video_confidence > 0.6:
+                        video_prefix = f"{observation}. "
+                    else:
+                        video_prefix = f"{observation}, though I'm reading between the lines. "
+                    
+                    therapy_response['content'] = video_prefix + therapy_response['content']
+                
                 logger.info(f"Therapy response generated for session {session_id}")
             except Exception as e:
                 logger.error(f"Therapy response failed: {e}")
                 therapy_response = _get_fallback_response(message, analysis_results)
         else:
             therapy_response = _get_fallback_response(message, analysis_results)
+            
+            # Add video observation even to fallback
+            if enhanced_context['has_video']:
+                video_emotion = video_analysis.get('dominant_emotion', 'neutral')
+                observation = f"I can see you look {video_emotion}. "
+                therapy_response['content'] = observation + therapy_response['content']
         
         # Create message objects
         user_message = {
@@ -467,7 +585,8 @@ def send_message():
             'timestamp': datetime.now().isoformat(),
             'provider': therapy_response.get('provider', 'unknown'),
             'technique': therapy_response.get('technique', 'unknown'),
-            'personalized': therapy_response.get('personalized', False)
+            'personalized': therapy_response.get('personalized', False),
+            'video_enhanced': video_analysis is not None  # Flag to show video was used
         }
         
         # Add agentic features if available
@@ -476,6 +595,14 @@ def send_message():
             agentic_features['proactive_suggestion'] = therapy_response['proactive_suggestion']
         if therapy_response.get('goal_progress'):
             agentic_features['goal_progress'] = therapy_response['goal_progress']
+        
+        # Add video analysis to agentic features if available
+        if video_analysis and video_analysis.get('faces_detected', 0) > 0:
+            agentic_features['video_emotion_detected'] = {
+                'emotion': video_analysis.get('dominant_emotion'),
+                'confidence': video_analysis.get('confidence'),
+                'therapeutic_suggestion': video_analysis.get('therapeutic_suggestion')
+            }
         
         # Update session
         session_data['chat_history'].extend([user_message, assistant_message])
@@ -494,6 +621,7 @@ def send_message():
             'success': True,
             'assistant_response': assistant_message,
             'analysis': analysis_results,
+            'video_analysis': video_analysis,  # Include video data in response
             'crisis_detected': crisis_detected,
             'session_stats': session_data['stats'],
             'agentic_mode': session_data.get('agentic_mode', False)
