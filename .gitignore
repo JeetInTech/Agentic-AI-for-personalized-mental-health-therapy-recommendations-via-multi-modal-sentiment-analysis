@@ -1,3 +1,113 @@
-/logs
-/venv
-/session_data
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+therapy_agent.log
+
+# Session data (contains sensitive user data)
+session_data/
+privacy_records/
+
+# User data and databases
+*.db
+*.sqlite
+*.sqlite3
+user_memory.db
+
+# Encryption keys (CRITICAL - never commit!)
+keys/
+*.key
+encryption.key
+
+# Uploaded files
+uploads/
+video_data/
+models/
+
+# Multimodal profiles (may contain user data)
+multimodal_profiles/
+
+# Test files (optional - remove if you want to track them)
+test_*.py
+fertest.py
+camera_test.py
+diagnose_fer.py
+
+# AI Model cache
+.cache/
+*.pkl
+*.pth
+*.h5
+*.pb
+*.onnx
+
+# TensorFlow/Keras
+*.ckpt
+*.index
+*.meta
+checkpoints/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Configuration (remove config.json if it contains secrets)
+# config.json  # Uncomment if config has API keys
+
+# OS specific
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Flask
+instance/
+.webassets-cache
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# pytest
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Claude AI
+.claude/
