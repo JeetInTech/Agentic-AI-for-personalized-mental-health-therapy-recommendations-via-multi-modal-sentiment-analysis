@@ -110,3 +110,5 @@ dmypy.json
 
 # Claude AI
 .claude/
+
+remove_secrets.py
