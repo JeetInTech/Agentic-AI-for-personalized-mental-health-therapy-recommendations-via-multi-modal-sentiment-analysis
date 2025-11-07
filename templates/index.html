@@ -695,6 +695,170 @@
             height: 0;
         }
 
+        /* Credentials Modal Styles */
+        .credentials-modal {
+            max-width: 420px;
+        }
+
+        .credentials-container {
+            background: #000;
+            padding: 20px;
+            border-radius: 4px;
+            color: white;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .credentials-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .credentials-header h3 {
+            margin: 0;
+            font-size: 1.1em;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .credentials-header p {
+            margin: 8px 0 0 0;
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .credential-item {
+            background: #111;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            border: 1px solid #333;
+        }
+
+        .credential-label {
+            font-size: 0.75em;
+            color: #999;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .credential-value-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credential-value {
+            flex: 1;
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: white;
+            word-break: break-all;
+            border: 1px solid #444;
+        }
+
+        .copy-btn {
+            background: white;
+            color: black;
+            border: 1px solid white;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .copy-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .copy-btn.copied {
+            background: black;
+            color: white;
+            border-color: white;
+        }
+
+        .credentials-warning {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.85em;
+        }
+
+        .credentials-warning strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .credentials-warning p {
+            color: #999;
+            line-height: 1.4;
+        }
+
+        .credentials-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .credentials-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-download {
+            background: white;
+            color: black;
+            border: 1px solid white;
+        }
+
+        .btn-download:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+        }
+
+        .btn-continue {
+            background: black;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-continue:hover {
+            background: #1a1a1a;
+            transform: scale(1.02);
+        }
+
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -1183,7 +1347,7 @@
                 <h4>⚠️ Important:</h4>
                 <ul>
                     <li>This is an AI assistant, not a licensed therapist</li>
-                    <li>For emergencies: Call 911 or text 988</li>
+                    <li>For emergencies: Call 112 or KIRAN helpline 1800-599-0019</li>
                     <li>Crisis resources available 24/7</li>
                 </ul>
             </div>
@@ -1270,7 +1434,7 @@
                 <!-- Video Features -->
                 <div class="section">
                     <div class="section-header" onclick="toggleSection('video')">
-                        <h3><span class="button-icon">�📹</span>Video Features</h3>
+                        <h3><span class="button-icon">📹</span>Video Features</h3>
                         <span class="collapse-icon">▼</span>
                     </div>
                     <div class="section-content" id="video-section">
@@ -1290,8 +1454,8 @@
                             </label>
                         </div>
                         <div class="video-stream-container" id="videoStreamContainer" style="display: none; margin-top: 10px;">
-                            <video id="videoStream" width="100%" height="auto" autoplay muted 
-                                   style="border: 2px solid #ccc; border-radius: 8px; background: #000;"></video>
+                            <video id="videoStream" width="100%" height="auto" autoplay muted playsinline
+                                   style="border: 2px solid #4CAF50; border-radius: 8px; background: #000; min-height: 180px; max-width: 100%; object-fit: cover;"></video>
                         </div>
                         <div class="video-emotion-display" id="videoEmotionDisplay" style="display: none; margin-top: 10px;">
                             <div style="text-align: center;">
@@ -1341,15 +1505,15 @@
                     </div>
                     <div class="section-content" id="crisis-section">
                         <div class="crisis-resource">
-                            <strong>988</strong> - Suicide & Crisis Lifeline<br>
+                            <strong>1800-599-0019</strong> - KIRAN Mental Health<br>
                             <small>24/7 phone support</small>
                         </div>
                         <div class="crisis-resource">
-                            <strong>741741</strong> - Crisis Text Line<br>
-                            <small>Text HOME for support</small>
+                            <strong>9152987821</strong> - Vandrevala Foundation<br>
+                            <small>24/7 crisis helpline</small>
                         </div>
                         <div class="crisis-resource">
-                            <strong>911</strong> - Emergency Services<br>
+                            <strong>112</strong> - Emergency Services<br>
                             <small>Immediate danger</small>
                         </div>
                         <button class="button-sidebar" id="copingStrategiesBtn" style="margin-top: 10px;">
@@ -1582,6 +1746,56 @@
         </div>
     </div>
 
+    <!-- Credentials Modal -->
+    <div class="modal-overlay" id="credentialsModal">
+        <div class="modal credentials-modal">
+            <div class="modal-header" style="border-bottom: 1px solid #333; padding-bottom: 15px;">
+                <h3 class="modal-title" style="font-size: 1.1em; font-weight: 600;">Account Created</h3>
+                <button class="modal-close" onclick="closeCredentialsModal()">✕</button>
+            </div>
+            <div class="credentials-container">
+                <div class="credentials-header">
+                    <h3>Your Secure Credentials</h3>
+                    <p>Save these credentials to access your account</p>
+                </div>
+                
+                <div class="credential-item">
+                    <div class="credential-label">User ID</div>
+                    <div class="credential-value-container">
+                        <div class="credential-value" id="displayUserId">-</div>
+                        <button class="copy-btn" onclick="copyToClipboard('userId')">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="credential-item">
+                    <div class="credential-label">Password</div>
+                    <div class="credential-value-container">
+                        <div class="credential-value" id="displayPassword">-</div>
+                        <button class="copy-btn" onclick="copyToClipboard('password')">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="credentials-warning">
+                    <strong>Important</strong>
+                    <p style="margin: 5px 0 0 0;">Store these credentials safely. You'll need them to log in again.</p>
+                </div>
+            </div>
+
+            <div class="credentials-actions">
+                <button class="btn-download" onclick="downloadCredentials()">
+                    Download
+                </button>
+                <button class="btn-continue" onclick="closeCredentialsModal()">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let appState = {
             sessionId: null,
@@ -1707,7 +1921,7 @@
                     if (data.agentic_mode) {
                         appState.userId = data.consent_result?.user_id;
                         if (data.consent_result?.user_id && data.consent_result?.password) {
-                            alert(`Please save these credentials:\n\nUser ID: ${data.consent_result.user_id}\nPassword: ${data.consent_result.password}\n\nYou'll need these to access your data later.`);
+                            showCredentialsModal(data.consent_result.user_id, data.consent_result.password);
                         }
                     }
                     updateModeIndicator();
@@ -1866,12 +2080,17 @@
                         appState.videoEnabled = true;
                         if (videoToggleBtn) videoToggleBtn.textContent = '🚫 Disable Video';
                         if (analyzeVideoBtn) analyzeVideoBtn.disabled = false;
-                        if (videoInstructions) videoInstructions.textContent = 'Video system active';
-                        if (videoStreamContainer) videoStreamContainer.style.display = 'block';
-                        startVideoStream();
+                        if (videoInstructions) videoInstructions.textContent = 'Video system active - Backend processing';
+                        // Don't show video stream container since backend handles camera
+                        // if (videoStreamContainer) videoStreamContainer.style.display = 'block';
+                        // Don't start browser video stream - backend has the camera
+                        // startVideoStream();
+                    } else {
+                        alert('Failed to start video: ' + (data.error || 'Unknown error'));
                     }
                 } catch (error) {
                     console.error('Start video error:', error);
+                    alert('Failed to start video system');
                 }
             }
         }
@@ -1909,13 +2128,42 @@
         async function startVideoStream() {
             try {
                 const videoElement = document.getElementById('videoStream');
-                if (!videoElement) return;
+                if (!videoElement) {
+                    console.error('Video element not found');
+                    return;
+                }
+                
+                console.log('Requesting camera access...');
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {width: 320, height: 240, facingMode: 'user'}
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    }
                 });
+                
+                console.log('Camera access granted, setting up stream...');
                 videoElement.srcObject = stream;
+                
+                // Wait for video to be loaded
+                videoElement.onloadedmetadata = () => {
+                    console.log('Video metadata loaded');
+                    videoElement.play().then(() => {
+                        console.log('✅ Video stream started and playing successfully');
+                    }).catch(err => {
+                        console.error('Play error:', err);
+                    });
+                };
+                
             } catch (error) {
                 console.error('Video stream error:', error);
+                if (error.name === 'NotAllowedError') {
+                    alert('Camera permission denied. Please allow camera access in your browser settings.');
+                } else if (error.name === 'NotFoundError') {
+                    alert('No camera found. Please connect a camera and try again.');
+                } else {
+                    alert('Could not start video: ' + error.message);
+                }
             }
         }
 
@@ -2009,7 +2257,7 @@
             } else if (agenticMode) {
                 welcomeContent = 'Welcome to Agentic Therapy AI! I can remember our conversations and provide personalized support.';
             } else {
-                welcomeContent = 'Hello! I\'m here to provide mental health support. For emergencies, call 911 or text 988.';
+                welcomeContent = 'Hello! I\'m here to provide mental health support. For emergencies, call 112 or KIRAN helpline 1800-599-0019.';
             }
             const welcomeMsg = {
                 role: 'assistant',
@@ -2115,9 +2363,9 @@
             alertDiv.innerHTML = `
                 <strong>🚨 Crisis Support Available</strong><br>
                 Your safety is important. Please consider reaching out:<br><br>
-                <strong>988</strong> - Suicide & Crisis Lifeline (24/7)<br>
-                <strong>741741</strong> - Crisis Text Line (Text HOME)<br>
-                <strong>911</strong> - Emergency services<br><br>
+                <strong>1800-599-0019</strong> - KIRAN Mental Health Helpline (24/7)<br>
+                <strong>9152987821</strong> - Vandrevala Foundation Helpline (24/7)<br>
+                <strong>112</strong> - Emergency services<br><br>
                 Remember: You are not alone, and help is available.
             `;
             chatMessages.appendChild(alertDiv);
@@ -2210,6 +2458,96 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) modal.classList.remove('show');
+        }
+
+        // ============================================
+        // CREDENTIALS MODAL FUNCTIONS
+        // ============================================
+
+        let savedCredentials = { userId: '', password: '' };
+
+        function showCredentialsModal(userId, password) {
+            savedCredentials = { userId, password };
+            document.getElementById('displayUserId').textContent = userId;
+            document.getElementById('displayPassword').textContent = password;
+            openModal('credentialsModal');
+        }
+
+        function closeCredentialsModal() {
+            closeModal('credentialsModal');
+            // Focus on message input
+            setTimeout(() => document.getElementById('messageInput')?.focus(), 300);
+        }
+
+        async function copyToClipboard(type) {
+            const text = type === 'userId' ? savedCredentials.userId : savedCredentials.password;
+            const button = event.target.closest('.copy-btn');
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                // Visual feedback
+                const originalContent = button.innerHTML;
+                button.innerHTML = 'Copied';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    const originalContent = button.innerHTML;
+                    button.innerHTML = 'Copied';
+                    button.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalContent;
+                        button.classList.remove('copied');
+                    }, 2000);
+                } catch (err2) {
+                    alert('Failed to copy. Please manually copy the text.');
+                }
+                
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function downloadCredentials() {
+            const content = `Agentic Therapy AI - Account Credentials
+========================================
+
+User ID: ${savedCredentials.userId}
+Password: ${savedCredentials.password}
+
+IMPORTANT: Keep these credentials safe and secure.
+You will need them to access your account.
+
+Date Created: ${new Date().toLocaleString()}
+`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `therapy_ai_credentials_${savedCredentials.userId}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show success message
+            alert('Credentials downloaded successfully!');
         }
 
         // Duration counter
