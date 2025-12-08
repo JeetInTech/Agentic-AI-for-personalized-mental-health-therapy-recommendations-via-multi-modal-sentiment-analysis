@@ -54,14 +54,19 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.95);
-            display: flex !important;
+            display: flex;
             align-items: center;
             justify-content: center;
             z-index: 999999;
             /* Removed backdrop-filter for Chrome compatibility */
             padding: 20px;
-            visibility: visible !important;
-            opacity: 1 !important;
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .privacy-overlay[style*="display: none"] {
+            display: none !important;
         }
 
         .privacy-modal {
@@ -1892,6 +1897,10 @@
         }
 
         async function handlePrivacyConsent() {
+            console.log('🚀 handlePrivacyConsent called');
+            console.log('Session ID:', appState.sessionId);
+            console.log('Agentic mode:', appState.agenticMode);
+            
             if (!appState.sessionId) {
                 alert('Session not initialized. Please refresh.');
                 return;
@@ -1901,6 +1910,8 @@
                 const preferredName = document.getElementById('preferredName')?.value.trim();
                 const password = document.getElementById('userPassword')?.value.trim();
                 const retentionDays = parseInt(document.getElementById('retentionDays')?.value || '30');
+                console.log('Agentic mode selected:', {preferredName, hasPassword: !!password, retentionDays});
+                
                 if (!preferredName || !password) {
                     alert('Please fill in your name and create a password.');
                     return;
@@ -1912,15 +1923,13 @@
                     password: password
                 };
             } else {
+                console.log('Private mode selected');
                 userChoice = {choice: 'private'};
             }
+            
+            console.log('Sending consent request:', userChoice);
+            
             try {
-                const consentResponse = await fetch('/api/privacy/consent/request', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({session_id: appState.sessionId})
-                });
-                if (!consentResponse.ok) throw new Error('Failed to request consent');
                 const response = await fetch('/api/privacy/consent/respond', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1929,24 +1938,42 @@
                         user_choice: userChoice
                     })
                 });
+                
+                console.log('Response status:', response.status);
                 const data = await response.json();
+                console.log('Response data:', data);
+                
                 if (data.success) {
+                    console.log('✅ Consent processed successfully');
                     appState.consentCompleted = true;
+                    appState.agenticMode = data.agentic_mode || false;
+                    
+                    console.log('Hiding privacy consent...');
                     hidePrivacyConsent();
+                    
                     if (data.agentic_mode) {
                         appState.userId = data.consent_result?.user_id;
                         if (data.consent_result?.user_id && data.consent_result?.password) {
+                            console.log('Showing credentials modal...');
                             showCredentialsModal(data.consent_result.user_id, data.consent_result.password);
                         }
                     }
+                    
+                    console.log('Updating mode indicator...');
                     updateModeIndicator();
+                    
+                    console.log('Adding welcome message...');
                     addWelcomeMessage(data.agentic_mode);
-                    setTimeout(() => document.getElementById('messageInput')?.focus(), 500);
+                    
+                    setTimeout(() => {
+                        console.log('Focusing on message input...');
+                        document.getElementById('messageInput')?.focus();
+                    }, 500);
                 } else {
                     throw new Error(data.error || 'Failed to process consent');
                 }
             } catch (error) {
-                console.error('Consent error:', error);
+                console.error('❌ Consent error:', error);
                 alert('Failed to process your choice. Please try again.');
             }
         }
