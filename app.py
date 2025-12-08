@@ -27,6 +27,7 @@ from voice_agent import VoiceAgent
 from video_agent import VideoAgent
 from crisis_counselling_mode import CrisisCounsellingMode
 from crisis_api import crisis_bp, init_crisis_api
+from vector_session_manager import VectorSessionManager
 
 load_dotenv()
 
@@ -50,6 +51,7 @@ agentic_system = None
 voice_agent = None
 video_agent = None
 crisis_counselor = None
+vector_session_manager = None
 
 class SessionManager:
     def __init__(self):
@@ -109,9 +111,15 @@ class SessionManager:
 session_manager = SessionManager()
 
 def initialize_components():
-    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent, crisis_counselor
+    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent, crisis_counselor, vector_session_manager
 
     logger.info("Initializing AI components...")
+    
+    try:
+        vector_session_manager = VectorSessionManager()
+        logger.info("✓ Vector session manager initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize vector session manager: {e}")
 
     try:
         text_analyzer = TextAnalyzer()
@@ -616,6 +624,17 @@ def send_message():
         
         session_manager.update_session(session_id, session_data)
         
+        # Save to vector database for semantic search (if user has agentic mode)
+        if vector_session_manager and session_data.get('agentic_mode') and session_data.get('user_id'):
+            try:
+                vector_session_manager.save_session(
+                    user_id=session_data['user_id'],
+                    session_id=session_id,
+                    session_data=session_data
+                )
+            except Exception as e:
+                logger.warning(f"Failed to save session to vector DB: {e}")
+        
         # Check for crisis
         crisis_detected = analysis_results.get('crisis_classification', 'LOW') in ['HIGH', 'CRITICAL']
         if crisis_detected:
@@ -825,6 +844,104 @@ def delete_user_data():
         return jsonify({
             'success': False,
             'error': 'Failed to delete user data'
+        }), 500
+
+@app.route('/api/session/search', methods=['POST'])
+def search_past_conversations():
+    """Search past conversations using semantic similarity"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        query_text = data.get('query')
+        n_results = data.get('n_results', 5)
+        
+        if not session_id or not query_text:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID and query required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        user_id = session_data.get('user_id')
+        if not user_id or not vector_session_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Vector search not available'
+            }), 400
+        
+        # Search similar conversations
+        similar = vector_session_manager.find_similar_conversations(
+            user_id=user_id,
+            query_text=query_text,
+            n_results=n_results
+        )
+        
+        return jsonify({
+            'success': True,
+            'similar_conversations': similar,
+            'count': len(similar)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error searching conversations: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Search failed'
+        }), 500
+
+@app.route('/api/session/history', methods=['POST'])
+def get_session_history():
+    """Get user's session history"""
+    try:
+        ensure_initialized()
+        data = request.get_json()
+        session_id = data.get('session_id')
+        limit = data.get('limit', 10)
+        
+        if not session_id:
+            return jsonify({
+                'success': False,
+                'error': 'Session ID required'
+            }), 400
+        
+        session_data = session_manager.get_session(session_id)
+        if not session_data:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid session'
+            }), 404
+        
+        user_id = session_data.get('user_id')
+        if not user_id or not vector_session_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Session history not available'
+            }), 400
+        
+        # Get past sessions
+        past_sessions = vector_session_manager.get_user_sessions(
+            user_id=user_id,
+            limit=limit
+        )
+        
+        return jsonify({
+            'success': True,
+            'sessions': past_sessions,
+            'count': len(past_sessions)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting session history: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to retrieve history'
         }), 500
 
 @app.route('/api/session/settings', methods=['POST'])

@@ -676,6 +676,13 @@ Would you like me to remember our conversations, or prefer to keep each session 
             self.current_user_id = user_id
             profile = self.memory_manager.get_user_profile(user_id)
             
+            # Check if profile was successfully retrieved
+            if not profile:
+                return {
+                    "status": "error",
+                    "message": "Failed to load user profile. Please try again or start a new session."
+                }
+            
             # Check if proactive check-in needed
             checkin_needed = self.intervention_engine.should_initiate_checkin(user_id)
             
