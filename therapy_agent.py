@@ -119,9 +119,9 @@ class TherapyAgent:
         # Crisis responses
         self.crisis_responses = {
             'HIGH': [
-                "I'm very concerned about what you've shared. Your safety is important. Please consider reaching out to a crisis hotline at 988 or emergency services at 911.",
-                "Thank you for trusting me with these difficult feelings. Right now, I want to make sure you're safe. The 988 Suicide & Crisis Lifeline is available 24/7.",
-                "These feelings sound overwhelming. Please know that help is available. You can call 988 for immediate support or 911 if you're in immediate danger."
+                "I'm very concerned about what you've shared. Your safety is important. Please consider reaching out to AASRA at 9820466726 or emergency services at 112.",
+                "Thank you for trusting me with these difficult feelings. Right now, I want to make sure you're safe. AASRA (9820466726) is available 24/7 for suicide prevention support.",
+                "These feelings sound overwhelming. Please know that help is available. You can call AASRA at 9820466726 for immediate support or 112 if you're in immediate danger."
             ],
             'MODERATE': [
                 "I hear that you're going through a really difficult time. Have you considered speaking with a mental health professional?",
@@ -515,10 +515,11 @@ Respond with empathy and professional therapeutic guidance. Provide specific, ac
         additional_resources = []
         
         if any('suicide' in indicator for indicator in crisis_indicators):
-            additional_resources.append("National Suicide Prevention Lifeline: 988")
+            additional_resources.append("AASRA Suicide Prevention: 9820466726")
+            additional_resources.append("Vandrevala Foundation: 1860-2662-345")
         
         if any('self_harm' in indicator for indicator in crisis_indicators):
-            additional_resources.append("Crisis Text Line: Text HOME to 741741")
+            additional_resources.append("iCall Psychosocial Helpline: 9152987821")
         
         # Combine response with resources
         full_response = base_response

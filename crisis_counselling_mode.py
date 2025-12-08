@@ -193,16 +193,16 @@ class CrisisCounsellingMode:
         self.response_templates = {
             CrisisType.SUICIDAL_IDEATION: {
                 EmotionalTone.IMMEDIATE_CRISIS: [
-                    "I'm so glad you reached out. What you're feeling right now matters deeply, and I want you to know that you're not alone. Your life has value, even when it doesn't feel that way. Can we talk about what's happening right now? And please know that immediate help is available - the 988 Suicide & Crisis Lifeline is there 24/7 at 988, or you can text 'HELLO' to 741741. You deserve support through this.",
-                    "Thank you for trusting me with these incredibly difficult feelings. Right now, your safety is what matters most. I want you to know that these feelings, as overwhelming as they are, can change - and there are people who want to help you through this. Please reach out to 988 (Suicide & Crisis Lifeline) or 911 if you're in immediate danger. Can you tell me if you're somewhere safe right now?",
-                    "I hear how much pain you're in, and I'm really concerned about you. What you're going through is incredibly hard, but you took an important step by reaching out. Please don't face this alone - call 988 right now for immediate support, or 911 if you need emergency help. While we talk, can you tell me if there's someone nearby who can be with you?"
+                    "I'm so glad you reached out. What you're feeling right now matters deeply, and I want you to know that you're not alone. Your life has value, even when it doesn't feel that way. Can we talk about what's happening right now? And please know that immediate help is available - AASRA is there 24/7 at 9820466726, or you can reach Vandrevala Foundation at 1860-2662-345 (9am-9pm). You deserve support through this.",
+                    "Thank you for trusting me with these incredibly difficult feelings. Right now, your safety is what matters most. I want you to know that these feelings, as overwhelming as they are, can change - and there are people who want to help you through this. Please reach out to AASRA (9820466726) or 112 if you're in immediate danger. Can you tell me if you're somewhere safe right now?",
+                    "I hear how much pain you're in, and I'm really concerned about you. What you're going through is incredibly hard, but you took an important step by reaching out. Please don't face this alone - call AASRA at 9820466726 right now for immediate support, or 112 if you need emergency help. While we talk, can you tell me if there's someone nearby who can be with you?"
                 ]
             },
             CrisisType.SELF_HARM: {
                 EmotionalTone.ACUTE_DISTRESS: [
-                    "I can hear how much emotional pain you're carrying, and I'm really concerned about you. Self-harm often happens when the pain inside feels unbearable and there seems to be no other way to cope. You deserve care and support, not harm. Can we talk about what's happening? The Crisis Text Line (text HELLO to 741741) can also provide immediate support. Are you somewhere safe right now?",
-                    "Thank you for sharing this with me - that takes courage. When we feel overwhelmed, sometimes our mind searches for any way to release the pain. But you deserve healing, not hurt. There are other ways to manage these intense feelings, and people who can help you find them. Can we explore what you're feeling right now? And please know the 988 Lifeline is available anytime you need immediate support.",
-                    "I'm hearing that you're struggling with urges to hurt yourself, and I want you to know that these feelings, while powerful, don't define you. They're a signal that you're in deep pain and need support. Let's work through this moment together. Can you try holding ice cubes, snapping a rubber band on your wrist, or calling 741741 right now? What would feel most manageable?"
+                    "I can hear how much emotional pain you're carrying, and I'm really concerned about you. Self-harm often happens when the pain inside feels unbearable and there seems to be no other way to cope. You deserve care and support, not harm. Can we talk about what's happening? iCall Psychosocial Helpline (9152987821) can provide immediate support Monday-Saturday 8am-10pm. Are you somewhere safe right now?",
+                    "Thank you for sharing this with me - that takes courage. When we feel overwhelmed, sometimes our mind searches for any way to release the pain. But you deserve healing, not hurt. There are other ways to manage these intense feelings, and people who can help you find them. Can we explore what you're feeling right now? And please know AASRA (9820466726) is available 24/7 anytime you need immediate support.",
+                    "I'm hearing that you're struggling with urges to hurt yourself, and I want you to know that these feelings, while powerful, don't define you. They're a signal that you're in deep pain and need support. Let's work through this moment together. Can you try holding ice cubes, snapping a rubber band on your wrist, or calling iCall at 9152987821 right now? What would feel most manageable?"
                 ]
             },
             CrisisType.GRIEF_LOSS: {
@@ -478,43 +478,54 @@ class CrisisCounsellingMode:
         """Initialize professional resources and hotlines"""
         self.professional_resources = {
             'crisis': {
-                'Suicide & Crisis Lifeline': {
-                    'phone': '988',
+                'AASRA': {
+                    'phone': '9820466726',
                     'description': '24/7 suicide prevention and crisis support',
-                    'website': '988lifeline.org'
+                    'website': 'www.aasra.info',
+                    'email': 'aasrahelpline@yahoo.com'
                 },
-                'Crisis Text Line': {
-                    'text': 'Text HELLO to 741741',
-                    'description': '24/7 crisis support via text',
-                    'website': 'crisistextline.org'
+                'Vandrevala Foundation': {
+                    'phone': '1860-2662-345 / 1800-2333-330',
+                    'description': 'Mental health support and crisis counseling',
+                    'hours': '24/7',
+                    'website': 'www.vandrevalafoundation.com'
                 },
                 'Emergency Services': {
-                    'phone': '911',
+                    'phone': '112',
                     'description': 'For immediate life-threatening emergencies'
+                },
+                'iCall Psychosocial Helpline': {
+                    'phone': '9152987821',
+                    'email': 'icall@tiss.edu',
+                    'description': 'Professional counseling and emotional support',
+                    'hours': 'Monday-Saturday, 8am-10pm'
                 }
             },
             'support': {
-                'SAMHSA National Helpline': {
-                    'phone': '1-800-662-4357',
-                    'description': 'Mental health and substance abuse referrals',
-                    'hours': '24/7'
-                },
-                'NAMI HelpLine': {
-                    'phone': '1-800-950-6264',
+                'NIMHANS Helpline': {
+                    'phone': '080-46110007',
                     'description': 'Mental health information and support',
-                    'hours': 'Monday-Friday, 10am-10pm ET'
+                    'hours': 'Monday-Saturday, 9am-5:30pm'
                 },
-                'Grief Support': {
-                    'resources': [
-                        'GriefShare groups (griefshare.org)',
-                        'The Compassionate Friends (for parents who lost children)',
-                        'Tragedy Assistance Program for Survivors (TAPS)'
-                    ]
+                'Sneha Foundation': {
+                    'phone': '044-24640050',
+                    'description': 'Emotional support and suicide prevention',
+                    'hours': '24/7',
+                    'website': 'www.snehaindia.org'
                 },
-                'Trauma Resources': {
-                    'phone': '1-800-656-4673',
-                    'description': 'RAINN Sexual Assault Hotline',
-                    'hours': '24/7'
+                'The Live Love Laugh Foundation': {
+                    'website': 'www.thelivelovelaughfoundation.org',
+                    'description': 'Mental health awareness and support resources'
+                },
+                'Connecting NGO': {
+                    'phone': '9922001122 / 9922004305',
+                    'description': 'Mental health support',
+                    'hours': '12pm-8pm'
+                },
+                'Mpower 1on1': {
+                    'phone': '1800-120-820050',
+                    'description': 'Mental health counseling',
+                    'hours': '9am-9pm'
                 }
             },
             'therapy_types': {
