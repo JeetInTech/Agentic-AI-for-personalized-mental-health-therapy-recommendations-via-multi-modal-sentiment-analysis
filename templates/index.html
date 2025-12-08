@@ -54,12 +54,14 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.95);
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             z-index: 999999;
-            backdrop-filter: blur(10px);
+            /* Removed backdrop-filter for Chrome compatibility */
             padding: 20px;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .privacy-modal {
@@ -1832,11 +1834,20 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('privateOption')?.addEventListener('click', () => selectPrivacyOption('private'));
-            document.getElementById('agenticOption')?.addEventListener('click', () => selectPrivacyOption('agentic'));
-            document.getElementById('proceedButton')?.addEventListener('click', handlePrivacyConsent);
-            document.getElementById('returningUserButton')?.addEventListener('click', showReturningUserForm);
-            document.getElementById('loginButton')?.addEventListener('click', handleReturningUser);
+            console.log('🔧 Setting up event listeners...');
+            const privateOption = document.getElementById('privateOption');
+            const agenticOption = document.getElementById('agenticOption');
+            const proceedButton = document.getElementById('proceedButton');
+            const returningUserButton = document.getElementById('returningUserButton');
+            const loginButton = document.getElementById('loginButton');
+            
+            if (privateOption) privateOption.addEventListener('click', () => selectPrivacyOption('private'));
+            if (agenticOption) agenticOption.addEventListener('click', () => selectPrivacyOption('agentic'));
+            if (proceedButton) proceedButton.addEventListener('click', handlePrivacyConsent);
+            if (returningUserButton) returningUserButton.addEventListener('click', showReturningUserForm);
+            if (loginButton) loginButton.addEventListener('click', handleReturningUser);
+            
+            console.log('✅ Privacy consent listeners attached');
             document.getElementById('sendButton')?.addEventListener('click', sendMessage);
             document.getElementById('messageInput')?.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -1854,21 +1865,25 @@
         }
 
         function selectPrivacyOption(option) {
+            console.log('📋 Privacy option selected:', option);
             document.getElementById('privateOption')?.classList.remove('selected');
             document.getElementById('agenticOption')?.classList.remove('selected');
             document.getElementById('retentionSelector')?.classList.remove('show');
             document.getElementById('userCredentials')?.classList.remove('show');
             if (option === 'private') {
                 document.getElementById('privateOption')?.classList.add('selected');
-                document.getElementById('proceedButton').disabled = false;
+                const proceedBtn = document.getElementById('proceedButton');
+                if (proceedBtn) proceedBtn.disabled = false;
                 appState.agenticMode = false;
             } else {
                 document.getElementById('agenticOption')?.classList.add('selected');
                 document.getElementById('retentionSelector')?.classList.add('show');
                 document.getElementById('userCredentials')?.classList.add('show');
-                document.getElementById('proceedButton').disabled = false;
+                const proceedBtn = document.getElementById('proceedButton');
+                if (proceedBtn) proceedBtn.disabled = false;
                 appState.agenticMode = true;
             }
+            console.log('✅ Proceed button enabled');
         }
 
         function showReturningUserForm() {
@@ -1976,9 +1991,15 @@
         }
 
         function hidePrivacyConsent() {
+            console.log('🔒 Hiding privacy consent overlay');
             const overlay = document.getElementById('privacyOverlay');
             if (overlay) {
                 overlay.style.display = 'none';
+                overlay.style.visibility = 'hidden';
+                overlay.style.opacity = '0';
+                console.log('✅ Privacy consent hidden');
+            } else {
+                console.error('❌ Privacy overlay not found when hiding!');
             }
             enableChatInterface();
         }
@@ -2427,6 +2448,19 @@
         // Call this in initializeApp
         async function enhancedInitializeApp() {
             try {
+                console.log('🚀 Initializing app...');
+                
+                // Ensure privacy overlay is visible
+                const overlay = document.getElementById('privacyOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    overlay.style.visibility = 'visible';
+                    overlay.style.opacity = '1';
+                    console.log('✅ Privacy overlay displayed');
+                } else {
+                    console.error('❌ Privacy overlay not found!');
+                }
+                
                 disableChatInterface();
                 setupEventListeners();
                 setupAllEventListeners(); // Add new listeners

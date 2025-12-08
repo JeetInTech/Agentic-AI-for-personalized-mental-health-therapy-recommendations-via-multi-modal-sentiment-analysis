@@ -12,6 +12,7 @@ torch==2.1.2
 torchvision==0.16.2
 torchaudio==2.1.2
 transformers==4.36.2
+protobuf>=4.25.0
 sentencepiece==0.1.99
 tokenizers==0.15.0
 accelerate==0.25.0
@@ -42,7 +43,7 @@ audioread==3.0.1
 # Video & Computer Vision
 # ============================================
 opencv-python==4.9.0.80
-mediapipe==0.10.9
+# mediapipe==0.10.9  # Removed: conflicts with protobuf requirements
 pillow==10.2.0
 fer==22.5.1
 
@@ -59,7 +60,7 @@ openai==1.12.0
 # ============================================
 # Data Processing & Analysis
 # ============================================
-numpy
+numpy<2  # PyTorch 2.1.2 requires numpy 1.x
 pandas
 scikit-learn
 scipy

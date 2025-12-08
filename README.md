@@ -15,11 +15,10 @@ A comprehensive AI-powered mental health support system that combines text, voic
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Project Structure](#project-structure)
+- [Crisis Counselling Mode](#crisis-counselling-mode)
 - [API Endpoints](#api-endpoints)
-- [Crisis Resources](#crisis-resources)
 - [Privacy & Security](#privacy--security)
-- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
 - [License](#license)
 
 ---
@@ -361,63 +360,83 @@ Proactive Check-ins & Recommendations
 ## 🚀 Installation
 
 ### Prerequisites
-- **Python**: 3.8 - 3.11 (3.10 recommended)
+- **Python**: 3.10 or 3.11 (recommended)
 - **Operating System**: Windows, macOS, or Linux
 - **Camera**: Optional (for video features)
 - **Microphone**: Optional (for voice features)
 
-### Step 1: Clone Repository
+### Quick Install
+
 ```bash
+# 1. Clone Repository
 git clone https://github.com/JeetInTech/Agentic-AI-for-personalized-mental-health-therapy-recommendations-via-multi-modal-sentiment-analysis.git
 cd health
-```
 
-### Step 2: Create Virtual Environment
-```bash
-# Windows
+# 2. Create Virtual Environment
 python -m venv venv
+
+# Windows
 venv\Scripts\activate
 
 # macOS/Linux
-python3 -m venv venv
 source venv/bin/activate
-```
 
-### Step 3: Install Dependencies
-```bash
+# 3. Fix NumPy compatibility (Important!)
+pip install "numpy<2.0"
+pip install "protobuf==4.25.3"
+
+# 4. Install Dependencies
 pip install -r requirements.txt
 ```
 
-**Note**: On Windows, PyAudio may require:
+### Windows-Specific Instructions
+
+**PyAudio Installation (Required for Voice Features):**
 ```bash
 pip install pipwin
 pipwin install pyaudio
 ```
 
-### Step 4: Install Ollama (Optional - for local LLM)
+**Visual C++ Build Tools:**
+Some packages require C++ compiler. Download from:
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+Install "Desktop development with C++"
+
+### macOS Instructions
+```bash
+brew install portaudio
+pip install -r requirements.txt
+```
+
+### Linux (Ubuntu/Debian) Instructions
+```bash
+sudo apt-get update
+sudo apt-get install -y python3-dev portaudio19-dev libsndfile1 ffmpeg
+pip install -r requirements.txt
+```
+
+### Optional: Install Ollama (Local LLM)
 Download from: https://ollama.ai/download
 
 ```bash
-# Pull the model
 ollama pull llama3.1:8b
 ```
 
-### Step 5: Configure Environment Variables
-Create a `.env` file in the project root:
+### Configure Environment Variables
+Create a `.env` file:
 ```env
 GROQ_API_KEY=your_groq_api_key_here
 SECRET_KEY=your_secret_key_here
-FLASK_ENV=development
 ```
 
-Get your Groq API key from: https://console.groq.com/
+Get Groq API key from: https://console.groq.com/
 
-### Step 6: Run the Application
+### Run the Application
 ```bash
 python app.py
 ```
 
-Access the application at: **http://localhost:5000**
+Access at: **http://localhost:5000**
 
 ---
 
@@ -592,131 +611,126 @@ DELETE /api/goals/{id}               # Delete goal
 
 ---
 
-## 🧪 Testing
+## 🆘 Crisis Counselling Mode
 
-Run tests:
-```bash
-# All tests
-pytest
+### Features
+- **Automatic Crisis Detection**: Identifies 13+ crisis types (suicide ideation, self-harm, depression, anxiety, grief, etc.)
+- **Adaptive Responses**: Emotionally intelligent, context-aware support
+- **Evidence-Based Strategies**: Immediate, short-term, and long-term coping techniques
+- **Professional Resources**: Crisis hotlines and emergency contacts
+- **LLM Integration**: Enhanced empathy through Groq/Ollama with graceful fallbacks
 
-# Specific tests
-python test_system.py
-python test_emotion_detection.py
-python test_voice_output.py
-python test_crisis_mode.py
-```
+### Testing Crisis Mode
+Try these messages:
+- **Suicidal Ideation**: "I want to end it all"
+- **Depression**: "I feel hopeless and empty"
+- **Anxiety**: "I'm having a panic attack"
+- **Grief**: "I lost someone I love"
+
+### Crisis Resources (India)
+- **KIRAN Mental Health**: 1800-599-0019 (24/7)
+- **Vandrevala Foundation**: 9152987821 (24/7)
+- **Emergency Services**: 112
+- **NIMHANS Helpline**: 080-46110007
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### Common Issues
+### Installation Issues
 
-**1. PyAudio Installation Error (Windows)**
+**1. NumPy/Protobuf Version Conflicts**
+```bash
+pip uninstall numpy protobuf -y
+pip install "numpy<2.0" "protobuf==4.25.3"
+```
+
+**2. PyAudio Installation Error (Windows)**
 ```bash
 pip install pipwin
 pipwin install pyaudio
 ```
 
-**2. Camera Not Working**
+**3. Transformers Import Error**
+```bash
+pip install --upgrade transformers torch
+```
+
+### Runtime Issues
+
+**4. Camera Not Working**
 - Check camera permissions in Windows Settings
-- Ensure no other application is using the camera
-- Try different camera_index in config.json (0, 1, 2...)
+- Ensure no other app is using the camera
+- Try different camera_index in config.json (0, 1, 2)
 
-**3. Voice Recognition Not Working**
+**5. Voice Recognition Not Working**
 - Check microphone permissions
-- Test microphone in Windows Sound settings
-- Install latest audio drivers
+- Test microphone in system settings
+- Update audio drivers
 
-**4. LLM Not Responding**
-- Verify Groq API key in .env file
-- Check internet connection for Groq API
-- Ensure Ollama is running for local fallback
-- Check logs for detailed error messages
+**6. LLM Not Responding**
+- Verify GROQ_API_KEY in .env file
+- Check internet connection
+- Ensure Ollama is running (if using local fallback)
+- Check logs/app.log for errors
 
-**5. Models Not Downloading**
-- Ensure stable internet connection
-- HuggingFace models download on first run
-- Check available disk space (models ~500MB-2GB)
+**7. Models Not Downloading**
+- Stable internet connection required
+- First run downloads ~2-5GB of models
+- Check available disk space
+- Models cache in `models/` directory
+
+### Chrome-Specific Issues
+
+**8. Consent Popup Not Showing in Chrome**
+- Clear browser cache
+- Disable browser extensions
+- Try incognito mode
+- Check browser console for errors (F12)
 
 ---
 
-## 📊 Performance
+## 📊 System Requirements
 
-### Resource Requirements
-- **RAM**: Minimum 4GB, Recommended 8GB+
+- **RAM**: 4GB minimum, 8GB+ recommended
 - **Storage**: ~5GB for models and dependencies
 - **CPU**: Multi-core recommended for real-time video
 - **GPU**: Optional (CUDA support for faster inference)
+- **Python**: 3.10 or 3.11
 
 ### Model Loading Times
-- Text Models: ~5-10 seconds (first load)
-- Video Models: ~10-15 seconds (first load)
+- Text Models: 5-10 seconds (first load)
+- Video Models: 10-15 seconds (first load)
 - LLM Response: 2-5 seconds (Groq), 5-15 seconds (Ollama)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see LICENSE file for details.
 
 ---
 
-## 👥 Authors
+## 👥 Author
 
-- **JeetInTech** - [GitHub Profile](https://github.com/JeetInTech)
+**JeetInTech** - [GitHub](https://github.com/JeetInTech)
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **HuggingFace** for transformer models
-- **Groq** for LLM API access
-- **Ollama** for local LLM deployment
-- **OpenCV** for computer vision
-- **FER** for facial emotion recognition
-- Mental health professionals who provided guidance
+- HuggingFace for transformer models
+- Groq for LLM API access
+- Ollama for local LLM deployment
+- OpenCV and FER for emotion recognition
+- Mental health professionals for guidance
 
 ---
 
-## 📞 Support
+**⚠️ Medical Disclaimer**
 
-For issues, questions, or suggestions:
-- GitHub Issues: [Create an Issue](https://github.com/JeetInTech/Agentic-AI-for-personalized-mental-health-therapy-recommendations-via-multi-modal-sentiment-analysis/issues)
-- Email: [Your Email]
+This application provides supportive information only and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult qualified healthcare providers for mental health concerns. In emergencies, call 112 or visit the nearest hospital immediately.
 
 ---
 
-## 🔮 Future Enhancements
-
-- [ ] Multi-language support
-- [ ] Mobile application (React Native)
-- [ ] Integration with wearable devices
-- [ ] Advanced emotion trend visualization
-- [ ] Therapist dashboard for monitoring
-- [ ] Integration with electronic health records
-- [ ] Voice emotion analysis (prosody)
-- [ ] Group therapy session support
-
----
-
-**⚠️ Important Medical Disclaimer**
-
-This application is designed to provide supportive information and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a mental health condition. Never disregard professional medical advice or delay in seeking it because of something you have read or learned through this application.
-
-If you are experiencing a medical emergency, please call 112 immediately.
-
----
-
-Made with ❤️ for mental health awareness and support
+Made with ❤️ for mental health awareness

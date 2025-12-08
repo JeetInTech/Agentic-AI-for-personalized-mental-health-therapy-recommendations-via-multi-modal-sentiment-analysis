@@ -13,6 +13,10 @@ import json
 from typing import Dict, List, Any, Optional
 import threading
 import random
+
+# Prevent transformers from importing TensorFlow/Flax, avoiding protobuf runtime_version errors
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
+os.environ.setdefault("TRANSFORMERS_NO_FLAX", "1")
 from dotenv import load_dotenv
 
 # Import our modules

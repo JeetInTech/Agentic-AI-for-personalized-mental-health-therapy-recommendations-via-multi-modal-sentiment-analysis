@@ -3,11 +3,17 @@ Simplified Text Analyzer for Mental Health Therapy System
 Phase 1: Text-only analysis with reliable models and robust error handling
 """
 
+import os
 import torch
 import logging
 import re
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+
+# Avoid pulling in TensorFlow/Flax inside transformers to prevent protobuf runtime issues
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
+os.environ.setdefault("TRANSFORMERS_NO_FLAX", "1")
+
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np
 
