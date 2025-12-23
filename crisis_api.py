@@ -392,7 +392,7 @@ def get_coping_strategies():
                 'error': 'Crisis counseling mode not available'
             }), 503
 
-        crisis_type = request.args.get('crisis_type')
+        crisis_type = request.args.get('crisis_type', 'general_distress')
         level = request.args.get('level', 'all')
 
         if not crisis_type:
@@ -405,11 +405,13 @@ def get_coping_strategies():
         from crisis_counselling_mode import CrisisType
 
         try:
-            crisis_enum = CrisisType[crisis_type.upper()]
-        except KeyError:
+            # Convert lowercase with underscores to uppercase enum name
+            crisis_enum = CrisisType(crisis_type.lower())
+        except (KeyError, ValueError) as e:
+            logger.error(f"Invalid crisis type '{crisis_type}': {e}")
             return jsonify({
                 'success': False,
-                'error': f'Invalid crisis type: {crisis_type}'
+                'error': f'Invalid crisis type: {crisis_type}. Available types: {[ct.value for ct in CrisisType]}'
             }), 400
 
         all_strategies = crisis_counselor.coping_strategies.get(crisis_enum, {})

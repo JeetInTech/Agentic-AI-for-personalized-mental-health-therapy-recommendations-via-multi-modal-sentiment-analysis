@@ -2965,16 +2965,25 @@ Date Created: ${new Date().toLocaleString()}
             }
 
             try {
-                // Use general_distress as default
+                // Use general_distress as default - must match enum name exactly
                 const response = await fetch('/api/crisis/coping-strategies?crisis_type=general_distress');
                 const data = await response.json();
+                
+                console.log('Coping strategies response:', data);
                 
                 if (data.success && data.strategies) {
                     appState.copingStrategiesCache = data.strategies;
                     displayCopingStrategies(data.strategies);
+                } else {
+                    console.error('Failed to load strategies:', data.error);
+                    // Display error message
+                    document.getElementById('immediateStrategiesList').innerHTML = 
+                        '<div class="coping-strategy" style="color: #dc2626;">Failed to load strategies. Please try again.</div>';
                 }
             } catch (error) {
                 console.error('Load coping strategies error:', error);
+                document.getElementById('immediateStrategiesList').innerHTML = 
+                    '<div class="coping-strategy" style="color: #dc2626;">Error loading strategies. Please check your connection.</div>';
             }
         }
 
