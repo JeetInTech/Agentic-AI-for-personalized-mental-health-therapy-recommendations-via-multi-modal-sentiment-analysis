@@ -471,6 +471,118 @@ class CrisisCounsellingMode:
                     "Build resilience through community connection",
                     "Find meaning and growth opportunities"
                 ]
+            },
+            CrisisType.GENERAL_DISTRESS: {
+                'immediate': [
+                    "Take 5 deep breaths - in through nose, out through mouth",
+                    "Drink a glass of water and check if you need food or rest",
+                    "Step away from the stressor for 5-10 minutes if possible",
+                    "Call or text a trusted friend or family member",
+                    "Write down what you're feeling without judgment"
+                ],
+                'short_term': [
+                    "Break down your challenges into smaller, manageable steps",
+                    "Practice one self-care activity daily (walk, music, reading)",
+                    "Set boundaries on work, social media, or other stressors",
+                    "Talk to someone you trust about what you're experiencing",
+                    "Make a list of things you can control vs. things you can't"
+                ],
+                'long_term': [
+                    "Develop a regular self-care routine",
+                    "Consider therapy or counseling for ongoing support",
+                    "Build healthy coping mechanisms (exercise, hobbies, social connection)",
+                    "Learn stress management techniques (mindfulness, time management)",
+                    "Cultivate a support network you can rely on"
+                ]
+            },
+            CrisisType.SELF_HARM: {
+                'immediate': [
+                    "Call a crisis helpline (AASRA: 9820466726, iCall: 9152987821)",
+                    "Use ice cubes, snap a rubber band, or hold something cold instead",
+                    "Call a trusted person and tell them you're struggling",
+                    "Go to a safe public place or stay with someone",
+                    "Use the 'TIPP' skill: Temperature (cold water), Intense exercise, Paced breathing, Paired muscle relaxation"
+                ],
+                'short_term': [
+                    "Remove or secure items you might use to self-harm",
+                    "Create a 'safety box' with soothing items and coping tools",
+                    "Use distraction techniques when urges arise",
+                    "Practice emotional regulation skills (DBT techniques)",
+                    "Identify triggers and make a plan for managing them"
+                ],
+                'long_term': [
+                    "Work with a therapist specializing in self-harm (DBT is very effective)",
+                    "Develop healthy ways to express and manage intense emotions",
+                    "Build a strong support system who understands your struggle",
+                    "Address underlying mental health issues (depression, trauma, etc.)",
+                    "Learn to replace self-harm with healthier coping mechanisms"
+                ]
+            },
+            CrisisType.HEALTH_CRISIS: {
+                'immediate': [
+                    "Reach out to your medical team with questions and concerns",
+                    "Allow yourself to feel your emotions about the diagnosis",
+                    "Ask a trusted person to be with you for medical appointments",
+                    "Focus on one day at a time rather than the long-term"
+                ],
+                'short_term': [
+                    "Learn about your condition from reliable medical sources",
+                    "Join a support group for people with similar health challenges",
+                    "Create a system for managing medications and appointments",
+                    "Practice stress-reduction techniques regularly",
+                    "Communicate openly with loved ones about what you need"
+                ],
+                'long_term': [
+                    "Work with a therapist to process health-related anxiety and grief",
+                    "Advocate for yourself in medical settings",
+                    "Find ways to maintain quality of life despite health challenges",
+                    "Build a care team including mental health support",
+                    "Connect with others who have navigated similar health journeys"
+                ]
+            },
+            CrisisType.FINANCIAL_STRESS: {
+                'immediate': [
+                    "Make a list of your most urgent financial concerns",
+                    "Contact creditors to discuss payment plans if needed",
+                    "Look into immediate assistance programs (food banks, utility assistance)",
+                    "Avoid making impulsive financial decisions when stressed"
+                ],
+                'short_term': [
+                    "Create a basic budget to understand your financial situation",
+                    "Research available resources (government assistance, community programs)",
+                    "Consider free financial counseling services",
+                    "Talk to trusted people about your situation - you don't have to hide it",
+                    "Focus on small financial goals you can achieve"
+                ],
+                'long_term': [
+                    "Work with a financial advisor or counselor on a recovery plan",
+                    "Develop better financial literacy and money management skills",
+                    "Build an emergency fund gradually, even small amounts help",
+                    "Address any emotional spending or financial trauma with a therapist",
+                    "Create a realistic financial plan for the future"
+                ]
+            },
+            CrisisType.FAMILY_CONFLICT: {
+                'immediate': [
+                    "Take space from the conflict to cool down if needed",
+                    "Practice calming techniques before re-engaging",
+                    "Avoid escalating the situation with hurtful words",
+                    "Reach out to a neutral support person"
+                ],
+                'short_term': [
+                    "Set healthy boundaries with family members",
+                    "Practice 'I' statements to communicate feelings",
+                    "Consider family therapy or mediation",
+                    "Work on your own emotional regulation",
+                    "Build support outside of your family"
+                ],
+                'long_term': [
+                    "Address family patterns with individual or family therapy",
+                    "Develop healthy relationship skills and communication",
+                    "Accept what you cannot change about family members",
+                    "Create chosen family and support networks",
+                    "Work on healing from family-of-origin wounds"
+                ]
             }
         }
 
