@@ -40,6 +40,7 @@ This system leverages multiple AI models and modalities (text, voice, video) to 
 ### 🎯 Core Capabilities
 - **Multi-Modal Input Processing**
   - Text chat analysis
+  - **Real-time voice conversation mode** (ChatGPT-style)
   - Voice recognition and synthesis
   - Real-time video emotion detection
   
@@ -66,6 +67,26 @@ This system leverages multiple AI models and modalities (text, voice, video) to 
   - Immediate safety resource display
   - 24/7 hotline information (India-specific)
   - Automated alert system
+
+### 🎙️ Voice Conversation Mode (NEW)
+- **ChatGPT-Style Voice Interface**
+  - Continuous real-time conversation
+  - Web Speech API integration
+  - Dynamic UI with visual feedback
+  - Interrupt capability - speak anytime to interrupt AI
+  
+- **Intelligent Voice Features**
+  - Automatic speech recognition (browser-based)
+  - Natural text-to-speech with calming voice selection
+  - Visual orb animation showing listening/speaking states
+  - Session state management (idle, listening, speaking, processing)
+  
+- **Seamless User Experience**
+  - Single dynamic button interface
+  - Black & white minimalist theme
+  - Response text display during conversation
+  - Welcome greeting on session start
+  - Background chat logging for reference
 
 ---
 
@@ -501,6 +522,38 @@ Edit `config.json` to customize:
 - Speak your message
 - System transcribes and processes
 - Optional: Enable auto-speak for voice responses
+
+### 3a. **Voice Conversation Mode** 🆕
+**ChatGPT-Style Real-Time Voice Therapy**
+
+1. **Starting a Voice Session**
+   - Click the "Voice Conversation" button (🎙️)
+   - Modal opens with animated orb visualizer
+   - Click the main microphone button to begin
+   - AI greets you with a welcome message
+
+2. **During the Session**
+   - **Idle State**: White button with 🎤 - Click to start
+   - **Listening State**: Dark button with ⏸️ - AI is listening to you
+   - **Processing State**: Dark button with ⏳ - AI is thinking
+   - **Speaking State**: Dark button with 🔊 - AI is responding
+   
+3. **Interrupt Anytime**
+   - Simply start speaking while AI talks
+   - Click the hand button (✋) to interrupt
+   - AI stops immediately and listens to you
+   - No need to wait for AI to finish
+
+4. **Session Controls**
+   - Main button: Start/Pause conversation
+   - Left button: Interrupt AI when speaking
+   - Right button: End session (✕)
+   
+5. **Visual Feedback**
+   - Animated orb pulses when listening/speaking
+   - Response text shows what AI is saying
+   - Status text shows current action
+   - All conversations logged in background chat
 
 ### 4. **Video Analysis**
 - Click "Enable Video"

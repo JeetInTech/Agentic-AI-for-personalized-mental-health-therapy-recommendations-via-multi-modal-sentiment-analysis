@@ -702,7 +702,7 @@ Would you like me to remember our conversations, or prefer to keep each session 
                 "message": "Authentication failed. Please check your credentials or start a new private session."
             }
     
-    def generate_agentic_response(self, user_message: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_agentic_response(self, user_message: str, analysis: Dict[str, Any], chat_history: list = None) -> Dict[str, Any]:
         """Generate response with full agentic capabilities"""
         
         # Check for proactive intervention opportunities
@@ -711,7 +711,7 @@ Would you like me to remember our conversations, or prefer to keep each session 
             intervention = self.intervention_engine.detect_intervention_opportunity(user_message, analysis)
         
         # Get personalized context
-        context = self.build_personalized_context(user_message, analysis)
+        context = self.build_personalized_context(user_message, analysis, chat_history)
         
         # Generate response using LLM with enhanced context
         response = self.generate_llm_response(user_message, analysis, context)
@@ -732,12 +732,13 @@ Would you like me to remember our conversations, or prefer to keep each session 
         
         return response
     
-    def build_personalized_context(self, user_message: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def build_personalized_context(self, user_message: str, analysis: Dict[str, Any], chat_history: list = None) -> Dict[str, Any]:
         """Build personalized context for response generation"""
         context = {
             "user_message": user_message,
             "analysis": analysis,
-            "privacy_mode": self.privacy_mode
+            "privacy_mode": self.privacy_mode,
+            "chat_history": chat_history or []
         }
         
         if not self.privacy_mode and self.current_user_id:
@@ -833,9 +834,20 @@ Provide an empathetic, therapeutic response that:
             }
             
             messages = [
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": context["user_message"]}
+                {"role": "system", "content": prompt}
             ]
+            
+            # Add chat history for conversation context (last 6 messages)
+            chat_history = context.get("chat_history", [])
+            if chat_history:
+                for msg in chat_history[-6:]:
+                    role = "user" if msg.get('role') == 'user' else "assistant"
+                    content = msg.get('content', '')
+                    if content:
+                        messages.append({"role": role, "content": content})
+            
+            # Add current user message
+            messages.append({"role": "user", "content": context["user_message"]})
             
             payload = {
                 "messages": messages,

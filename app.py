@@ -28,6 +28,7 @@ from video_agent import VideoAgent
 from crisis_counselling_mode import CrisisCounsellingMode
 from crisis_api import crisis_bp, init_crisis_api
 from vector_session_manager import VectorSessionManager
+from realtime_voice_agent import RealtimeVoiceAgent, VoiceConversationManager
 
 load_dotenv()
 
@@ -48,6 +49,8 @@ app.register_blueprint(crisis_bp)
 text_analyzer = None
 therapy_agent = None
 agentic_system = None
+realtime_voice = None
+voice_conversation_manager = None
 voice_agent = None
 video_agent = None
 crisis_counselor = None
@@ -111,7 +114,7 @@ class SessionManager:
 session_manager = SessionManager()
 
 def initialize_components():
-    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent, crisis_counselor, vector_session_manager
+    global text_analyzer, therapy_agent, agentic_system, voice_agent, video_agent, crisis_counselor, vector_session_manager, realtime_voice, voice_conversation_manager
 
     logger.info("Initializing AI components...")
     
@@ -164,6 +167,19 @@ def initialize_components():
     except Exception as e:
         logger.error(f"Failed to initialize crisis counselor: {e}")
         crisis_counselor = None
+
+    # Initialize realtime voice conversation system
+    try:
+        realtime_voice = RealtimeVoiceAgent()
+        if therapy_agent:
+            voice_conversation_manager = VoiceConversationManager(therapy_agent)
+            logger.info("✓ Realtime voice conversation system initialized")
+        else:
+            logger.warning("Therapy agent not available - voice conversation limited")
+    except Exception as e:
+        logger.error(f"Failed to initialize realtime voice: {e}")
+        realtime_voice = None
+        voice_conversation_manager = None
 
     if text_analyzer is None or agentic_system is None:
         logger.warning("Some components failed to initialize - app will run with limited functionality")
@@ -485,7 +501,7 @@ def send_message():
         
         if agentic_system and session_data.get('agentic_mode', False):
             try:
-                therapy_response = agentic_system.generate_agentic_response(message, analysis_results)
+                therapy_response = agentic_system.generate_agentic_response(message, analysis_results, session_data['chat_history'])
                 
                 # Enhance response with video observation if available
                 if enhanced_context['has_video']:
@@ -1198,6 +1214,128 @@ def listen_for_speech():
             'error': 'Speech recognition failed'
         }), 500
 
+# ===== REALTIME VOICE CONVERSATION ENDPOINTS =====
+
+@app.route('/api/voice/conversation/start', methods=['POST'])
+def start_voice_conversation():
+    """Start real-time voice conversation mode (like ChatGPT voice)"""
+    try:
+        ensure_initialized()
+        if not voice_conversation_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Voice conversation system not available'
+            }), 503
+
+        data = request.get_json() or {}
+        session_id = data.get('session_id')
+
+        result = voice_conversation_manager.start(session_id)
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error starting voice conversation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/voice/conversation/stop', methods=['POST'])
+def stop_voice_conversation():
+    """Stop real-time voice conversation mode"""
+    try:
+        ensure_initialized()
+        if not voice_conversation_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Voice conversation system not available'
+            }), 503
+
+        result = voice_conversation_manager.stop()
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error stopping voice conversation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/voice/conversation/interrupt', methods=['POST'])
+def interrupt_voice():
+    """Interrupt current speech and start listening"""
+    try:
+        ensure_initialized()
+        if not voice_conversation_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Voice conversation system not available'
+            }), 503
+
+        result = voice_conversation_manager.interrupt()
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error interrupting voice: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/voice/conversation/status')
+def get_voice_conversation_status():
+    """Get real-time voice conversation status"""
+    try:
+        ensure_initialized()
+        if not voice_conversation_manager:
+            return jsonify({
+                'success': False,
+                'error': 'Voice conversation system not available',
+                'realtime_available': False
+            }), 503
+
+        status = voice_conversation_manager.get_status()
+        status['success'] = True
+        status['realtime_available'] = True
+        return jsonify(status)
+
+    except Exception as e:
+        logger.error(f"Error getting voice conversation status: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/voice/conversation/speak', methods=['POST'])
+def speak_in_conversation():
+    """Speak text in conversation mode (with interrupt support)"""
+    try:
+        ensure_initialized()
+        if not realtime_voice:
+            return jsonify({
+                'success': False,
+                'error': 'Realtime voice not available'
+            }), 503
+
+        data = request.get_json()
+        text = data.get('text', '').strip()
+
+        if not text:
+            return jsonify({
+                'success': False,
+                'error': 'No text provided'
+            }), 400
+
+        result = realtime_voice.speak(text)
+        return jsonify(result)
+
+    except Exception as e:
+        logger.error(f"Error in conversation speak: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 # ===== VIDEO AGENT ENDPOINTS =====
 
 @app.route('/api/video/status')
@@ -1398,7 +1536,7 @@ def send_multimodal_message():
         therapy_response = None
         if agentic_system and session_data.get('agentic_mode', False):
             try:
-                therapy_response = agentic_system.generate_agentic_response(message, analysis_results)
+                therapy_response = agentic_system.generate_agentic_response(message, analysis_results, session_data['chat_history'])
             except Exception as e:
                 logger.error(f"Agentic response failed: {e}")
                 if therapy_agent:

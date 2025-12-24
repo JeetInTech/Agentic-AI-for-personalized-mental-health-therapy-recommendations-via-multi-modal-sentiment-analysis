@@ -982,6 +982,264 @@
             margin-top: 4px;
         }
 
+        /* ===== Voice Conversation Modal (ChatGPT-like) ===== */
+        .voice-conversation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .voice-conversation-overlay.active {
+            display: flex;
+        }
+
+        .voice-conversation-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .voice-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .voice-visualizer {
+            flex: 0 0 auto;
+            margin-bottom: 40px;
+        }
+
+        .voice-orb {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 60px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .voice-orb.listening {
+            animation: orbPulse 1.5s infinite ease-in-out;
+            box-shadow: 0 0 80px rgba(102, 126, 234, 0.6);
+        }
+
+        .voice-orb.speaking {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            animation: orbSpeak 0.5s infinite ease-in-out;
+            box-shadow: 0 0 80px rgba(56, 239, 125, 0.5);
+        }
+
+        .voice-orb.processing {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: orbProcess 1s infinite linear;
+        }
+
+        .orb-inner {
+            width: 60%;
+            height: 60%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .orb-ring {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: ringExpand 2s infinite ease-out;
+        }
+
+        .ring-1 { width: 100%; height: 100%; animation-delay: 0s; }
+        .ring-2 { width: 100%; height: 100%; animation-delay: 0.5s; }
+        .ring-3 { width: 100%; height: 100%; animation-delay: 1s; }
+
+        .voice-orb:not(.listening):not(.speaking) .orb-ring {
+            display: none;
+        }
+
+        @keyframes orbPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        @keyframes orbSpeak {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes orbProcess {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ringExpand {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .voice-therapy-header {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1em;
+        }
+
+        .therapy-icon {
+            font-size: 1.5em;
+        }
+
+        .therapy-title {
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .voice-status-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.4em;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 1.5em;
+        }
+
+        .voice-response-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.15em;
+            text-align: center;
+            max-width: 85%;
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            font-style: italic;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: opacity 0.3s ease;
+        }
+
+        .voice-response-text::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .voice-response-text::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .voice-controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .voice-control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .voice-main-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            background: white;
+            color: #1e293b;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .voice-main-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .voice-main-btn.active {
+            background: #1e293b;
+            color: white;
+            border-color: white;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .voice-hint {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9em;
+        }
+
+        .voice-conversation-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-color: #667eea !important;
+            margin-bottom: 15px;
+        }
+
+        .voice-conversation-btn:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+        }
+
+        /* ===== End Voice Conversation Styles ===== */
+
         .crisis-alert {
             background: #fee2e2;
             border: 2px solid #dc2626;
@@ -1416,6 +1674,10 @@
                         <span class="collapse-icon">▼</span>
                     </div>
                     <div class="section-content" id="voice-section">
+                        <!-- Real-time Voice Conversation Button (like ChatGPT) -->
+                        <button class="button-sidebar voice-conversation-btn" id="voiceConversationBtn">
+                            <span class="button-icon">🎧</span>Voice Conversation
+                        </button>
                         <div class="button-group">
                             <button class="button-sidebar" id="voiceInputBtn">
                                 <span class="button-icon">🎙️</span>Speak
@@ -1512,16 +1774,28 @@
                     </div>
                     <div class="section-content" id="crisis-section">
                         <div class="crisis-resource">
-                            <strong>1800-599-0019</strong> - KIRAN Mental Health<br>
-                            <small>24/7 phone support</small>
+                            <strong>1800-599-0019</strong> - KIRAN Mental Health Helpline<br>
+                            <small>24/7 support, all languages</small>
                         </div>
                         <div class="crisis-resource">
                             <strong>9152987821</strong> - Vandrevala Foundation<br>
-                            <small>24/7 crisis helpline</small>
+                            <small>24/7 crisis helpline, multilingual</small>
                         </div>
                         <div class="crisis-resource">
-                            <strong>112</strong> - Emergency Services<br>
-                            <small>Immediate danger</small>
+                            <strong>08046110007</strong> - iCall Psychosocial Helpline<br>
+                            <small>Mon-Sat, 8 AM - 10 PM</small>
+                        </div>
+                        <div class="crisis-resource">
+                            <strong>9820466726</strong> - Aasra<br>
+                            <small>24/7 suicide prevention</small>
+                        </div>
+                        <div class="crisis-resource">
+                            <strong>+91-9849 980 000</strong> - Roshni Trust<br>
+                            <small>24/7 emotional support</small>
+                        </div>
+                        <div class="crisis-resource">
+                            <strong>112</strong> - National Emergency Number<br>
+                            <small>Immediate danger, police/ambulance</small>
                         </div>
                         <button class="button-sidebar" id="copingStrategiesBtn" style="margin-top: 10px;">
                             <span class="button-icon">💡</span>Coping Strategies
@@ -1799,6 +2073,55 @@
                 <button class="btn-continue" onclick="closeCredentialsModal()">
                     Continue
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Conversation Modal (ChatGPT-like) -->
+    <div class="voice-conversation-overlay" id="voiceConversationModal">
+        <div class="voice-conversation-container">
+            <button class="voice-close-btn" id="closeVoiceConversation">✕</button>
+            
+            <!-- Therapy branding -->
+            <div class="voice-therapy-header">
+                <span class="therapy-icon">🧘</span>
+                <span class="therapy-title">Voice Therapy Session</span>
+            </div>
+            
+            <!-- Voice Visualizer -->
+            <div class="voice-visualizer">
+                <div class="voice-orb" id="voiceOrb">
+                    <div class="orb-inner"></div>
+                    <div class="orb-ring ring-1"></div>
+                    <div class="orb-ring ring-2"></div>
+                    <div class="orb-ring ring-3"></div>
+                </div>
+            </div>
+            
+            <!-- Status Text -->
+            <div class="voice-status-text" id="voiceConversationStatus">
+                Tap to begin your session
+            </div>
+            
+            <!-- Therapist response text (shows what AI is saying) -->
+            <div class="voice-response-text" id="voiceResponseText"></div>
+            
+            <!-- Control Buttons -->
+            <div class="voice-controls-bar">
+                <button class="voice-control-btn" id="voiceMuteBtn" title="Interrupt">
+                    <span id="muteIcon">🔇</span>
+                </button>
+                <button class="voice-main-btn" id="voiceMainBtn">
+                    <span class="mic-icon" id="mainBtnIcon">🎤</span>
+                </button>
+                <button class="voice-control-btn" id="voiceEndBtn" title="End Session">
+                    <span>✕</span>
+                </button>
+            </div>
+            
+            <!-- Interrupt hint -->
+            <div class="voice-hint" id="voiceInterruptHint">
+                Speak anytime to interrupt
             </div>
         </div>
     </div>
@@ -2278,6 +2601,16 @@
                     if (data.crisis_detected) {
                         showCrisisAlert();
                     }
+                    
+                    // Auto-speak if enabled
+                    console.log('Auto-speak check - autoSpeak:', appState.autoSpeak, 'voiceEnabled:', appState.voiceEnabled);
+                    if (appState.autoSpeak && appState.voiceEnabled) {
+                        setTimeout(async () => {
+                            const cleanContent = assistantMsg.content.split('⏰')[0].trim();
+                            console.log('Auto-speaking:', cleanContent.substring(0, 50) + '...');
+                            await speakText(cleanContent);
+                        }, 500);
+                    }
                 } else {
                     throw new Error(data.error || 'Failed to process message');
                 }
@@ -2443,6 +2776,7 @@
             document.getElementById('quickVoiceBtn')?.addEventListener('click', startVoiceInput);
             document.getElementById('autoSpeakToggle')?.addEventListener('change', function() {
                 appState.autoSpeak = this.checked;
+                console.log('Auto-speak toggled:', appState.autoSpeak, 'voiceEnabled:', appState.voiceEnabled);
             });
 
             // Video continuous monitoring
@@ -2645,10 +2979,18 @@ Date Created: ${new Date().toLocaleString()}
 
         async function initializeVoiceSystem() {
             try {
+                console.log('Initializing voice system...');
                 const response = await fetch('/api/voice/status');
                 const data = await response.json();
+                console.log('Voice status response:', data);
                 if (data.success && data.status) {
-                    appState.voiceEnabled = data.status.speech_recognition_available && data.status.text_to_speech_available;
+                    const speechRecAvailable = data.status.speech_recognition_available;
+                    const ttsAvailable = data.status.text_to_speech_available;
+                    console.log('Speech recognition:', speechRecAvailable, 'TTS:', ttsAvailable);
+                    
+                    // Enable voice if TTS is available (main feature for auto-speak)
+                    appState.voiceEnabled = ttsAvailable;
+                    console.log('Voice enabled set to:', appState.voiceEnabled);
                     updateVoiceStatus(appState.voiceEnabled);
                 }
             } catch (error) {
@@ -2674,11 +3016,14 @@ Date Created: ${new Date().toLocaleString()}
 
         async function startVoiceInput() {
             if (!appState.voiceEnabled) {
+                console.log('Voice input not available - voiceEnabled is false');
                 alert('Voice input is not available. Please check your microphone.');
                 return;
             }
 
             const quickVoiceBtn = document.getElementById('quickVoiceBtn');
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+            
             if (appState.isListening) {
                 stopVoiceInput();
                 return;
@@ -2686,9 +3031,15 @@ Date Created: ${new Date().toLocaleString()}
 
             try {
                 appState.isListening = true;
+                console.log('Starting voice input...');
+                
+                // Update UI to show listening state
                 if (quickVoiceBtn) {
                     quickVoiceBtn.classList.add('active');
                     quickVoiceBtn.textContent = '🔴';
+                }
+                if (voiceInputBtn) {
+                    voiceInputBtn.innerHTML = '<span class="button-icon">🔴</span>Listening...';
                 }
 
                 const response = await fetch('/api/voice/listen', {
@@ -2698,14 +3049,18 @@ Date Created: ${new Date().toLocaleString()}
                 });
 
                 const data = await response.json();
+                console.log('Voice listen response:', data);
+                
                 if (data.success && data.text) {
                     const messageInput = document.getElementById('messageInput');
                     if (messageInput) {
                         messageInput.value = data.text;
                         messageInput.focus();
+                        console.log('Voice input transcribed:', data.text);
                     }
                 } else {
-                    alert(data.error || 'Could not understand speech');
+                    console.error('Voice input failed:', data.error || 'Unknown error');
+                    alert(data.error || 'Could not understand speech. Please try again.');
                 }
             } catch (error) {
                 console.error('Voice input error:', error);
@@ -2718,16 +3073,25 @@ Date Created: ${new Date().toLocaleString()}
         function stopVoiceInput() {
             appState.isListening = false;
             const quickVoiceBtn = document.getElementById('quickVoiceBtn');
+            const voiceInputBtn = document.getElementById('voiceInputBtn');
+            
             if (quickVoiceBtn) {
                 quickVoiceBtn.classList.remove('active');
                 quickVoiceBtn.textContent = '🎙️';
             }
+            if (voiceInputBtn) {
+                voiceInputBtn.innerHTML = '<span class="button-icon">🎙️</span>Voice Input';
+            }
         }
 
         async function speakText(text) {
-            if (!appState.voiceEnabled || !text) return;
+            if (!appState.voiceEnabled || !text) {
+                console.log('speakText skipped - voiceEnabled:', appState.voiceEnabled, 'text:', !!text);
+                return;
+            }
 
             try {
+                console.log('Speaking text:', text.substring(0, 50) + '...');
                 appState.isSpeaking = true;
                 const response = await fetch('/api/voice/speak', {
                     method: 'POST',
@@ -2736,6 +3100,7 @@ Date Created: ${new Date().toLocaleString()}
                 });
 
                 const data = await response.json();
+                console.log('TTS response:', data);
                 if (!data.success) {
                     console.error('TTS failed:', data.error);
                 }
@@ -2754,6 +3119,470 @@ Date Created: ${new Date().toLocaleString()}
                 await speakText(content);
             }
         }
+
+        // ============================================
+        // VOICE CONVERSATION MODE (ChatGPT-like)
+        // ============================================
+        
+        let voiceConversationState = {
+            active: false,
+            isListening: false,
+            isSpeaking: false,
+            recognition: null,
+            synthesis: window.speechSynthesis,
+            currentUtterance: null,
+            transcript: [],
+            voicesLoaded: false
+        };
+
+        function initVoiceConversation() {
+            // Check for Web Speech API support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('Web Speech API not supported');
+                document.getElementById('voiceConversationBtn')?.setAttribute('disabled', 'true');
+                return;
+            }
+            
+            // Preload voices
+            if (voiceConversationState.synthesis) {
+                const loadVoices = () => {
+                    const voices = voiceConversationState.synthesis.getVoices();
+                    if (voices.length > 0) {
+                        voiceConversationState.voicesLoaded = true;
+                        console.log('✅ Loaded', voices.length, 'voices');
+                    }
+                };
+                loadVoices();
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = loadVoices;
+                }
+            }
+            }
+
+            // Initialize speech recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            voiceConversationState.recognition = new SpeechRecognition();
+            voiceConversationState.recognition.continuous = true;
+            voiceConversationState.recognition.interimResults = true;
+            voiceConversationState.recognition.lang = 'en-US';
+
+            // Speech recognition events
+            voiceConversationState.recognition.onstart = () => {
+                console.log('🎤 Voice recognition started');
+                voiceConversationState.isListening = true;
+                updateVoiceConversationUI('listening');
+                updateVoiceStatus('Listening...');
+            };
+
+            voiceConversationState.recognition.onend = () => {
+                console.log('🎤 Voice recognition ended');
+                voiceConversationState.isListening = false;
+                // Only restart if active and not speaking/processing
+                if (voiceConversationState.active && !voiceConversationState.isSpeaking) {
+                    setTimeout(() => {
+                        if (voiceConversationState.active && !voiceConversationState.isSpeaking && !voiceConversationState.isListening) {
+                            startRecognitionSafely();
+                        }
+                    }, 300);
+                }
+            };
+
+            voiceConversationState.recognition.onresult = (event) => {
+                let finalTranscript = '';
+                let interimTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                // Show interim results
+                if (interimTranscript) {
+                    updateVoiceStatus('Hearing: ' + interimTranscript);
+                }
+
+                // Process final results
+                if (finalTranscript.trim()) {
+                    console.log('🗣️ User said:', finalTranscript);
+                    handleVoiceInput(finalTranscript.trim());
+                }
+            };
+
+            voiceConversationState.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    updateVoiceStatus('No speech detected. Try again.');
+                } else if (event.error === 'audio-capture') {
+                    updateVoiceStatus('Microphone not found');
+                } else if (event.error !== 'aborted') {
+                    updateVoiceStatus('Error: ' + event.error);
+                }
+            };
+
+            // Set up event listeners
+            document.getElementById('voiceConversationBtn')?.addEventListener('click', openVoiceConversation);
+            document.getElementById('closeVoiceConversation')?.addEventListener('click', closeVoiceConversation);
+            document.getElementById('voiceMainBtn')?.addEventListener('click', toggleVoiceConversation);
+            document.getElementById('voiceEndBtn')?.addEventListener('click', closeVoiceConversation);
+            document.getElementById('voiceMuteBtn')?.addEventListener('click', interruptSpeaking);
+            
+            // Click on orb to interrupt
+            document.getElementById('voiceOrb')?.addEventListener('click', () => {
+                if (voiceConversationState.isSpeaking) {
+                    interruptSpeaking();
+                }
+            });
+
+            console.log('✅ Voice conversation initialized');
+        
+
+        function openVoiceConversation() {
+            const modal = document.getElementById('voiceConversationModal');
+            if (modal) {
+                modal.classList.add('active');
+                updateVoiceStatus('Click the microphone to begin your session');
+                clearVoiceResponse();
+                updateVoiceConversationUI('idle');
+            }
+        }
+
+        function closeVoiceConversation() {
+            voiceConversationState.active = false;
+            
+            // Stop recognition
+            if (voiceConversationState.recognition) {
+                voiceConversationState.recognition.stop();
+            }
+            
+            // Stop speaking
+            if (voiceConversationState.synthesis) {
+                voiceConversationState.synthesis.cancel();
+            }
+            
+            const modal = document.getElementById('voiceConversationModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            
+            updateVoiceConversationUI('idle');
+            clearVoiceResponse();
+        }
+
+        async function toggleVoiceConversation() {
+            const mainBtnIcon = document.getElementById('mainBtnIcon');
+            
+            if (voiceConversationState.active) {
+                // Stop/Pause conversation
+                voiceConversationState.active = false;
+                voiceConversationState.recognition?.stop();
+                voiceConversationState.synthesis?.cancel();
+                voiceConversationState.isSpeaking = false;
+                updateVoiceConversationUI('idle');
+                updateVoiceStatus('Session paused. Click to resume.');
+                if (mainBtnIcon) mainBtnIcon.textContent = '▶️';
+            } else {
+                // Start conversation
+                voiceConversationState.active = true;
+                if (mainBtnIcon) mainBtnIcon.textContent = '⏸️';
+                document.getElementById('voiceMainBtn')?.classList.add('active');
+                
+                // Welcome greeting when starting
+                const welcomeMessage = "Hello, I'm here to support you. Take your time, and whenever you're ready, share what's on your mind.";
+                showVoiceResponse(welcomeMessage);
+                
+                try {
+                    await speakResponse(welcomeMessage);
+                } catch (e) {
+                    console.error('Welcome speech failed:', e);
+                    // Still start listening even if speech fails
+                    resumeListening();
+                }
+            }
+        }
+
+        async function handleVoiceInput(text) {
+            console.log('📝 Processing voice input:', text);
+            
+            // Show what user said briefly
+            updateVoiceStatus(`You: "${text}"`);
+            
+            // Stop listening while processing
+            voiceConversationState.recognition?.stop();
+            updateVoiceConversationUI('processing');
+            
+            setTimeout(() => {
+                updateVoiceStatus('Thinking...');
+            }, 500);
+
+            try {
+                // Ensure session exists
+                if (!appState.sessionId) {
+                    throw new Error('No session ID - please refresh the page');
+                }
+                
+                // Send to therapy agent
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        session_id: appState.sessionId,
+                        message: text,
+                        include_analysis: true,
+                        input_modality: 'voice'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('API response:', data);
+                
+                // API returns assistant_response.content, not response
+                const responseText = data.assistant_response?.content || data.response;
+                
+                if (data.success && responseText) {
+                    // Show response text while speaking
+                    showVoiceResponse(responseText);
+                    
+                    // Also add to main chat (background) - use proper message objects
+                    if (data.assistant_response) {
+                        // Create user message object
+                        const userMsg = {
+                            role: 'user',
+                            content: text,
+                            timestamp: new Date().toISOString()
+                        };
+                        addMessage(userMsg);
+                        
+                        // Add assistant message (already has proper format from API)
+                        addMessage(data.assistant_response);
+                        
+                        // Show analysis if available
+                        if (data.analysis) {
+                            showAnalysis(data.analysis);
+                        }
+                    }
+                    
+                    // Speak the response
+                    await speakResponse(responseText);
+                } else {
+                    throw new Error(data.error || 'No response from server');
+                }
+            } catch (error) {
+                console.error('Voice chat error:', error);
+                updateVoiceStatus('Error: ' + error.message);
+                showVoiceResponse('Sorry, I had trouble processing that. Please try again.');
+                
+                // Resume listening after error
+                if (voiceConversationState.active) {
+                    setTimeout(() => {
+                        updateVoiceConversationUI('listening');
+                        startRecognitionSafely();
+                    }, 2000);
+                }
+            }
+        }
+        
+        // Safe recognition start to prevent "already started" errors
+        function startRecognitionSafely() {
+            if (!voiceConversationState.recognition) return;
+            
+            try {
+                // Check if already running
+                if (!voiceConversationState.isListening) {
+                    voiceConversationState.recognition.start();
+                }
+            } catch (e) {
+                if (e.name !== 'InvalidStateError') {
+                    console.error('Recognition start error:', e);
+                }
+            }
+        }
+
+        async function speakResponse(text) {
+            if (!voiceConversationState.synthesis) {
+                console.warn('Speech synthesis not available');
+                resumeListening();
+                return;
+            }
+
+            voiceConversationState.isSpeaking = true;
+            updateVoiceConversationUI('speaking');
+            updateVoiceStatus('Speaking...');
+            showVoiceResponse(text);
+            
+            const interruptHint = document.getElementById('voiceInterruptHint');
+            if (interruptHint) interruptHint.style.display = 'block';
+
+            return new Promise((resolve) => {
+                // Cancel any ongoing speech first
+                voiceConversationState.synthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                voiceConversationState.currentUtterance = utterance;
+                
+                // Configure voice - calmer, slower for therapy
+                utterance.rate = 0.95;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+
+                // Try to use a natural, calming voice
+                const voices = voiceConversationState.synthesis.getVoices();
+                console.log('Available voices:', voices.length);
+                
+                const preferredVoice = voices.find(v => 
+                    v.name.includes('Microsoft Aria') ||
+                    v.name.includes('Microsoft Jenny') ||
+                    v.name.includes('Google US English Female') ||
+                    v.name.includes('Samantha') ||
+                    v.name.includes('Zira')
+                ) || voices.find(v => v.lang.startsWith('en'));
+                
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                    console.log('Using voice:', preferredVoice.name);
+                }
+
+                utterance.onend = () => {
+                    console.log('✅ Speech completed');
+                    voiceConversationState.isSpeaking = false;
+                    voiceConversationState.currentUtterance = null;
+                    if (interruptHint) interruptHint.style.display = 'none';
+                    resolve();
+                    resumeListening();
+                };
+
+                utterance.onerror = (e) => {
+                    console.error('Speech error:', e.error);
+                    voiceConversationState.isSpeaking = false;
+                    if (interruptHint) interruptHint.style.display = 'none';
+                    resolve();
+                    resumeListening();
+                };
+
+                voiceConversationState.synthesis.speak(utterance);
+            });
+        }
+
+        function interruptSpeaking() {
+            if (voiceConversationState.isSpeaking) {
+                console.log('🛑 Interrupting speech');
+                voiceConversationState.synthesis?.cancel();
+                voiceConversationState.isSpeaking = false;
+                voiceConversationState.currentUtterance = null;
+                document.getElementById('voiceInterruptHint').style.display = 'none';
+                clearVoiceResponse();
+                updateVoiceStatus('Interrupted. Listening...');
+                resumeListening();
+            }
+        }
+
+        function resumeListening() {
+            if (voiceConversationState.active) {
+                setTimeout(() => {
+                    updateVoiceConversationUI('listening');
+                    updateVoiceStatus('Listening...');
+                    startRecognitionSafely();
+                }, 300);
+            } else {
+                updateVoiceConversationUI('idle');
+                updateVoiceStatus('Click the microphone to start');
+            }
+        }
+
+        function updateVoiceConversationUI(state) {
+            const orb = document.getElementById('voiceOrb');
+            const mainBtn = document.getElementById('voiceMainBtn');
+            const mainBtnIcon = document.getElementById('mainBtnIcon');
+            const muteIcon = document.getElementById('muteIcon');
+            const muteBtn = document.getElementById('voiceMuteBtn');
+            
+            orb?.classList.remove('listening', 'speaking', 'processing');
+            
+            switch (state) {
+                case 'listening':
+                    orb?.classList.add('listening');
+                    if (mainBtnIcon) mainBtnIcon.textContent = '⏸️';
+                    if (mainBtn) {
+                        mainBtn.title = 'Pause';
+                        mainBtn.classList.add('active');
+                    }
+                    if (muteIcon) muteIcon.textContent = '🔇';
+                    if (muteBtn) muteBtn.style.opacity = '0.3';
+                    break;
+                case 'speaking':
+                    orb?.classList.add('speaking');
+                    if (mainBtnIcon) mainBtnIcon.textContent = '🔊';
+                    if (mainBtn) {
+                        mainBtn.title = 'Speaking';
+                        mainBtn.classList.add('active');
+                    }
+                    if (muteIcon) muteIcon.textContent = '✋';
+                    if (muteBtn) muteBtn.style.opacity = '1';
+                    break;
+                case 'processing':
+                    orb?.classList.add('processing');
+                    if (mainBtnIcon) mainBtnIcon.textContent = '⏳';
+                    if (mainBtn) {
+                        mainBtn.title = 'Processing';
+                        mainBtn.classList.add('active');
+                    }
+                    if (muteIcon) muteIcon.textContent = '🔇';
+                    if (muteBtn) muteBtn.style.opacity = '0.3';
+                    break;
+                case 'idle':
+                default:
+                    if (mainBtnIcon) mainBtnIcon.textContent = '🎤';
+                    if (mainBtn) {
+                        mainBtn.title = 'Start session';
+                        mainBtn.classList.remove('active');
+                    }
+                    if (muteIcon) muteIcon.textContent = '🔇';
+                    if (muteBtn) muteBtn.style.opacity = '0.3';
+                    break;
+            }
+        }
+
+        function updateVoiceStatus(text) {
+            const status = document.getElementById('voiceConversationStatus');
+            if (status) {
+                status.textContent = text;
+            }
+        }
+
+        function showVoiceResponse(text) {
+            const responseEl = document.getElementById('voiceResponseText');
+            if (responseEl) {
+                responseEl.textContent = text;
+                responseEl.style.opacity = '1';
+            }
+        }
+
+        function clearVoiceResponse() {
+            const responseEl = document.getElementById('voiceResponseText');
+            if (responseEl) {
+                responseEl.textContent = '';
+                responseEl.style.opacity = '0';
+            }
+        }
+
+        // Initialize voice conversation on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for voices to load
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => {
+                    initVoiceConversation();
+                };
+            } else {
+                setTimeout(initVoiceConversation, 100);
+            }
+        });
 
         // ============================================
         // CONTINUOUS VIDEO MONITORING
@@ -3196,7 +4025,10 @@ Date Created: ${new Date().toLocaleString()}
 
                     // Auto-speak if enabled
                     if (appState.autoSpeak && appState.voiceEnabled) {
-                        await speakText(assistantMsg.content);
+                        setTimeout(async () => {
+                            const cleanContent = assistantMsg.content.split('⏰')[0].trim();
+                            await speakText(cleanContent);
+                        }, 500);
                     }
                 } else {
                     throw new Error(data.error || 'Failed to process message');

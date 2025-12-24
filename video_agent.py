@@ -27,9 +27,9 @@ except ImportError:
 try:
     from fer import FER
     FER_AVAILABLE = True
-except ImportError:
+except (ImportError, Exception) as e:
     FER_AVAILABLE = False
-    logging.warning("fer not available - using OpenCV-based emotion detection")
+    logging.warning(f"fer not available - using OpenCV-based emotion detection: {e}")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

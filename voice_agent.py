@@ -131,16 +131,54 @@ class VoiceAgent:
         try:
             def tts_worker():
                 """Worker thread function to process TTS queue"""
+                import platform
+                thread_engine = None
+                
+                # Windows requires COM initialization in each thread
+                if platform.system() == 'Windows':
+                    try:
+                        import pythoncom
+                        pythoncom.CoInitialize()
+                        logger.info("COM initialized for TTS worker thread")
+                    except ImportError:
+                        logger.warning("pythoncom not available - TTS may not work correctly")
+                    except Exception as e:
+                        logger.warning(f"COM initialization warning: {e}")
+                
                 while not self._stop_tts_worker:
                     try:
                         # Wait for TTS requests (timeout to check stop condition)
                         text = self._tts_queue.get(timeout=1.0)
 
-                        if text and self.tts_engine:
+                        if text:
                             try:
                                 self.is_speaking = True
-                                self.tts_engine.say(text)
-                                self.tts_engine.runAndWait()
+                                logger.info(f"TTS worker processing: '{text[:30]}...'")
+                                
+                                # Create engine in worker thread for Windows
+                                try:
+                                    if thread_engine is None:
+                                        thread_engine = pyttsx3.init()
+                                        thread_engine.setProperty('rate', self.voice_settings["tts_rate"])
+                                        thread_engine.setProperty('volume', self.voice_settings["tts_volume"])
+                                        # Set voice
+                                        voices = thread_engine.getProperty('voices')
+                                        if voices:
+                                            for voice in voices:
+                                                if 'female' in voice.name.lower() or 'zira' in voice.name.lower():
+                                                    thread_engine.setProperty('voice', voice.id)
+                                                    break
+                                            else:
+                                                thread_engine.setProperty('voice', voices[0].id)
+                                    
+                                    thread_engine.say(text)
+                                    thread_engine.runAndWait()
+                                    logger.info(f"TTS completed for text: '{text[:30]}...'")
+                                except Exception as e:
+                                    logger.error(f"TTS engine error: {e}")
+                                    # Reset engine on error
+                                    thread_engine = None
+                                        
                             except Exception as e:
                                 logger.error(f"Error in TTS worker: {e}")
                             finally:
@@ -152,6 +190,21 @@ class VoiceAgent:
                         continue
                     except Exception as e:
                         logger.error(f"Error in TTS worker thread: {e}")
+                
+                # Cleanup
+                if thread_engine:
+                    try:
+                        thread_engine.stop()
+                    except:
+                        pass
+                
+                # Windows COM cleanup
+                if platform.system() == 'Windows':
+                    try:
+                        import pythoncom
+                        pythoncom.CoUninitialize()
+                    except:
+                        pass
 
             # Start the worker thread
             self._tts_worker_thread = threading.Thread(target=tts_worker, daemon=True)
@@ -322,13 +375,7 @@ class VoiceAgent:
             }
 
     def speak_text(self, text: str, async_mode: bool = True) -> Dict[str, Any]:
-        """Convert text to speech and play it using queue system"""
-        if not self.tts_engine:
-            return {
-                "success": False,
-                "error": "Text-to-speech not available"
-            }
-
+        """Convert text to speech and play it"""
         if not text or not text.strip():
             return {
                 "success": False,
@@ -336,25 +383,66 @@ class VoiceAgent:
             }
 
         try:
-            logger.info(f"Queuing text for speech: '{text[:50]}...'")
-
-            # Add text to TTS queue
-            self._tts_queue.put(text)
-
-            return {
-                "success": True,
-                "message": "Speech synthesis queued",
-                "text_length": len(text),
-                "async": True,
-                "timestamp": datetime.now().isoformat(),
-                "queue_size": self._tts_queue.qsize()
-            }
+            logger.info(f"Speaking text: '{text[:50]}...'")
+            
+            import platform
+            
+            # On Windows, use synchronous mode to avoid threading issues with pyttsx3
+            if platform.system() == 'Windows':
+                try:
+                    self.is_speaking = True
+                    # Create a fresh engine for each call on Windows
+                    engine = pyttsx3.init()
+                    engine.setProperty('rate', self.voice_settings["tts_rate"])
+                    engine.setProperty('volume', self.voice_settings["tts_volume"])
+                    
+                    # Set voice
+                    voices = engine.getProperty('voices')
+                    if voices:
+                        for voice in voices:
+                            if 'female' in voice.name.lower() or 'zira' in voice.name.lower():
+                                engine.setProperty('voice', voice.id)
+                                break
+                        else:
+                            engine.setProperty('voice', voices[0].id)
+                    
+                    engine.say(text)
+                    engine.runAndWait()
+                    engine.stop()
+                    
+                    logger.info(f"TTS completed for text: '{text[:30]}...'")
+                    
+                    return {
+                        "success": True,
+                        "message": "Speech synthesis completed",
+                        "text_length": len(text),
+                        "timestamp": datetime.now().isoformat()
+                    }
+                except Exception as e:
+                    logger.error(f"Windows TTS error: {e}")
+                    return {
+                        "success": False,
+                        "error": f"TTS error: {str(e)}"
+                    }
+                finally:
+                    self.is_speaking = False
+            else:
+                # Non-Windows: use queue-based async mode
+                self._tts_queue.put(text)
+                return {
+                    "success": True,
+                    "message": "Speech synthesis queued",
+                    "text_length": len(text),
+                    "async": True,
+                    "timestamp": datetime.now().isoformat(),
+                    "queue_size": self._tts_queue.qsize()
+                }
 
         except Exception as e:
-            logger.error(f"Error queueing text for speech: {e}")
+            logger.error(f"Error in speak_text: {e}")
             return {
                 "success": False,
-                "error": f"TTS queue error: {str(e)}"
+                "error": f"TTS error: {str(e)}"
             }
 
     def stop_speaking(self) -> Dict[str, Any]:
