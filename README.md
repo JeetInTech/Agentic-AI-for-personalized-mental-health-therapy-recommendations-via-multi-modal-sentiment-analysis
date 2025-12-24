@@ -42,12 +42,13 @@ This system leverages multiple AI models and modalities (text, voice, video) to 
   - Text chat analysis
   - **Real-time voice conversation mode** (ChatGPT-style)
   - Voice recognition and synthesis
-  - Real-time video emotion detection
+  - **Real-time video emotion detection with autonomous monitoring** 🤖
   
 - **Advanced AI Analysis**
   - Emotion recognition (7 emotions: happy, sad, angry, fear, surprise, disgust, neutral)
   - Sentiment analysis (positive, negative, neutral)
   - Crisis risk assessment
+  - **Autonomous pattern detection and intervention** (NEW) 🤖
   - Mental health topic detection
 
 - **Therapeutic Support**
@@ -176,7 +177,7 @@ This system leverages multiple AI models and modalities (text, voice, video) to 
 - **Architecture**: DistilRoBERTa
 - **Use Case**: Analyzing emotional content in user text messages
 
-#### Video Facial Emotion Recognition
+#### Video Facial Emotion Recognition (Autonomous Agent 🤖)
 - **File**: `video_agent.py`
 - **Library**: `FER` (Facial Emotion Recognition)
 - **Model**: Deep Neural Network with MTCNN face detection
@@ -187,6 +188,21 @@ This system leverages multiple AI models and modalities (text, voice, video) to 
   - Continuous monitoring mode
   - Confidence scoring
   - Emotion trend analysis
+  - **🤖 Autonomous decision-making** (NEW)
+  - **🚨 Automatic crisis escalation** (NEW)
+  - **📊 Pattern detection** (NEW)
+
+**Autonomous Capabilities:**
+- **Emotion Persistence Tracking**: Monitors duration of each emotion in real-time
+- **Automatic Escalation Rules**:
+  - **SAD**: 5 minutes → Crisis counselor escalation (HIGH priority)
+  - **ANGRY**: 4 minutes → Crisis counselor escalation (HIGH priority)
+  - **FEAR**: 3 minutes → Crisis counselor escalation (HIGH priority)
+  - **DISGUST**: 5 minutes → Therapy agent notification (MEDIUM priority)
+  - **NEUTRAL**: 10 minutes → User engagement check (LOW priority)
+- **Pattern Detection**: Detects rapid emotional fluctuation and suggests grounding techniques
+- **Crisis Integration**: Automatically activates crisis counselor when concerning patterns detected
+- **Cooldown Mechanism**: Prevents duplicate escalations within 2-minute intervals
 
 ---
 

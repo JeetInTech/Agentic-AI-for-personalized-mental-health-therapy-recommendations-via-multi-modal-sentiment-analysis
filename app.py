@@ -153,13 +153,6 @@ def initialize_components():
         voice_agent = None
 
     try:
-        video_agent = VideoAgent()
-        logger.info("✓ Video agent initialized")
-    except Exception as e:
-        logger.error(f"Failed to initialize video agent: {e}")
-        video_agent = None
-
-    try:
         crisis_counselor = CrisisCounsellingMode()
         logger.info("✓ Crisis counselor initialized")
         # Initialize crisis API with components
@@ -167,6 +160,14 @@ def initialize_components():
     except Exception as e:
         logger.error(f"Failed to initialize crisis counselor: {e}")
         crisis_counselor = None
+
+    try:
+        # Initialize video agent with agent references for autonomous coordination
+        video_agent = VideoAgent(therapy_agent=therapy_agent, crisis_counselor=crisis_counselor)
+        logger.info("✓ Autonomous Video Agent initialized with crisis integration")
+    except Exception as e:
+        logger.error(f"Failed to initialize video agent: {e}")
+        video_agent = None
 
     # Initialize realtime voice conversation system
     try:
@@ -1340,16 +1341,18 @@ def speak_in_conversation():
 
 @app.route('/api/video/status')
 def get_video_status():
-    """Get video agent status"""
+    """Get video agent status including autonomous decision-making status"""
     try:
         ensure_initialized()
         if video_agent:
             status = video_agent.get_video_status()
             capabilities = video_agent.get_video_capabilities()
+            autonomous_status = video_agent.get_autonomous_status()
             return jsonify({
                 'success': True,
                 'status': status,
-                'capabilities': capabilities
+                'capabilities': capabilities,
+                'autonomous': autonomous_status
             })
         else:
             return jsonify({

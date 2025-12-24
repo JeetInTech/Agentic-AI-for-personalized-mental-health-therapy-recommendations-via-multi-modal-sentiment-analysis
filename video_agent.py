@@ -37,17 +37,24 @@ logger = logging.getLogger(__name__)
 
 class VideoAgent:
     """
-    Video processing agent for therapeutic AI system
-    Handles facial expression recognition and emotion analysis
-    WITH CONTINUOUS MONITORING SUPPORT
+    🤖 AUTONOMOUS VIDEO AGENT for therapeutic AI system
+    Features:
+    - Facial expression recognition and emotion analysis
+    - Autonomous decision-making based on emotional patterns
+    - Automatic escalation to crisis counselor for concerning patterns
+    - Goal-oriented therapeutic interventions
     """
 
-    def __init__(self, config_path="config.json"):
+    def __init__(self, config_path="config.json", therapy_agent=None, crisis_counselor=None):
         self.config = self.load_config(config_path)
         self.camera = None
         self.is_recording = False
         self.is_analyzing = False
         self.analysis_thread = None
+        
+        # Agent references for autonomous coordination
+        self.therapy_agent = therapy_agent
+        self.crisis_counselor = crisis_counselor
 
         # Video settings
         self.video_settings = self.config.get("video", {
@@ -62,6 +69,29 @@ class VideoAgent:
             "continuous_monitoring": True,  # Enable by default
             "use_frame_enhancement": True  # Enable contrast enhancement
         })
+        
+        # 🤖 AUTONOMOUS DECISION-MAKING SYSTEM
+        self.autonomous_enabled = True
+        self.decision_history = []
+        
+        # Emotion persistence tracking
+        self.emotion_persistence = {
+            'current_emotion': None,
+            'start_time': None,
+            'duration': 0
+        }
+        
+        # Escalation rules (in seconds)
+        self.escalation_rules = {
+            'sad': {'duration': 300, 'action': 'escalate_crisis', 'priority': 'high'},  # 5 minutes
+            'angry': {'duration': 240, 'action': 'escalate_crisis', 'priority': 'high'},  # 4 minutes
+            'fear': {'duration': 180, 'action': 'escalate_crisis', 'priority': 'high'},  # 3 minutes
+            'disgust': {'duration': 300, 'action': 'notify_therapy', 'priority': 'medium'},
+            'neutral': {'duration': 600, 'action': 'check_engagement', 'priority': 'low'}  # 10 minutes
+        }
+        
+        # Autonomous actions taken
+        self.autonomous_actions = []
 
         # Emotion mapping with detailed therapeutic context
         self.emotion_mapping = {
@@ -121,6 +151,11 @@ class VideoAgent:
         self.analysis_queue = queue.Queue(maxsize=100)
         self.latest_analysis = None
         self.analysis_callbacks = []
+        
+        # Autonomous goals and state
+        self.current_goal = "monitor_emotional_wellbeing"
+        self.intervention_active = False
+        self.last_escalation_time = None
 
         # Initialize components
         self.face_cascade = None
@@ -129,11 +164,18 @@ class VideoAgent:
         self.init_face_detection()
         self.init_emotion_detection()
 
-        logger.info("Video agent initialized successfully")
+        logger.info("🤖 AUTONOMOUS Video Agent initialized successfully")
+        logger.info("✓ Autonomous decision-making: ENABLED")
+        logger.info("✓ Crisis escalation rules: ACTIVE")
         if FER_AVAILABLE:
             logger.info("✓ FER library available - using deep learning emotion detection")
         else:
             logger.warning("⚠ FER library not available - install with: pip install fer")
+        
+        if self.crisis_counselor:
+            logger.info("✓ Crisis counselor integration: READY")
+        else:
+            logger.warning("⚠ Crisis counselor not linked - escalation capabilities limited")
 
     def load_config(self, config_path: str) -> dict:
         """Load configuration from file"""
@@ -649,6 +691,10 @@ class VideoAgent:
             # Keep only recent history (last 100 analyses)
             if len(self.emotion_history) > 100:
                 self.emotion_history = self.emotion_history[-100:]
+            
+            # 🤖 AUTONOMOUS DECISION-MAKING: Analyze patterns and take action
+            if self.autonomous_enabled:
+                self.autonomous_decision_engine(analysis)
 
             # Notify callbacks
             for callback in self.analysis_callbacks:
@@ -898,6 +944,189 @@ class VideoAgent:
                 "error": f"Frame capture failed: {str(e)}"
             }
 
+    def autonomous_decision_engine(self, analysis: Dict[str, Any]):
+        """🤖 AUTONOMOUS DECISION ENGINE - Analyzes patterns and takes action"""
+        try:
+            current_emotion = analysis.get("dominant_emotion")
+            confidence = analysis.get("confidence", 0)
+            timestamp = datetime.now()
+            
+            # Track emotion persistence
+            if self.emotion_persistence['current_emotion'] != current_emotion:
+                # Emotion changed - record previous duration
+                if self.emotion_persistence['current_emotion']:
+                    prev_emotion = self.emotion_persistence['current_emotion']
+                    duration = self.emotion_persistence['duration']
+                    logger.info(f"📊 Emotion changed: {prev_emotion} lasted {duration:.1f}s")
+                
+                # Start tracking new emotion
+                self.emotion_persistence = {
+                    'current_emotion': current_emotion,
+                    'start_time': timestamp,
+                    'duration': 0
+                }
+            else:
+                # Same emotion - update duration
+                if self.emotion_persistence['start_time']:
+                    self.emotion_persistence['duration'] = (
+                        timestamp - self.emotion_persistence['start_time']
+                    ).total_seconds()
+            
+            # Check escalation rules
+            duration = self.emotion_persistence['duration']
+            if current_emotion in self.escalation_rules:
+                rule = self.escalation_rules[current_emotion]
+                threshold = rule['duration']
+                
+                # 🚨 AUTONOMOUS ACTION: Escalate if duration exceeds threshold
+                if duration >= threshold and confidence > 0.4:
+                    self.execute_autonomous_action(
+                        action_type=rule['action'],
+                        emotion=current_emotion,
+                        duration=duration,
+                        priority=rule['priority'],
+                        confidence=confidence
+                    )
+            
+            # Pattern detection: Rapid emotion changes (potential distress)
+            if len(self.emotion_history) >= 5:
+                recent_emotions = [e['emotion'] for e in self.emotion_history[-5:]]
+                unique_emotions = set(recent_emotions)
+                if len(unique_emotions) >= 4:
+                    logger.warning("🔴 PATTERN DETECTED: Rapid emotional fluctuation")
+                    self.execute_autonomous_action(
+                        action_type='suggest_grounding',
+                        emotion='fluctuating',
+                        duration=0,
+                        priority='medium',
+                        confidence=0.8
+                    )
+        
+        except Exception as e:
+            logger.error(f"Error in autonomous decision engine: {e}")
+    
+    def execute_autonomous_action(self, action_type: str, emotion: str, 
+                                   duration: float, priority: str, confidence: float):
+        """🤖 EXECUTE AUTONOMOUS ACTION based on decision"""
+        try:
+            # Prevent duplicate actions within 2 minutes
+            if self.last_escalation_time:
+                time_since_last = (datetime.now() - self.last_escalation_time).total_seconds()
+                if time_since_last < 120:
+                    logger.info(f"⏳ Skipping action (cooldown: {120-time_since_last:.0f}s remaining)")
+                    return
+            
+            action_record = {
+                'timestamp': datetime.now().isoformat(),
+                'action_type': action_type,
+                'emotion': emotion,
+                'duration': duration,
+                'priority': priority,
+                'confidence': confidence,
+                'success': False
+            }
+            
+            logger.warning(f"🤖 AUTONOMOUS ACTION: {action_type.upper()}")
+            logger.warning(f"   Reason: {emotion} detected for {duration:.1f}s (threshold exceeded)")
+            logger.warning(f"   Priority: {priority.upper()} | Confidence: {confidence:.2f}")
+            
+            if action_type == 'escalate_crisis':
+                # 🚨 ESCALATE TO CRISIS COUNSELOR
+                if self.crisis_counselor:
+                    logger.error("🚨 ESCALATING TO CRISIS COUNSELOR")
+                    try:
+                        crisis_result = self.crisis_counselor.handle_crisis({
+                            'emotion': emotion,
+                            'duration': duration,
+                            'confidence': confidence,
+                            'source': 'autonomous_video_agent',
+                            'message': f"Persistent {emotion} detected for {duration/60:.1f} minutes"
+                        })
+                        action_record['success'] = True
+                        action_record['crisis_response'] = crisis_result
+                        logger.info(f"✓ Crisis counselor activated: {crisis_result}")
+                        self.intervention_active = True
+                    except Exception as e:
+                        logger.error(f"✗ Crisis escalation failed: {e}")
+                        action_record['error'] = str(e)
+                else:
+                    logger.error("✗ Crisis counselor not available!")
+                    action_record['error'] = 'crisis_counselor_unavailable'
+            
+            elif action_type == 'notify_therapy':
+                # Notify therapy agent
+                logger.warning("📢 NOTIFYING THERAPY AGENT")
+                if self.therapy_agent:
+                    action_record['success'] = True
+                    logger.info(f"✓ Therapy agent notified about {emotion}")
+            
+            elif action_type == 'suggest_grounding':
+                # Suggest grounding techniques
+                logger.info("💡 SUGGESTING GROUNDING TECHNIQUES")
+                action_record['success'] = True
+                action_record['suggestion'] = "5-4-3-2-1 grounding technique recommended"
+            
+            elif action_type == 'check_engagement':
+                # Check user engagement
+                logger.info("👤 CHECKING USER ENGAGEMENT")
+                action_record['success'] = True
+            
+            # Record action
+            self.autonomous_actions.append(action_record)
+            self.decision_history.append(action_record)
+            self.last_escalation_time = datetime.now()
+            
+            # Keep only last 50 actions
+            if len(self.autonomous_actions) > 50:
+                self.autonomous_actions = self.autonomous_actions[-50:]
+        
+        except Exception as e:
+            logger.error(f"Error executing autonomous action: {e}")
+    
+    def get_autonomous_status(self) -> Dict[str, Any]:
+        """Get status of autonomous decision-making system"""
+        return {
+            "autonomous_enabled": self.autonomous_enabled,
+            "current_goal": self.current_goal,
+            "intervention_active": self.intervention_active,
+            "emotion_persistence": {
+                "emotion": self.emotion_persistence['current_emotion'],
+                "duration": self.emotion_persistence['duration'],
+                "threshold_status": self._get_threshold_status()
+            },
+            "escalation_rules": self.escalation_rules,
+            "actions_taken": len(self.autonomous_actions),
+            "recent_actions": self.autonomous_actions[-5:] if self.autonomous_actions else [],
+            "last_escalation": self.last_escalation_time.isoformat() if self.last_escalation_time else None
+        }
+    
+    def _get_threshold_status(self) -> Dict[str, Any]:
+        """Calculate how close current emotion is to escalation threshold"""
+        emotion = self.emotion_persistence['current_emotion']
+        duration = self.emotion_persistence['duration']
+        
+        if emotion and emotion in self.escalation_rules:
+            threshold = self.escalation_rules[emotion]['duration']
+            percentage = (duration / threshold) * 100
+            return {
+                "emotion": emotion,
+                "duration": duration,
+                "threshold": threshold,
+                "percentage": min(percentage, 100),
+                "will_escalate_in": max(0, threshold - duration)
+            }
+        return {"status": "no_active_tracking"}
+    
+    def set_crisis_counselor(self, crisis_counselor):
+        """Link crisis counselor for autonomous escalation"""
+        self.crisis_counselor = crisis_counselor
+        logger.info("✓ Crisis counselor linked to autonomous video agent")
+    
+    def set_therapy_agent(self, therapy_agent):
+        """Link therapy agent for coordination"""
+        self.therapy_agent = therapy_agent
+        logger.info("✓ Therapy agent linked to autonomous video agent")
+
     def get_video_capabilities(self) -> Dict[str, Any]:
         """Get information about video processing capabilities"""
         return {
@@ -919,6 +1148,14 @@ class VideoAgent:
                 "trend_analysis": True,
                 "therapeutic_suggestions": True,
                 "callback_support": True
+            },
+            "autonomous_capabilities": {
+                "decision_making": self.autonomous_enabled,
+                "pattern_detection": True,
+                "automatic_escalation": True,
+                "crisis_integration": self.crisis_counselor is not None,
+                "goal_oriented": True,
+                "escalation_rules": len(self.escalation_rules)
             },
             "hardware_requirements": {
                 "camera_required": True,

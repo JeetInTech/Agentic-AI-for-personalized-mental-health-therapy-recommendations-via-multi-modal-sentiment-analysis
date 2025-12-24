@@ -81,7 +81,7 @@ checkpoints/
 *.ipynb
 
 # Configuration (remove config.json if it contains secrets)
-config.json
+# config.json
 # OS specific
 Thumbs.db
 .DS_Store
@@ -114,5 +114,5 @@ dmypy.json
 remove_secrets.py
 changesjeet.md
 
-config.json
+
 jeet.md
