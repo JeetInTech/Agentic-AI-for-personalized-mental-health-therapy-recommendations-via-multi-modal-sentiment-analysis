@@ -170,8 +170,23 @@ class UserMemoryManager:
             self.encryption_manager = EncryptionManager(password)
             self.current_user_id = user_id
             
+            # Check if user exists first
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM user_profiles WHERE user_id = ?", (user_id,))
+            exists = cursor.fetchone()[0] > 0
+            conn.close()
+            
+            if not exists:
+                logger.warning(f"User {user_id} does not exist")
+                return False
+            
             # Test decryption with existing data
             profile = self.get_user_profile(user_id)
+            if profile is None:
+                logger.warning(f"Failed to decrypt profile for user {user_id} - wrong password")
+                return False
+                
             return True
         except Exception as e:
             logger.warning(f"Authentication failed for user {user_id}: {e}")
@@ -669,37 +684,57 @@ Would you like me to remember our conversations, or prefer to keep each session 
     
     def authenticate_returning_user(self, user_id: str, password: str) -> dict:
         """Authenticate returning user"""
-        success = self.memory_manager.authenticate_user(user_id, password)
-        
-        if success:
-            self.privacy_mode = False
-            self.current_user_id = user_id
-            profile = self.memory_manager.get_user_profile(user_id)
+        try:
+            success = self.memory_manager.authenticate_user(user_id, password)
             
-            # Check if profile was successfully retrieved
-            if not profile:
-                return {
-                    "status": "error",
-                    "message": "Failed to load user profile. Please try again or start a new session."
+            if success:
+                self.privacy_mode = False
+                self.current_user_id = user_id
+                profile = self.memory_manager.get_user_profile(user_id)
+                
+                # Check if profile was successfully retrieved
+                if not profile:
+                    return {
+                        "status": "error",
+                        "message": "Failed to load user profile. Please try again or start a new session."
+                    }
+                
+                # Check if proactive check-in needed
+                checkin_needed = self.intervention_engine.should_initiate_checkin(user_id)
+                
+                response = {
+                    "status": "success",
+                    "message": f"Welcome back, {profile.preferred_name}! I remember our previous conversations.",
+                    "proactive_checkin": checkin_needed
                 }
-            
-            # Check if proactive check-in needed
-            checkin_needed = self.intervention_engine.should_initiate_checkin(user_id)
-            
-            response = {
-                "status": "success",
-                "message": f"Welcome back, {profile.preferred_name}! I remember our previous conversations.",
-                "proactive_checkin": checkin_needed
-            }
-            
-            if checkin_needed:
-                response["checkin_message"] = self.intervention_engine.generate_checkin_message(user_id)
-            
-            return response
-        else:
+                
+                if checkin_needed:
+                    response["checkin_message"] = self.intervention_engine.generate_checkin_message(user_id)
+                
+                return response
+            else:
+                # Check if user exists at all
+                conn = sqlite3.connect(self.memory_manager.db_path)
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM user_profiles WHERE user_id = ?", (user_id,))
+                exists = cursor.fetchone()[0] > 0
+                conn.close()
+                
+                if not exists:
+                    return {
+                        "status": "error",
+                        "message": "User ID not found. Please check your User ID or start a new session to create an account."
+                    }
+                else:
+                    return {
+                        "status": "error",
+                        "message": "Incorrect password. Please try again or start a new private session."
+                    }
+        except Exception as e:
+            logger.error(f"Error in authenticate_returning_user: {e}")
             return {
                 "status": "error",
-                "message": "Authentication failed. Please check your credentials or start a new private session."
+                "message": "Authentication system error. Please try again or start a new private session."
             }
     
     def generate_agentic_response(self, user_message: str, analysis: Dict[str, Any], chat_history: list = None) -> Dict[str, Any]:
