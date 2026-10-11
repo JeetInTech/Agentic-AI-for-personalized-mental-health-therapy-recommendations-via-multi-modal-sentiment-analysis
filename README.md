@@ -473,7 +473,7 @@ Get Groq API key from: https://console.groq.com/
 python app.py
 ```
 
-Access at: **http://localhost:5000**
+Access at: **`http://localhost:5000`**
 
 ---
 
